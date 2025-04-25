@@ -19,14 +19,14 @@
     #
     # You should have received a copy of the GNU General Public License
     # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    # WARNING: doMreps use a slightly modified version of mreps. 
-    # The original version should be downloaded from 
+
+    # WARNING: doMreps use a slightly modified version of mreps.
+    # The original version should be downloaded from
     #  http://mreps.univ-mlv.fr/.
-    # The aim of the modification was to have a less verbose output to 
+    # The aim of the modification was to have a less verbose output to
     # accelerate the processing (a more specific output for fastq data)
-    # 
-    # mreps is released by the author under the GNU GPL licence 
+    #
+    # mreps is released by the author under the GNU GPL licence
     #  (see LICENCE.md)
 
     #!/bin/bash -f
@@ -55,8 +55,8 @@
         echo -n $file
         total=0
 
-        while read line  
-        do  
+        while read line
+        do
         Forward=`echo $line | sed -e s/\.\*=//g`
         Reversed=`echo $Forward | rev`
     #	echo "1 REVERSE=${Reversed}"
@@ -65,7 +65,7 @@
         Reversed=`echo $Reversed | sed -e s/\(/V+/g | sed -e s/\+\)/S/g`
     #	echo "3 REVERSE=${Reversed}"
         Reversed=`echo $Reversed | tr W T | tr X G | tr Y C | tr Z A | tr V ")" | tr S "("`
-    #	echo "4 REVERSE=${Reversed}"	
+    #	echo "4 REVERSE=${Reversed}"
         nb=$(zgrep -c -E "${Forward}"\|"${Reversed}" $file)
     #	echo "nb=\$(zgrep -c -E \"${Forward}\"\|\"${Reversed}\" $file)"
         echo -n " $nb"
