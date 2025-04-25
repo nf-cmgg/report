@@ -7,5 +7,8 @@ testing/
 testing*
 *.pyc
 null/
-hg38.fa
-hg38.fa.fai
+/bin/hg38.fa
+/bin/hg38.fa.fai
+/bin/D2507392-ready.cram
+/bin/D2507392-ready.cram.crai
+/bin/test_output.bam
