@@ -12,14 +12,14 @@ import re
 import glob
 
 #########################
-### read config file  ###	
+### read config file  ###
 #########################
 config_file = "./config_seqcap_v2.ini"
 config = configparser.ConfigParser()
 config.read(config_file)
 
 #########################
-###     functions     ###	
+###     functions     ###
 #########################
 
 def config_section_map(section, config_obj):
@@ -67,7 +67,6 @@ def count_reads_at_target(crams, outputdir, pos, user, group, samtools, hotcount
         ### Log sample that is being processed ###
         print(f"\t{sample}")
         subprocess.check_output(f"echo\t{sample} >> {log}", stderr=subprocess.STDOUT, shell=True)
-        
         ### Defining file paths for intermediate files ###
         bam = f"{outputdir}/{sample}_var.bam"
         bam_sorted = f"{outputdir}/{sample}_var_sorted.bam"
@@ -108,7 +107,7 @@ def parse_count_output(outp, var_dict):
 
 
 ################################
-###     input parameters     ###	
+###     input parameters     ###
 ################################
 
 parser = argparse.ArgumentParser(usage='Usage: python SpotHot.py --run NVQ_828')
@@ -125,7 +124,7 @@ analysis = config_section_map("analysis", config)
 designs = targeted_variants["designs"]
 designs_list = designs.split(',')
 panelfile = files["seqcap_panels_file"]
-results_dir = f"{directories["documents"]}{directories["results"]}_{analysis["variant_caller"]}" 
+results_dir = f"{directories["documents"]}{directories["results"]}_{analysis["variant_caller"]}"
 runinfofile = files["runinfofile"]
 bin = directories["bin"]
 samtools_path = os.path.expanduser(targeted_variants["samtools"])
@@ -139,7 +138,7 @@ reference_genome = files["reference_genome"]
 if not os.path.exists(results_dir):
     print(f'Map "{results_dir}" bestaat niet')
     os.makedirs(results_dir)
-    
+
 if not os.path.exists(runinfofile):
     print(f'Bestand "{runinfofile}" bestaat niet')
 
@@ -154,7 +153,7 @@ samples_coverage_to_low = []
 for designs_plus_gene in designs_list:
     ### variables ###
     design, rest = designs_plus_gene.split('~')
-    gene, position = rest.split('/')  
+    gene, position = rest.split('/')
     hotspot_count = {}
     query_list = f"{design}_{gene}.txt"
 
@@ -173,7 +172,6 @@ for designs_plus_gene in designs_list:
             os.chmod(excel_output_sub_dir, 0o775)
             os.chown(excel_output_sub_dir, user_id, group_id)
         print(f"-> {len(patients_design)} {design} patienten te analyseren")
-        
         ### read variant query file ###
         if not os.path.isfile(query_list):
             print(f"Error: {gene} variant bestand \"{query_list}\" kon niet worden geopend\n")
@@ -193,17 +191,13 @@ for designs_plus_gene in designs_list:
             missing = set(patients_design) - set(MAPPING_files)
             print(f"Error: CRAM/BAM files missing for: {', '.join(missing)}")
             sys.exit()
-        
         ### counting reads with specific target sequences ###
         print(f"-> Tellen van reads in positie {gene} {position}:\n")
         logfile = f"{excel_output_sub_dir}/{run}_{design}_{gene}_varcount.log"
         outputfile = f"{excel_output_sub_dir}/{run}_{design}_{gene}_varcount.txt"
         output_excel = f"{results_dir}/{run}_{design}_targeted_{gene}.xlsx"
         output_txt = f"{excel_output_sub_dir}/{run}_{design}_targeted_{gene}.txt"
-        samples_coverage_to_low = count_reads_at_target(
-            MAPPING_files, excel_output_sub_dir, position, user_id, group_id, 
-            samtools_path, hotcount_path, pear_path, logfile, outputfile, query_list
-        )
+        samples_coverage_to_low = count_reads_at_target(MAPPING_files, excel_output_sub_dir, position, user_id, group_id, samtools_path, hotcount_path, pear_path, logfile, outputfile, query_list)
         if samples_coverage_to_low:
             print(f"\tWARNING: volgende stalen hadden geen coverage in de ROI van de variant: {samples_coverage_to_low}")
         hotspot_count = parse_count_output(outputfile, hotspot_count)
