@@ -7,3 +7,12 @@ testing/
 testing*
 *.pyc
 null/
+bin/hg38.fa
+bin/hg38.fa.fai
+bin/D2507392-ready.cram
+bin/D2507392-ready.cram.crai
+bin/test_output.bam
+bin/FamCanc_v2_MSH2.txt
+bin/FamCanc_v3_MSH2.txt
+bin/SeqCap_NVQ_1308.txt
+bin/seqcap_panels
