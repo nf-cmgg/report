@@ -18,7 +18,7 @@ workflow REPORT {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
-    
+
     main:
 
     COUNT_READS_AT_TARGET(ch_samplesheet)
