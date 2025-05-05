@@ -3,6 +3,7 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { COUNT_READS_AT_TARGET} from '../subworkflows/local/count_reads_at_target/main.nf'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_report_pipeline'
@@ -17,7 +18,10 @@ workflow REPORT {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+
     main:
+
+    COUNT_READS_AT_TARGET(ch_samplesheet)
 
     ch_versions = Channel.empty()
 
