@@ -1,5 +1,7 @@
 include { SAMTOOLS_VIEW } from '../../../modules/nf-core/samtools/view/main.nf'
 include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
+include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
+
 
 workflow COUNT_READS_AT_TARGET {
     take:
@@ -12,11 +14,15 @@ workflow COUNT_READS_AT_TARGET {
         ch_samplesheet,
         ch_reference,
         [],    // qname
-        "bai"   // index_format
+        []   // index_format
     )
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
         ch_reference
+    )
+    SAMTOOLS_FASTQ(
+        SAMTOOLS_SORT.out.bam,
+        false
     )
 
     emit:
