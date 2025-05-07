@@ -1,7 +1,7 @@
 include { SAMTOOLS_VIEW } from '../../../modules/nf-core/samtools/view/main.nf'
 include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
 include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
-
+include { PEAR } from '../../../modules/nf-core/pear/main.nf'
 
 workflow COUNT_READS_AT_TARGET {
     take:
@@ -23,6 +23,9 @@ workflow COUNT_READS_AT_TARGET {
     SAMTOOLS_FASTQ(
         SAMTOOLS_SORT.out.bam,
         false
+    )
+    PEAR(
+        SAMTOOLS_FASTQ.out.fastq
     )
 
     emit:
