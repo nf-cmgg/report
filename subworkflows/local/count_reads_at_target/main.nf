@@ -2,6 +2,7 @@ include { SAMTOOLS_VIEW } from '../../../modules/nf-core/samtools/view/main.nf'
 include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
 include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
 include { PEAR } from '../../../modules/nf-core/pear/main.nf'
+include { MERGE_READS } from '../../../modules/local/mergereads/main.nf'
 
 workflow COUNT_READS_AT_TARGET {
     take:
@@ -26,6 +27,12 @@ workflow COUNT_READS_AT_TARGET {
     )
     PEAR(
         SAMTOOLS_FASTQ.out.fastq
+    )
+
+    ch_merge_input = PEAR.out.assembled.join(SAMTOOLS_FASTQ.out.singleton, failOnDuplicate:true, failOnMismatch:true)
+
+    MERGE_READS(
+        ch_merge_input
     )
 
     emit:
