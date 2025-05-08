@@ -28,9 +28,11 @@ workflow COUNT_READS_AT_TARGET {
     PEAR(
         SAMTOOLS_FASTQ.out.fastq
     )
+
+    ch_merge_input = PEAR.out.assembled.join(SAMTOOLS_FASTQ.out.singleton)
+
     MERGE_READS(
-        PEAR.out.assembled,
-        SAMTOOLS_FASTQ.out.singleton
+        ch_merge_input
     )
 
     emit:
