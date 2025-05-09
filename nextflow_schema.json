@@ -215,8 +215,7 @@
         "queries_dir": {
             "type": "string",
             "format": "directory-path",
-            "exists": true,
-            "default": "/home/guest/Documents/Internship/nf-cmgg-report/assets/queries/"
+            "exists": true
         }
     }
 }

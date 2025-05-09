@@ -1,3 +1,5 @@
+params.queries_dir = "${projectDir}/assets/queries/"
+
 include { SAMTOOLS_VIEW } from '../../../modules/nf-core/samtools/view/main.nf'
 include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
 include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
