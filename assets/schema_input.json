@@ -24,6 +24,9 @@
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+\\.crai$"
+            },
+            "design": {
+                "type": "string"
             }
         },
         "required": ["sample", "cram", "crai"]

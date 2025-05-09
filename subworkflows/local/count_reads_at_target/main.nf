@@ -3,6 +3,7 @@ include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
 include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
 include { PEAR } from '../../../modules/nf-core/pear/main.nf'
 include { MERGE_READS } from '../../../modules/local/mergereads/main.nf'
+include { HOTCOUNT } from '../../../modules/local/hotcount/main.nf'
 
 workflow COUNT_READS_AT_TARGET {
     take:
@@ -12,7 +13,7 @@ workflow COUNT_READS_AT_TARGET {
     ch_reference = Channel.value( [ [:], file(params.fasta) ] )
 
     SAMTOOLS_VIEW(
-        ch_samplesheet,
+        ch_samplesheet.map { meta, cram, crai, _query -> tuple(meta, cram, crai)},
         ch_reference,
         [],    // qname
         []   // index_format
@@ -33,6 +34,17 @@ workflow COUNT_READS_AT_TARGET {
 
     MERGE_READS(
         ch_merge_input
+    )
+
+    ch_queries = ch_samplesheet.map { meta, _cram, _crai, design ->
+        def query_file = file("${projectDir}/assets/queries/${design}_MSH2.txt")
+        tuple(meta, query_file) }
+    ch_hotcount_input = MERGE_READS.out.merged.join(ch_queries, failOnDuplicate:true, failOnMismatch:true).map { meta, fastq, query -> tuple(meta, query, fastq)}
+
+
+
+    HOTCOUNT(
+        ch_hotcount_input
     )
 
     emit:
