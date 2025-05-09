@@ -36,12 +36,20 @@ workflow COUNT_READS_AT_TARGET {
         ch_merge_input
     )
 
-    ch_queries = ch_samplesheet.map { meta, _cram, _crai, design ->
-        def query_file = file("${projectDir}/assets/queries/${design}_MSH2.txt")
-        tuple(meta, query_file) }
+    ch_all_queries = Channel
+    .fromPath("${params.queries_dir}/*.txt")
+    .map { query_file ->
+        def fname = query_file.getName()
+        def design = fname.replaceFirst(/_[^_]+\.txt$/, '')
+        tuple(design, query_file)
+    }
+    ch_samplesheet_design = ch_samplesheet.map { meta, _cram, _crai, design ->
+        tuple(design, meta)
+    }
+    ch_queries = ch_samplesheet_design
+        .join(ch_all_queries, failOnDuplicate:true, failOnMismatch:true)
+        .map { _design, meta, query_file -> tuple(meta, query_file) }
     ch_hotcount_input = MERGE_READS.out.merged.join(ch_queries, failOnDuplicate:true, failOnMismatch:true).map { meta, fastq, query -> tuple(meta, query, fastq)}
-
-
 
     HOTCOUNT(
         ch_hotcount_input
