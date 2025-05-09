@@ -21,7 +21,17 @@ process HOTCOUNT {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        hotcount: \$(echo "1.0.0") # Replace with actual version command if available
+        hotcount: \$(echo "0.0")
+    END_VERSIONS
+    """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}.counts.txt
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        hotcount: \$(echo "0.0")
     END_VERSIONS
     """
 }
