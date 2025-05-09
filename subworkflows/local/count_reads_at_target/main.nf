@@ -13,7 +13,7 @@ workflow COUNT_READS_AT_TARGET {
     ch_reference = Channel.value( [ [:], file(params.fasta) ] )
 
     SAMTOOLS_VIEW(
-        ch_samplesheet.map { meta, cram, crai, _query -> tuple(meta, cram, crai)},
+        ch_samplesheet,
         ch_reference,
         [],    // qname
         []   // index_format
@@ -36,20 +36,18 @@ workflow COUNT_READS_AT_TARGET {
         ch_merge_input
     )
 
-    ch_all_queries = Channel
-    .fromPath("${params.queries_dir}/*.txt")
-    .map { query_file ->
-        def fname = query_file.getName()
-        def design = fname.replaceFirst(/_[^_]+\.txt$/, '')
-        tuple(design, query_file)
+    def query_list = file("${params.queries_dir}/*.txt")
+
+    ch_queries = ch_samplesheet.map { meta, _cram, _crai ->
+        def query = query_list.find { file -> file.name.startsWith(meta.design) }
+        if(!query) {
+            error("Could not find a query file for design ${meta.design} in the query directory (${params.queries_dir})")
+        }
+        tuple(meta,query)
     }
-    ch_samplesheet_design = ch_samplesheet.map { meta, _cram, _crai, design ->
-        tuple(design, meta)
-    }
-    ch_queries = ch_samplesheet_design
-        .join(ch_all_queries, failOnDuplicate:true, failOnMismatch:true)
-        .map { _design, meta, query_file -> tuple(meta, query_file) }
-    ch_hotcount_input = MERGE_READS.out.merged.join(ch_queries, failOnDuplicate:true, failOnMismatch:true).map { meta, fastq, query -> tuple(meta, query, fastq)}
+    ch_hotcount_input = MERGE_READS.out.merged
+        .join(ch_queries, failOnDuplicate:true, failOnMismatch:true)
+        .map { meta, fastq, query -> tuple(meta, query, fastq)}
 
     HOTCOUNT(
         ch_hotcount_input

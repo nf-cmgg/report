@@ -74,8 +74,8 @@ workflow PIPELINE_INITIALISATION {
 
     Channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, cram, crai, design ->
-            tuple(meta, file(cram), file(crai), design)
+        .map { meta, cram, crai ->
+            tuple(meta, file(cram), file(crai))
         }
         .set { ch_samplesheet }
 

@@ -26,7 +26,8 @@
                 "pattern": "^\\S+\\.crai$"
             },
             "design": {
-                "type": "string"
+                "type": "string",
+                "meta": "design"
             }
         },
         "required": ["sample", "cram", "crai"]

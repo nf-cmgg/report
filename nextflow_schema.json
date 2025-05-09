@@ -214,6 +214,8 @@
     "properties": {
         "queries_dir": {
             "type": "string",
+            "format": "directory-path",
+            "exists": true,
             "default": "assets/queries/"
         }
     }
