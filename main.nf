@@ -12,7 +12,6 @@
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
 include { REPORT  } from './workflows/report'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
@@ -28,7 +27,6 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_repo
 //   This is an example of how to use getGenomeAttribute() to fetch parameters
 //   from igenomes.config using `--genome`
 params.fasta = getGenomeAttribute('fasta')
-params.queries_dir = "${projectDir}/assets/queries/"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

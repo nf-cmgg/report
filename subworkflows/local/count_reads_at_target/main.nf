@@ -1,11 +1,11 @@
-params.queries_dir = "${projectDir}/assets/queries/"
-
 include { SAMTOOLS_VIEW } from '../../../modules/nf-core/samtools/view/main.nf'
 include { SAMTOOLS_SORT } from '../../../modules/nf-core/samtools/sort/main.nf'
 include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
 include { PEAR } from '../../../modules/nf-core/pear/main.nf'
 include { MERGE_READS } from '../../../modules/local/mergereads/main.nf'
 include { HOTCOUNT } from '../../../modules/local/hotcount/main.nf'
+
+params.queries_dir = "${projectDir}/assets/queries/"
 
 workflow COUNT_READS_AT_TARGET {
     take:

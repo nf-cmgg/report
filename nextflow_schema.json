@@ -211,11 +211,5 @@
             "$ref": "#/$defs/generic_options"
         }
     ],
-    "properties": {
-        "queries_dir": {
-            "type": "string",
-            "format": "directory-path",
-            "exists": true
-        }
-    }
+    "properties": {}
 }
