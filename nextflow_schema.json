@@ -211,5 +211,9 @@
             "$ref": "#/$defs/generic_options"
         }
     ],
-    "properties": {}
+    "properties": {
+        "queries_dir": {
+            "type": "string"
+        }
+    }
 }

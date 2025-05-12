@@ -18,10 +18,11 @@ workflow REPORT {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    queries
 
     main:
 
-    COUNT_READS_AT_TARGET(ch_samplesheet)
+    COUNT_READS_AT_TARGET(ch_samplesheet, queries)
 
     ch_versions = Channel.empty()
 

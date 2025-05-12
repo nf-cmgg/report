@@ -5,11 +5,10 @@ include { PEAR } from '../../../modules/nf-core/pear/main.nf'
 include { MERGE_READS } from '../../../modules/local/mergereads/main.nf'
 include { HOTCOUNT } from '../../../modules/local/hotcount/main.nf'
 
-params.queries_dir = "${projectDir}/assets/queries/"
-
 workflow COUNT_READS_AT_TARGET {
     take:
     ch_samplesheet
+    queries
 
     main:
     ch_reference = Channel.value( [ [:], file(params.fasta) ] )
@@ -38,12 +37,12 @@ workflow COUNT_READS_AT_TARGET {
         ch_merge_input
     )
 
-    def query_list = file("${params.queries_dir}/*.txt")
+    def query_list = file("${queries}/*.txt")
 
     ch_queries = ch_samplesheet.map { meta, _cram, _crai ->
         def query = query_list.find { file -> file.name.startsWith(meta.design) }
         if(!query) {
-            error("Could not find a query file for design ${meta.design} in the query directory (${params.queries_dir})")
+            error("Could not find a query file for design ${meta.design} in the query directory (${queries})")
         }
         tuple(meta,query)
     }
