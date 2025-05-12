@@ -213,7 +213,9 @@
     ],
     "properties": {
         "queries_dir": {
-            "type": "string"
+            "type": "string",
+            "format": "directory-path",
+            "exists": true
         }
     }
 }
