@@ -9,8 +9,6 @@ nextflow_process{
 
     test("chr2-subset - [meta, pear_assembled, samtools_singleton]") {
 
-        config "../../../../tests/nextflow.config"
-
         when {
             process {
                 """
@@ -34,7 +32,6 @@ nextflow_process{
 
     test("stub") {
         options "-stub"
-        config "../../../../tests/nextflow.config"
 
         when {
             process {
