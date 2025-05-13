@@ -1,0 +1,76 @@
+nextflow_process{
+
+    name "Test Process HOTCOUNT"
+    script "../main.nf"
+    process "HOTCOUNT"
+
+    tag "modules"
+    tag "hotcount"
+
+    test("chr2-subset - [meta, query_file, assembled_fastq]") {
+
+        config "../../../../tests/nextflow.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test' ],
+                    file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/FamCanc_v2_MSH2.txt', checkIfExists: true),
+                    file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.merged.fastq.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                {
+                    def (meta, countsFile) = process.out.counts.get(0)
+
+                    def content = path(countsFile)
+                        .readLines()
+                        .findAll { !it.startsWith("## date is") }
+                        .join("\n") + "\n"
+
+                    assert snapshot(content, process.out.versions).match()
+                }
+            )
+        }
+
+    }
+
+    test("stub") {
+        options "-stub"
+        config "../../../../tests/nextflow.config"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test'],
+                    file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/FamCanc_v2_MSH2.txt', checkIfExists: true),
+                    file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.merged.fastq.gz', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                {
+                    def (meta, countsFile) = process.out.counts.get(0)
+
+                    def content = path(countsFile)
+                        .readLines()
+                        .findAll { !it.startsWith("## date is") }
+                        .join("\n") + "\n"
+
+                    assert snapshot(content, process.out.versions).match()
+                }
+            )
+        }
+    }
+}
