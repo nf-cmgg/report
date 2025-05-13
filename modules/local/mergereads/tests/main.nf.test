@@ -9,11 +9,13 @@ nextflow_process{
 
     test("chr2-subset - [meta, pear_assembled, samtools_singleton]") {
 
+        config "./nextflow.config"
+
         when {
             process {
                 """
                 input[0] = [
-                    [ id:'test' ], // meta map
+                    [ id:'test' ],
                     file('https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.pear_assembled.fastq.gz', checkIfExists: true),
                     file('https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.samtools_fastq_singleton.fastq.gz', checkIfExists: true)
                 ]
@@ -24,8 +26,6 @@ nextflow_process{
         then {
             assertAll (
                 { assert process.success },
-                { assert process.out.merged.size() == 1 },
-                { assert process.out.versions.name == "versions.yml" },
                 { assert snapshot(process.out.merged, process.out.versions).match() }
             )
         }
@@ -34,14 +34,15 @@ nextflow_process{
 
     test("stub") {
         options "-stub"
+        config "./nextflow.config"
 
         when {
             process {
                 """
                 input[0] = [
                     [ id:'test'],
-                    file(https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.pear_assembled.fastq.gz, checkIfExists: true),
-                    file(https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.samtools_fastq_singleton.fastq.gz, checkIfExists: true)
+                    file('https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.pear_assembled.fastq.gz', checkIfExists: true),
+                    file('https://github.com/Tuur-ds/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/testfiles/test1.samtools_fastq_singleton.fastq.gz', checkIfExists: true)
                 ]
                 """
             }
@@ -50,8 +51,6 @@ nextflow_process{
         then {
             assertAll (
                 { assert process.success },
-                { assert process.out.merged.size() == 1 },
-                { assert process.out.versions.name == "versions.yml" },
                 { assert snapshot(process.out.merged, process.out.versions).match() }
             )
         }
