@@ -31,7 +31,7 @@ process MERGE_READS {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.merged.fastq.gz
+    gzip -c < /dev/null > ${prefix}.merged.fastq.gz
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         cat: \$(cat --version 2>&1 | head -n 1 | sed 's/^.* //')
