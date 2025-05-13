@@ -41,6 +41,10 @@ jobs:
       shard: ${{ steps.set-shards.outputs.shard }}
       total_shards: ${{ steps.set-shards.outputs.total_shards }}
     steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+
       - name: get number of shards
         id: set-shards
         uses: ./.github/actions/get-shards
