@@ -4,7 +4,54 @@
 
 This document describes the output produced by the pipeline.
 
-The directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
+The directories listed below will be created in the results directory after the pipeline has finished. For this example, a samplesheet with 2 samples (test1 and test2) was used.
+
+```bash
+results/
+├── hotcount
+│   ├── test1.counts.txt
+│   └── test2.counts.txt
+├── merge
+│   ├── test1.merged.fastq.gz
+│   └── test2.merged.fastq.gz
+├── pear
+│   ├── test1.assembled.fastq.gz
+│   ├── test1.discarded.fastq.gz
+│   ├── test1.unassembled.forward.fastq.gz
+│   ├── test1.unassembled.reverse.fastq.gz
+│   ├── test2.assembled.fastq.gz
+│   ├── test2.discarded.fastq.gz
+│   ├── test2.unassembled.forward.fastq.gz
+│   ├── test2.unassembled.reverse.fastq.gz
+│   └── versions.yml
+├── pipeline_info
+│   ├── execution_report_2025-05-14_10-34-56.html
+│   ├── execution_timeline_2025-05-14_10-34-56.html
+│   ├── execution_trace_2025-05-14_10-34-56.txt
+│   ├── params_2025-05-14_10-34-59.json
+│   ├── pipeline_dag_2025-05-14_10-34-56.html
+│   └── report_software_versions.yml
+├── samtools_fastq
+│   ├── test1.samtools_fastq_1.fastq.gz
+│   ├── test1.samtools_fastq_2.fastq.gz
+│   ├── test1.samtools_fastq_other.fastq.gz
+│   ├── test1.samtools_fastq_singleton.fastq.gz
+│   ├── test2.samtools_fastq_1.fastq.gz
+│   ├── test2.samtools_fastq_2.fastq.gz
+│   ├── test2.samtools_fastq_other.fastq.gz
+│   ├── test2.samtools_fastq_singleton.fastq.gz
+│   └── versions.yml
+├── samtools_sort
+│   ├── test1.samtools_sorted.bam
+│   ├── test2.samtools_sorted.bam
+│   └── versions.yml
+└── samtools_view
+    ├── test1.samtools_view.bam
+    ├── test2.samtools_view.bam
+    └── versions.yml
+```
+
+The output directory is specified using `--outdir`. All intermediate output of each tools is saved in it's respective subfolder.
 
 <!-- TODO nf-core: Write this documentation describing your workflow's output -->
 
