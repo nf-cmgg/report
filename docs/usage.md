@@ -4,15 +4,17 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated csv file with 4 columns as shown below.
-
-```bash
-sample,CRAM,CRAI,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
-```
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can either be a CSV, TSV, JSON or YAML file.
 
 ```bash
 --input '[path to samplesheet file]'
+```
+
+Example CSV-file:
+
+```bash
+sample,cram,crai,design
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
 ```
 
 ### Full samplesheet
@@ -20,8 +22,8 @@ CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v
 | Column   | Description                                                                                |
 | -------- | ------------------------------------------------------------------------------------------ |
 | `sample` | MANDATORY - Custom sample name.                                                            |
-| `CRAM`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`. |
-| `CRAI`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
+| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`. |
+| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
 | `design` | MANDATORY - Indicates the sequencing panel or assay used for each sample.                  |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
@@ -31,7 +33,7 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-cmgg/report --input ./samplesheet.csv --outdir ./results --fasta chr2_subset -profile docker
+nextflow run nf-cmgg/report --input ./samplesheet.csv --outdir ./results --fasta <path-to-fasta> -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.

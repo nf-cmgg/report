@@ -12,7 +12,7 @@
 
 ## Introduction
 
-**nf-cmgg/report** is a bioinformatics pipeline designed to detect a specific mutation in the MSH2 gene that is missed by standard variant calling methods.
+**nf-cmgg/report** is a bioinformatics pipeline that will do some common reporting whitin our institute.
 
 The pipeline is built using Nextflow, a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The Nextflow DSL2 implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from nf-core/modules in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
 
@@ -50,7 +50,7 @@ First, prepare a samplesheet with your input data that looks as follows:
 `samplesheet.csv`:
 
 ```csv
-sample,CRAM,CRAI,design
+sample,cram,crai,design
 CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
 ```
 
