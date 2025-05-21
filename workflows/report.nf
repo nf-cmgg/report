@@ -3,10 +3,11 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { COUNT_READS_AT_TARGET} from '../subworkflows/local/count_reads_at_target/main.nf'
+include { COUNT_READS_AT_TARGET  } from '../subworkflows/local/count_reads_at_target/main.nf'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_report_pipeline'
+include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,10 +20,11 @@ workflow REPORT {
     take:
     ch_samplesheet // channel: samplesheet read in from --input
     queries
+    multiqc_config
 
     main:
 
-    COUNT_READS_AT_TARGET(ch_samplesheet, queries)
+    COUNT_READS_AT_TARGET(ch_samplesheet, queries, multiqc_config)
 
     ch_versions = Channel.empty()
 

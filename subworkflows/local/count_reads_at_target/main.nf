@@ -4,11 +4,13 @@ include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf
 include { PEAR } from '../../../modules/nf-core/pear/main.nf'
 include { MERGE_READS } from '../../../modules/local/mergereads/main.nf'
 include { HOTCOUNT } from '../../../modules/local/hotcount/main.nf'
+include { MULTIQC } from '../../../modules/nf-core/multiqc/main.nf'
 
 workflow COUNT_READS_AT_TARGET {
     take:
     ch_samplesheet
     queries
+    multiqc_config
 
     main:
     ch_reference = Channel.value( [ [:], file(params.fasta) ] )
@@ -54,7 +56,24 @@ workflow COUNT_READS_AT_TARGET {
         ch_hotcount_input
     )
 
+    ch_multiqc_input = HOTCOUNT.out.paths.collect()
+
+    ch_multiqc_config = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    
+    ch_multiqc_custom_config = multiqc_config ?
+        Channel.fromPath(multiqc_config, checkIfExists: true) :
+        Channel.empty()
+
+    MULTIQC (
+        ch_multiqc_input,
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        [],
+        []
+    )
+
     emit:
     bam = SAMTOOLS_VIEW.out.bam
     sorted_bam = SAMTOOLS_SORT.out.bam
+    multiqc_report = MULTIQC.out.report
 }

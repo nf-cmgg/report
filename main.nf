@@ -64,7 +64,7 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     REPORT (
-        PIPELINE_INITIALISATION.out.samplesheet, params.queries_dir
+        PIPELINE_INITIALISATION.out.samplesheet, params.queries_dir, params.multiqc_config
     )
     //
     // SUBWORKFLOW: Run completion tasks
