@@ -14,6 +14,21 @@ results/
 ├── merge
 │   ├── test1.merged.fastq.gz
 │   └── test2.merged.fastq.gz
+├── multiqc
+│   ├── multiqc_data
+│   │   ├── MSH2_hotspot_varcount.txt
+│   │   ├── multiqc_citations.txt
+│   │   ├── multiqc_data.json
+│   │   ├── multiqc_MSH2_hotspot_varcount.txt
+│   │   ├── multiqc_sources.txt
+│   │   └── multiqc.log
+│   ├── multiqc_plots
+│   │   ├── pdf
+│   │   │   └── MSH2_hotspot_varcount.pdf
+│   │   ├── png
+│   │   │   └── MSH2_hotsot_varcount.png
+│   │   └── svg
+│   └── multiqc_report.html
 ├── pear
 │   ├── test1.assembled.fastq.gz
 │   ├── test1.discarded.fastq.gz
