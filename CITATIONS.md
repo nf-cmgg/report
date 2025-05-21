@@ -18,7 +18,14 @@
 
   > Zhang J, Kobert K, Flouri T, Stamatakis A. (2014) PEAR: a fast and accurate Illumina Paired-End reAd mergeR Bioinformatics.
 
-- [HotCount] (https://github.com/mafouille/HotCount)
+- [HotCount](https://github.com/mafouille/HotCount)
+
+- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+  
+  > Philip Ewels , Måns Magnusson , Sverker Lundin , Max Käller (2016) MultiQC: summarize analysis results for multiple tools and samples in a single report.
+  
+  > Custom version used [MultiQC_cmgg](https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG)
+
 
 ## Software packaging/containerisation tools
 
