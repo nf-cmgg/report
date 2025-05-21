@@ -31,6 +31,7 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 2. Merge overlapping paired end reads (pear)
 3. Combine PEAR output and singletons (mergereads)
 4. Count the reads at location of mutation (hotcount)
+5. Combine hotcount output into a single report (MultiQC)
 
 ## Summary of tools and version used in the pipeline
 
@@ -39,6 +40,7 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 | SAMtools | 1.21    |
 | PEAR     | 0.9.6   |
 | hotcount | 0.0.0   |
+| multiqc_cmgg | 0.0.2 |
 
 ## Usage
 
@@ -61,6 +63,7 @@ Now, you can run the pipeline using:
 ```bash
 nextflow run nf-cmgg/report -profile <docker/singularity> --input samplesheet.csv --outdir <OUTDIR>
 ```
+To use a different multiqc_config.yaml the following parameter can be added: `--multiqc_config <path_to_file>`
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
@@ -70,6 +73,8 @@ nextflow run nf-cmgg/report -profile <docker/singularity> --input samplesheet.cs
 nf-cmgg/report was originally written by Tuur-ds,nvnieuwk.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
+
+ThomasSte01
 
 <!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
