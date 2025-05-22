@@ -2,7 +2,7 @@ process MULTIQC {
     label 'process_single'
     
     conda "${moduleDir}/environment.yml"
-    container "multiqc_cmgg:0.0.2dev"
+    container 'cmgg/multiqc_cmgg:0.0.2dev'
 
     input: 
     path(multiqc_files, stageAs: "?/*")

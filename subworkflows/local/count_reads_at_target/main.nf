@@ -59,7 +59,7 @@ workflow COUNT_READS_AT_TARGET {
     ch_multiqc_input = HOTCOUNT.out.paths.collect()
 
     ch_multiqc_config = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    
+
     ch_multiqc_custom_config = multiqc_config ?
         Channel.fromPath(multiqc_config, checkIfExists: true) :
         Channel.empty()
