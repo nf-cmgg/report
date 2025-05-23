@@ -11,7 +11,6 @@ process HOTCOUNT {
     tuple val(meta), path(query_file), path(assembled_fastq)
 
     output:
-    path("*counts.txt"), emit: paths
     tuple val(meta), path("*counts.txt"), emit: counts
     path "versions.yml", emit: versions
 
