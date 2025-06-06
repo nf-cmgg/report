@@ -10,14 +10,14 @@
                 ]
             ],
             [
-                "versions.yml:md5,59ace0725ae632fac983529072150027"
+                "versions.yml:md5,3c363472d2455767ac21cd8a9da179bd"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.3"
         },
-        "timestamp": "2025-05-13T15:24:13.786557219"
+        "timestamp": "2025-06-06T11:03:58.769948904"
     },
     "chr2-subset - [meta, pear_assembled, samtools_singleton]": {
         "content": [
@@ -30,13 +30,13 @@
                 ]
             ],
             [
-                "versions.yml:md5,59ace0725ae632fac983529072150027"
+                "versions.yml:md5,3c363472d2455767ac21cd8a9da179bd"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.3"
         },
-        "timestamp": "2025-05-13T15:24:05.976757947"
+        "timestamp": "2025-06-06T11:03:48.719581683"
     }
 }
