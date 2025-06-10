@@ -41,6 +41,6 @@ custom_plot_config:
         direction: desc
       
 
-mosdepth_config:
+coverage_config:
   general_stats_coverage: [20,30]
   general_stats_coverage_hidden: [30]
