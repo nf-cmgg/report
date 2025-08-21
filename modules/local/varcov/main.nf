@@ -1,0 +1,70 @@
+process VARCOV {
+    tag "$meta.id"
+    label 'process_single'
+
+    conda "${moduleDir}/environment.yml"
+    container "${workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
+        ? ''
+        : 'community.wave.seqera.io/library/python_pip_openpyxl_pandas_pyvcf3:7b7a5f891e4e0fb5'}"
+
+    input:
+    tuple(
+        val(meta),
+        path(vcfs, stageAs: 'vcfs/*'),
+        path(stringtie, stageAs: 'stringtie/*'),
+        path(fusionreport, stageAs: 'fusionreport/*'),
+        path(ctat, stageAs: 'ctat/*'),
+        path(multiqc, stageAs: 'multiqc/*'),
+        path(bams, stageAs: 'bams/*'),
+        path(bais, stageAs: 'bams/*'),
+        val(run_nr)
+    )
+    path(genes)
+    path(fusions)
+    path(mane)
+    val(pipeline_version)
+
+    output:
+    tuple val(meta), path(prefix), emit: output
+    path "versions.yml"          , emit: versions
+
+    script:
+    prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    rnafusion_varcov.py \\
+        --input vcfs \\
+        --stringtie stringtie \\
+        --fusionreport fusionreport \\
+        --ctat ctat \\
+        --multiqc multiqc \\
+        --output ${prefix} \\
+        --bams bams \\
+        --genes $genes \\
+        --fusion_whitelist $fusions \\
+        --mane $mane \\
+        --run $run_nr \\
+        --pipeline_version $pipeline_version
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python --version 2>&1 | sed 's/^Python //')
+        pandas: \$(pip freeze | grep pandas | sed 's/pandas==//')
+        openpyxl: \$(pip freeze | grep openpyxl | sed 's/openpyxl==//')
+        pyvcf3: \$(pip freeze | grep pyvcf3 | sed 's/pyvcf3==//')
+    END_VERSIONS
+    """
+
+    stub:
+    prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    mkdir ${prefix}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python --version 2>&1 | sed 's/^Python //')
+        pandas: \$(pip freeze | grep pandas | sed 's/pandas==//')
+        openpyxl: \$(pip freeze | grep openpyxl | sed 's/openpyxl==//')
+        pyvcf3: \$(pip freeze | grep pyvcf3 | sed 's/pyvcf3==//')
+    END_VERSIONS
+    """
+}

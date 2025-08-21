@@ -1,0 +1,77 @@
+nextflow_process{
+
+    name "Test Process VARCOV"
+    script "../main.nf"
+    process "VARCOV"
+
+    tag "modules"
+    tag "varcov"
+
+    test("base test") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test' ],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/vcf/test_fusion_data.vcf", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/stringtie/test.gene.abundance.txt", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/fusionreport/test/test.fusions.csv", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/ctatsplicing/test.cancer.introns", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/multiqc/multiqc_data/multiqc_general_stats.txt", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/star/test.Aligned.sortedByCoord.out.bam", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/star/test.Aligned.sortedByCoord.out.bam.bai", checkIfExists:true)],
+                    'test_run'
+                ]
+                input[1] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt', checkIfExists:true)
+                input[2] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt', checkIfExists:true)
+                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/MANE_all_noVer.csv', checkIfExists:true)
+                input[4] = 'test_version'
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert snapshot(process.out.merged, process.out.versions).match() }
+            )
+        }
+
+    }
+
+    test("stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id:'test' ],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/vcf/test_fusion_data.vcf", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/stringtie/test.gene.abundance.txt", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/fusionreport/test/test.fusions.csv", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/ctatsplicing/test.cancer.introns", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/multiqc/multiqc_data/multiqc_general_stats.txt", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/star/test.Aligned.sortedByCoord.out.bam", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/test-results/star/test.Aligned.sortedByCoord.out.bam.bai", checkIfExists:true)],
+                    'test_run'
+                ]
+                input[1] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt', checkIfExists:true)
+                input[2] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt', checkIfExists:true)
+                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/MANE_all_noVer.csv', checkIfExists:true)
+                input[4] = 'test_version'
+                """
+            }
+        }
+
+        then {
+            assertAll (
+                { assert process.success },
+                { assert snapshot(process.out.merged, process.out.versions).match() }
+            )
+        }
+
+    }
+}
