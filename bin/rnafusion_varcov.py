@@ -98,15 +98,13 @@ cov_path:str = args.stringtie + "/"
 reads_path:str = args.fusionreport + "/"
 splicing_path:str = args.ctat + "/"
 qc_path:str = args.multiqc + "/"
-output_path:str = args.output + "/"
+excel_path:str = args.output
 bam_path:str = args.bams + "/"
-genes:str = args.genes
-fusions:str = args.fusion_whitelist
-mane:str = args.mane
+genes:str = pd.read_csv(args.genes, sep='\t')
+fusions:str = pd.read_csv(args.fusion_whitelist, sep='\t')
+mane:str = pd.read_csv(args.mane)
 run_nr:str = args.run
 pipeline_version:str = args.pipeline_version
-create_directory(output_path)
-
 
 ###############################################################
 ### Loop over .vcf files, extract info and export to report ###
@@ -166,7 +164,6 @@ for filename in os.listdir(input_path):
 
         # Extract the basename and use it as the output Excel file name and worksheet name
         basename = filename.split('_')[0]
-        excel_path = os.path.join(output_path, basename + ".xlsx")
 
         # read info about reads into a new df
         reads_file = os.path.join(reads_path + basename + ".fusions.csv")

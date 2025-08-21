@@ -25,11 +25,11 @@ process VARCOV {
     val(pipeline_version)
 
     output:
-    tuple val(meta), path(prefix), emit: output
+    tuple val(meta), path("*.xlsx"), emit: output
     path "versions.yml"          , emit: versions
 
     script:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     rnafusion_varcov.py \\
         --input vcfs \\
@@ -37,7 +37,7 @@ process VARCOV {
         --fusionreport fusionreport \\
         --ctat ctat \\
         --multiqc multiqc \\
-        --output ${prefix} \\
+        --output ${prefix}.xlsx \\
         --bams bams \\
         --genes $genes \\
         --fusion_whitelist $fusions \\
@@ -55,9 +55,9 @@ process VARCOV {
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir ${prefix}
+    touch ${prefix}.xlsx
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
