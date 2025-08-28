@@ -35,6 +35,7 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - tests/default.nf.test
 
 template:
   org: nf-cmgg
