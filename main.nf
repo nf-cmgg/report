@@ -60,11 +60,20 @@ workflow {
         params.input
     )
 
+    genes = params.genes ? Channel.value(file(params.genes)) : Channel.empty()
+    fusions = params.fusions ? Channel.value(file(params.fusions)) : Channel.empty()
+    mane = params.mane ? Channel.value(file(params.mane)) : Channel.empty()
+
     //
     // WORKFLOW: Run main workflow
     //
     REPORT (
-        PIPELINE_INITIALISATION.out.samplesheet, params.queries_dir
+        PIPELINE_INITIALISATION.out.samplesheet,
+        params.queries_dir,
+        PIPELINE_INITIALISATION.out.rnafusion_samplesheet,
+        genes,
+        fusions,
+        mane
     )
     //
     // SUBWORKFLOW: Run completion tasks

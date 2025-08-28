@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-cmgg/report/master/assets/schema_rnafusion_input.json",
+    "title": "nf-cmgg/report pipeline - params.rnafusion_input schema",
+    "description": "Schema for the file provided with params.rnafusion_input",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "run": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Run name must be provided and cannot contain spaces",
+                "meta": ["id", "run"]
+            },
+            "outdir": {
+                "type": "string",
+                "format": "path",
+                "oneOf": [
+                    {
+                        "format": "directory-path",
+                        "exists": true
+                    },
+                    {
+                        "format": "file-path",
+                        "exists": true,
+                        "pattern": "^\\S+\\.tar.gz$"
+                    }
+                ]
+            }
+        },
+        "required": ["run", "outdir"]
+    },
+    "uniqueEntries": ["run"]
+}

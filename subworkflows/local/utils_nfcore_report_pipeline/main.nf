@@ -72,16 +72,20 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
 
-    Channel
-        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, cram, crai ->
-            tuple(meta, file(cram), file(crai))
-        }
-        .set { ch_samplesheet }
+    def ch_samplesheet = Channel.empty()
+    if(input) {
+        ch_samplesheet = Channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
+    }
+
+    def ch_rnafusion_samplesheet = Channel.empty()
+    if(params.rnafusion_input) {
+        ch_rnafusion_samplesheet = Channel.fromList(samplesheetToList(params.rnafusion_input, "${projectDir}/assets/schema_rnafusion_input.json"))
+    }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+    samplesheet             = ch_samplesheet
+    rnafusion_samplesheet   = ch_rnafusion_samplesheet
+    versions                = ch_versions
 }
 
 /*
@@ -139,6 +143,28 @@ workflow PIPELINE_COMPLETION {
 // Check and validate pipeline parameters
 //
 def validateInputParameters() {
+    if(!params.input && !params.rnafusion_input) {
+        error("No input files provided. Please specify either '--input' and/or '--rnafusion_input'.")
+    }
+
+    if(params.input) {
+        if(!params.fasta) {
+            error("`--fasta` is required when using `--input`.")
+        }
+    }
+
+    if(params.rnafusion_input) {
+        if(!params.genes) {
+            error("`--genes` is required when using `--rnafusion_input`.")
+        }
+        if(!params.fusions) {
+            error("`--fusions` is required when using `--rnafusion_input`.")
+        }
+        if(!params.mane) {
+            error("`--mane` is required when using `--rnafusion_input`.")
+        }
+    }
+
     genomeExistsError()
 }
 
