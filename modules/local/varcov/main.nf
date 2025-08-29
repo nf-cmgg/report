@@ -4,7 +4,7 @@ process VARCOV {
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
-        ? ''
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/f6/f683dec10672e89b6e5bb105f4765ed84a0f270c8453a8af6904619ffae96e3f/data'
         : 'community.wave.seqera.io/library/python_pip_openpyxl_pandas_pyvcf3:7b7a5f891e4e0fb5'}"
 
     input:

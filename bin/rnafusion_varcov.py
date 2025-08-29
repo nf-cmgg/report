@@ -51,7 +51,20 @@ def vcf_to_df(vcf_path):
         df = pd.DataFrame(records)
         out = pd.concat([df.drop('INFO', axis=1), df['INFO'].apply(pd.Series)], axis=1)
         df = out
+        df["CHROM"] = df["CHROM"].apply(update_chroms)
+        df["ALT"] = df["ALT"].apply(update_alt_chroms)
     return df
+
+# Adds chr to chromosomes missing it
+def update_chroms(chrom:str) -> str:
+    return chrom if chrom.startswith("chr") else f"chr{chrom}"
+
+# Adds chr to alt allele chromosomes missing it
+def update_alt_chroms(alts:list[vcf.model._Breakend]) -> list[vcf.model._Breakend]:
+    for alt in alts:
+        if not alt.chr.startswith("chr"):
+            alt.chr = f"chr{alt.chr}"
+    return alts
 
 # Function to remove brackets and single quotes
 def remove_brackets(df, cols):
@@ -196,6 +209,8 @@ for filename in os.listdir(input_path):
 
         # merge read info one by one into the overview
         merged_df1 = pd.merge(df_clean, df_reads_fc, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
+        merged_df1["CHRA"] = merged_df1["CHRA"].apply(update_chroms)
+        merged_df1["CHRB"] = merged_df1["CHRB"].apply(update_chroms)
 
         if 'df_reads_ar' in globals():
             merged_df2 = pd.merge(df_clean, df_reads_ar, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
