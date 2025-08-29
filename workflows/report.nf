@@ -73,6 +73,7 @@ workflow REPORT {
         ch_mane,
         workflow.manifest.version
     )
+    ch_versions = ch_versions.mix(VARCOV.out.versions.first())
 
     //
     // Collate and save software versions
@@ -80,7 +81,7 @@ workflow REPORT {
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name:  'report_software_'  + 'versions.yml',
+            name:  'report_software_mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
         ).set { ch_collated_versions }

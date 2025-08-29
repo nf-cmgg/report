@@ -1,0 +1,3 @@
+pipeline_info/*.{html,json,txt,yml}
+varcov/*.xlsx
+hotcount/*.counts.txt

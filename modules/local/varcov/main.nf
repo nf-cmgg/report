@@ -50,7 +50,7 @@ process VARCOV {
         python: \$(python --version 2>&1 | sed 's/^Python //')
         pandas: \$(pip freeze | grep pandas | sed 's/pandas==//')
         openpyxl: \$(pip freeze | grep openpyxl | sed 's/openpyxl==//')
-        pyvcf3: \$(pip freeze | grep pyvcf3 | sed 's/pyvcf3==//')
+        pyvcf3: \$(pip freeze | grep PyVCF3 | sed 's/PyVCF3==//')
     END_VERSIONS
     """
 

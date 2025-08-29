@@ -38,7 +38,7 @@ process PEAR {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        pear: \$(pear -h | grep 'PEAR v' | sed 's/PEAR v//' | sed 's/ .*//' ))
+        pear: \$(pear -h | grep 'PEAR v' | sed 's/PEAR v//' | sed 's/ .*//' )
     END_VERSIONS
     """
 }
