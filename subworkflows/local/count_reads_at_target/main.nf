@@ -12,6 +12,7 @@ workflow COUNT_READS_AT_TARGET {
 
     main:
     ch_reference = Channel.value( [ [:], file(params.fasta) ] )
+    def ch_versions = Channel.empty()
 
     SAMTOOLS_VIEW(
         ch_samplesheet,
@@ -19,23 +20,30 @@ workflow COUNT_READS_AT_TARGET {
         [],    // qname
         []   // index_format
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_VIEW.out.versions.first())
+
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
         ch_reference
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
+
     SAMTOOLS_FASTQ(
         SAMTOOLS_SORT.out.bam,
         false
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_FASTQ.out.versions.first())
+
     PEAR(
         SAMTOOLS_FASTQ.out.fastq
     )
-
+    ch_versions = ch_versions.mix(PEAR.out.versions.first())
     ch_merge_input = PEAR.out.assembled.join(SAMTOOLS_FASTQ.out.singleton, failOnDuplicate:true, failOnMismatch:true)
 
     MERGE_READS(
         ch_merge_input
     )
+    ch_versions = ch_versions.mix(MERGE_READS.out.versions.first())
 
     def query_list = file("${queries}/*.txt")
 
@@ -53,8 +61,10 @@ workflow COUNT_READS_AT_TARGET {
     HOTCOUNT(
         ch_hotcount_input
     )
+    ch_versions = ch_versions.mix(HOTCOUNT.out.versions.first())
 
     emit:
     bam = SAMTOOLS_VIEW.out.bam
     sorted_bam = SAMTOOLS_SORT.out.bam
+    versions = ch_versions
 }

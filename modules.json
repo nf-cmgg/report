@@ -7,7 +7,7 @@
                 "nf-core": {
                     "pear": {
                         "branch": "master",
-                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "git_sha": "6ebefdf6a2085853efdf25b377b05903c6c9ed4f",
                         "installed_by": ["modules"]
                     },
                     "samtools/fastq": {
@@ -23,6 +23,11 @@
                     "samtools/view": {
                         "branch": "master",
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "installed_by": ["modules"]
+                    },
+                    "untar": {
+                        "branch": "master",
+                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     }
                 }
