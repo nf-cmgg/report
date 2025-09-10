@@ -1,5 +1,5 @@
 process VARCOV {
-    tag "$meta.id"
+    tag "${meta.id}"
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -8,25 +8,15 @@ process VARCOV {
         : 'community.wave.seqera.io/library/python_pip_openpyxl_pandas_pyvcf3:7b7a5f891e4e0fb5'}"
 
     input:
-    tuple(
-        val(meta),
-        path(vcfs, stageAs: 'vcfs/*'),
-        path(stringtie, stageAs: 'stringtie/*'),
-        path(fusionreport, stageAs: 'fusionreport/*'),
-        path(ctat, stageAs: 'ctat/*'),
-        path(multiqc, stageAs: 'multiqc/*'),
-        path(bams, stageAs: 'bams/*'),
-        path(bais, stageAs: 'bams/*'),
-        val(run_nr)
-    )
-    path(genes)
-    path(fusions)
-    path(mane)
-    val(pipeline_version)
+    tuple val(meta), path(vcfs, stageAs: 'vcfs/*'), path(stringtie, stageAs: 'stringtie/*'), path(fusionreport, stageAs: 'fusionreport/*'), path(ctat, stageAs: 'ctat/*'), path(multiqc, stageAs: 'multiqc/*'), path(bams, stageAs: 'bams/*'), path(bais, stageAs: 'bams/*'), val(run_nr)
+    path genes
+    path fusions
+    path mane
+    val pipeline_version
 
     output:
     tuple val(meta), path("*.xlsx"), emit: output
-    path "versions.yml"          , emit: versions
+    path "versions.yml", emit: versions
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
@@ -39,11 +29,11 @@ process VARCOV {
         --multiqc multiqc \\
         --output ${prefix}.xlsx \\
         --bams bams \\
-        --genes $genes \\
-        --fusion_whitelist $fusions \\
-        --mane $mane \\
-        --run $run_nr \\
-        --pipeline_version $pipeline_version
+        --genes ${genes} \\
+        --fusion_whitelist ${fusions} \\
+        --mane ${mane} \\
+        --run ${run_nr} \\
+        --pipeline_version ${pipeline_version}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
