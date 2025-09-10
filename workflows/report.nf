@@ -73,6 +73,17 @@ workflow REPORT {
     )
     ch_versions = ch_versions.mix(VARCOV.out.versions.first())
 
+    //
+    // Collate and save software versions
+    //
+    softwareVersionsToYAML(ch_versions)
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name: 'report_software_' + 'versions.yml',
+            sort: true,
+            newLine: true
+        )
+
     emit:
     versions = ch_versions // channel: [ path(versions.yml) ]
 }
