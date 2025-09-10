@@ -49,10 +49,28 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
+
+    def before_text = """
+-\033[2m----------------------------------------------------\033[0m-
+                                        \033[0;34m    ///\033[0;32m/// \033[0m
+\033[0;34m        ___     __   _  _   __   __     \033[0;34m  ///\033[0;32m///// \033[0m
+\033[0;34m  |\\ | |__  __ /  ` | \\/ | / _` / _`    \033[0;34m////\033[0;32m////// \033[0m
+\033[0;34m  | \\| |       \\__, |    | \\__| \\__|    \033[0;34m///\033[0;32m///// \033[0m
+                                        \033[0;34m///\033[0;32m/// \033[0m
+\033[0;35m  ${workflow.manifest.name} ${workflow.manifest.version}\033[0m
+-\033[2m----------------------------------------------------\033[0m-
+"""
+    def command = "nextflow run nf-cmgg/report -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
     UTILS_NFSCHEMA_PLUGIN(
         workflow,
         validate_params,
         null,
+        params.help,
+        params.help_full,
+        params.show_hidden,
+        before_text,
+        "",
+        command
     )
 
     //
