@@ -41,4 +41,18 @@ process PEAR {
         pear: \$(pear -h | grep 'PEAR v' | sed 's/PEAR v//' | sed 's/ .*//' )
     END_VERSIONS
     """
+
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    echo | gzip > ${prefix}.assembled.fastq.gz
+    echo | gzip > ${prefix}.unassembled.forward.fastq.gz
+    echo | gzip > ${prefix}.unassembled.reverse.fastq.gz
+    echo | gzip > ${prefix}.discarded.fastq.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        pear: \$(pear -h | grep 'PEAR v' | sed 's/PEAR v//' | sed 's/ .*//' )
+    END_VERSIONS
+    """
 }
