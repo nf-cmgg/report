@@ -14,10 +14,10 @@
 */
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_report_pipeline'
 
-params.fasta = getGenomeAttribute('fasta')
+params.fasta       = getGenomeAttribute('fasta')
 params.queries_dir = "${projectDir}/assets/queries/"
 
-include { REPORT  } from './workflows/report'
+include { REPORT                  } from './workflows/report'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
 
@@ -46,18 +46,16 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_repo
 */
 
 workflow {
-
-    main:
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
-    PIPELINE_INITIALISATION (
+    PIPELINE_INITIALISATION(
         params.version,
         params.validate_params,
         params.monochrome_logs,
         args,
         params.outdir,
-        params.input
+        params.input,
     )
 
     genes = params.genes ? Channel.value(file(params.genes)) : Channel.empty()
@@ -67,18 +65,18 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    REPORT (
+    REPORT(
         PIPELINE_INITIALISATION.out.samplesheet,
         params.queries_dir,
         PIPELINE_INITIALISATION.out.rnafusion_samplesheet,
         genes,
         fusions,
-        mane
+        mane,
     )
     //
     // SUBWORKFLOW: Run completion tasks
     //
-    PIPELINE_COMPLETION (
+    PIPELINE_COMPLETION(
         params.email,
         params.email_on_fail,
         params.plaintext_email,
@@ -87,9 +85,3 @@ workflow {
         params.hook_url,
     )
 }
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/

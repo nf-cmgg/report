@@ -18,9 +18,8 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_repo
 */
 
 workflow REPORT {
-
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet           // channel: samplesheet read in from --input
     queries
     ch_rnafusion_samplesheet // channel: samplesheet read in from --rnafusion_input
     ch_genes
@@ -41,11 +40,10 @@ workflow REPORT {
     // Rnafusion report flow
     //
 
-    def ch_rnafusion_branch = ch_rnafusion_samplesheet
-        .branch { _meta, dir ->
-            tarzipped: dir.extension == "gz"
-            dir: true
-        }
+    def ch_rnafusion_branch = ch_rnafusion_samplesheet.branch { _meta, dir ->
+        tarzipped: dir.extension == "gz"
+        dir: true
+    }
 
     UNTAR(ch_rnafusion_branch.tarzipped)
     ch_versions = ch_versions.mix(UNTAR.out.versions.first())
@@ -55,14 +53,14 @@ workflow REPORT {
         .map { meta, dir ->
             [
                 meta,
-                getFilesAndCheck(dir, "vcf/*.vcf"), // VCFs
-                getFilesAndCheck(dir, "stringtie/*.gene.abundance.txt"), // Stringtie
-                getFilesAndCheck(dir, "fusionreport/*/*.fusions.csv"), // Fusion report
-                getFilesAndCheck(dir, "ctatsplicing/*.cancer.introns"), // CTAT Splicing
-                getFilesAndCheck(dir, "multiqc/multiqc_data/multiqc_general_stats.txt"), // MultiQC
-                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam"), // BAM
-                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"), // BAI
-                meta.run
+                getFilesAndCheck(dir, "vcf/*.vcf"),
+                getFilesAndCheck(dir, "stringtie/*.gene.abundance.txt"),
+                getFilesAndCheck(dir, "fusionreport/*/*.fusions.csv"),
+                getFilesAndCheck(dir, "ctatsplicing/*.cancer.introns"),
+                getFilesAndCheck(dir, "multiqc/multiqc_data/multiqc_general_stats.txt"),
+                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam"),
+                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"),
+                meta.run,
             ]
         }
 
@@ -71,7 +69,7 @@ workflow REPORT {
         ch_genes,
         ch_fusions,
         ch_mane,
-        workflow.manifest.version
+        workflow.manifest.version,
     )
     ch_versions = ch_versions.mix(VARCOV.out.versions.first())
 
@@ -81,15 +79,13 @@ workflow REPORT {
     softwareVersionsToYAML(ch_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name:  'report_software_mqc_'  + 'versions.yml',
+            name: 'report_software_' + 'versions.yml',
             sort: true,
             newLine: true
-        ).set { ch_collated_versions }
-
+        )
 
     emit:
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
-
+    versions = ch_versions // channel: [ path(versions.yml) ]
 }
 
 /*
@@ -105,9 +101,3 @@ def getFilesAndCheck(dir, glob) {
     }
     return files
 }
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    THE END
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
