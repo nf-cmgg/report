@@ -57,7 +57,8 @@ def vcf_to_df(vcf_path):
 
 # Adds chr to chromosomes missing it
 def update_chroms(chrom:str) -> str:
-    return chrom if chrom.startswith("chr") else f"chr{chrom}"
+    str_chrom = str(chrom)
+    return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
 # Adds chr to alt allele chromosomes missing it
 def update_alt_chroms(alts:list[vcf.model._Breakend]) -> list[vcf.model._Breakend]:
