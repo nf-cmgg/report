@@ -552,9 +552,8 @@ for filename in os.listdir(input_path):
 
             # round the result of mean insert size to one decimal
             cells_to_round = ['C3', 'D3']
-            # TODO uncomment this again later
-            # for cell in cells_to_round:
-            #     ws[cell].value = round(ws[cell].value, 2)
+            for cell in cells_to_round:
+                ws[cell].value = round(ws[cell].value, 2)
 
         # save file
         workbook.save(excel_path)
