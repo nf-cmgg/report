@@ -19,7 +19,6 @@ process VARCOV {
     path "versions.yml", emit: versions
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     rnafusion_varcov.py \\
         --input vcfs \\
@@ -27,7 +26,7 @@ process VARCOV {
         --fusionreport fusionreport \\
         --ctat ctat \\
         --multiqc multiqc \\
-        --output ${prefix}.xlsx \\
+        --output . \\
         --bams bams \\
         --genes ${genes} \\
         --fusion_whitelist ${fusions} \\

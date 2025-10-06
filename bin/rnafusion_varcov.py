@@ -40,8 +40,7 @@ def create_directory(directory_path):
         print(f"Directory '{directory_path}' already exists.")
 
 # Function to convert VCF to DataFrame
-def vcf_to_df(vcf_path):
-    vcf_reader = vcf.Reader(open(vcf_path, 'r'))
+def vcf_to_df(vcf_reader):
     records = [vars(r) for r in vcf_reader]
     if not records:
         # Create an empty DataFrame with the appropriate headers if the VCF file is empty
@@ -112,7 +111,7 @@ cov_path:str = args.stringtie + "/"
 reads_path:str = args.fusionreport + "/"
 splicing_path:str = args.ctat + "/"
 qc_path:str = args.multiqc + "/"
-excel_path:str = args.output
+output_dir:str = args.output
 bam_path:str = args.bams + "/"
 genes:str = pd.read_csv(args.genes, sep='\t')
 fusions:str = pd.read_csv(args.fusion_whitelist, sep='\t')
@@ -152,9 +151,16 @@ for filename in os.listdir(input_path):
     if filename.endswith(".vcf"):
         # Full path to the VCF file
         vcf_path = os.path.join(input_path, filename)
+        vcf_reader = vcf.Reader(open(vcf_path, 'r'))
 
         # Convert VCF to DataFrame
-        df = vcf_to_df(vcf_path)
+        df = vcf_to_df(vcf_reader)
+
+        # Get sample names
+        samples: list[str] = vcf_reader.samples
+        if len(samples) != 1:
+            raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
+        sample_name: str = samples[0]
 
         # clean up data extracted from info
         # Specify the columns to apply the function to
@@ -372,6 +378,8 @@ for filename in os.listdir(input_path):
         ####################################
         ### Save all df to an Excel file ###
         ####################################
+
+        excel_path: str = f"{output_dir}/{sample_name}.xlsx"
 
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
             df_final.to_excel(writer, index=False, sheet_name="fusions_filt")
