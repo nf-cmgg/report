@@ -151,16 +151,17 @@ for filename in os.listdir(input_path):
     if filename.endswith(".vcf"):
         # Full path to the VCF file
         vcf_path = os.path.join(input_path, filename)
-        vcf_reader = vcf.Reader(open(vcf_path, 'r'))
+        with open(vcf_path, 'r') as vcf_file:
+            vcf_reader = vcf.Reader(vcf_file)
 
-        # Convert VCF to DataFrame
-        df = vcf_to_df(vcf_reader)
+            # Convert VCF to DataFrame
+            df = vcf_to_df(vcf_reader)
 
-        # Get sample names
-        samples: list[str] = vcf_reader.samples
-        if len(samples) != 1:
-            raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
-        sample_name: str = samples[0]
+            # Get sample names
+            samples: list[str] = vcf_reader.samples
+            if len(samples) != 1:
+                raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
+            sample_name: str = samples[0]
 
         # clean up data extracted from info
         # Specify the columns to apply the function to
