@@ -175,11 +175,11 @@ for filename in os.listdir(input_path):
 
         # change annotation of reference sequence to one column
         # output is seen as float, not string (is sometimes empty so pandas consideres it as float)
-        df_clean['TRANSCRIPT_A'] = df_clean['TRANSCRIPT_ID_A'].astype(str) + "." + df_clean['TRANSCRIPT_VERSION_A'].astype(str)
+        df_clean['TRANSCRIPT_A'] = df_clean['TRANSCRIPT_ID_A'].astype(str)
         df_clean = df_clean.drop('TRANSCRIPT_VERSION_A', axis = 1)
         df_clean = df_clean.drop('TRANSCRIPT_ID_A', axis = 1)
 
-        df_clean['TRANSCRIPT_B'] = df_clean['TRANSCRIPT_ID_B'].astype(str) + "." + df_clean['TRANSCRIPT_VERSION_B'].astype(str)
+        df_clean['TRANSCRIPT_B'] = df_clean['TRANSCRIPT_ID_B'].astype(str)
         df_clean = df_clean.drop('TRANSCRIPT_VERSION_B', axis = 1)
         df_clean = df_clean.drop('TRANSCRIPT_ID_B', axis = 1)
 
@@ -275,8 +275,8 @@ for filename in os.listdir(input_path):
         # ALTERNATIVE: either one of the two conditions is true: gives too many hits
         # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
 
-        # limit filtered to MANE transcript only
-        df_MANE = mane['MANE']
+        # limit filtered to versioned MANE transcript only
+        df_MANE = mane['MANE'].astype(str) + "." + mane['Version'].astype(str)
         df_final_MANE = df_final[df_final['TRANSCRIPT_A'].apply(lambda x: any(i in x for i in df_MANE)) & df_final['TRANSCRIPT_B'].apply(lambda x: any(i in x for i in df_MANE))]
 
         #df_final_MANE = df_final[df_final['TRANSCRIPT_A'].isin(df_MANE) | df_final['TRANSCRIPT_B'].isin(df_MANE)]
