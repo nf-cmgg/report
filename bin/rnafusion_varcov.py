@@ -317,21 +317,29 @@ for filename in os.listdir(input_path):
             "fc_longest_anchor",
             "fc_position",
             "fc_spanning_pairs",
-            "fc_spanning_unique_reads",
-            "ar_confidence",
-            "ar_coverage1",
-            "ar_coverage2",
-            "ar_discordant_mates",
-            "ar_position",
-            "ar_reading-frame",
-            "ar_split_reads1",
-            "ar_split_reads2",
-            "ar_type",
-            "sf_ffmp",
-            "sf_junction_reads",
-            "sf_position",
-            "sf_spanning_reads"
+            "fc_spanning_unique_reads"
         ]
+
+        if 'df_reads_ar' in globals():
+            relevant_columns.extend([
+                "ar_confidence",
+                "ar_coverage1",
+                "ar_coverage2",
+                "ar_discordant_mates",
+                "ar_position",
+                "ar_reading-frame",
+                "ar_split_reads1",
+                "ar_split_reads2",
+                "ar_type"
+            ])
+
+        if 'df_reads_sf' in globals():
+            relevant_columns.extend([
+                "sf_ffmp",
+                "sf_junction_reads",
+                "sf_position",
+                "sf_spanning_reads"
+            ])
         df_filt = merged_df[relevant_columns]
 
         # sort on score

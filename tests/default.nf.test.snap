@@ -27,10 +27,10 @@
                     "untar": 1.34
                 },
                 "VARCOV": {
-                    "python": "3.13.5",
-                    "pandas": "2.3.1",
+                    "python": "3.13.7",
+                    "pandas": "2.3.3",
                     "openpyxl": "3.1.5",
-                    "pyvcf3": "1.0.4"
+                    "pyvcf3": null
                 },
                 "Workflow": {
                     "nf-cmgg/report": "v1.0.0dev"
@@ -88,7 +88,8 @@
                 "untar/NVQTEST_123/vcf",
                 "untar/NVQTEST_123/vcf/test_fusion_data.vcf",
                 "varcov",
-                "varcov/NVQTEST_123.xlsx"
+                "varcov/NVQTEST_123",
+                "varcov/NVQTEST_123/test.xlsx"
             ],
             [
                 "test1.merged.fastq.gz:md5,59c73d5ea391b6c469b6989621a5cc45",
@@ -114,7 +115,7 @@
                 "test1.samtools_view.bam:md5,733d1986c59ae9d0d6272143194a95d0",
                 "test2.samtools_view.bam:md5,49f2c412b1a00d47b74a749fc9e90f9f",
                 "test.cancer.introns:md5,c0eb94972d845218c2e470b85c55871b",
-                "test.fusions.csv:md5,01b51beefaa75bf27efdda83d98554c9",
+                "test.fusions.csv:md5,06b525c49d454f6fb3b1f0f2e7ba186e",
                 "multiqc_general_stats.txt:md5,307d9ecd2e3bc4aeb06953cbe3c0c9ac",
                 "test.Aligned.sortedByCoord.out.bam:md5,1cfd2d8911d0215c08a939bace32274a",
                 "test.Aligned.sortedByCoord.out.bam.bai:md5,128bc3ce0419b9ac8cb70bfe374204f4",
@@ -126,6 +127,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-09-10T16:35:54.175449646"
+        "timestamp": "2025-10-07T15:38:04.779897714"
     }
 }
