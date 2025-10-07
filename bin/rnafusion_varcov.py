@@ -21,11 +21,50 @@ import argparse
 import re
 import os
 import pandas as pd
-import vcf
 import openpyxl
+import cyvcf2
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils.cell import get_column_letter
 
+###############
+## constants ##
+###############
+
+VCF_INFO_COLUMNS = [
+    'CHRA',
+    'CHRB',
+    'GENEA',
+    'GENEB',
+    'POSA',
+    'POSB',
+    'SCORE',
+    'TOOL_HITS',
+    'SCORE',
+    'FRAME_STATUS',
+    'TRANSCRIPT_ID_A',
+    'TRANSCRIPT_ID_B',
+    'EXON_NUMBER_A',
+    'EXON_NUMBER_B',
+    'TRANSCRIPT_VERSION_A',
+    'TRANSCRIPT_VERSION_B',
+    'HGNC_ID_A',
+    'HGNC_ID_B',
+    'ANNOTATIONS',
+    'ORIENTATION',
+    'FOUND_DB',
+    'FOUND_IN',
+]
+
+VCF_COLUMNS = [
+    "CHROM",
+    "POS",
+    "ID",
+    "REF",
+    "ALT",
+    "QUAL",
+    "FILTER",
+    "FORMAT"
+]
 
 ########################
 ## defining functions ##
@@ -39,19 +78,26 @@ def create_directory(directory_path):
     else:
         print(f"Directory '{directory_path}' already exists.")
 
-# Function to convert VCF to DataFrame
-def vcf_to_df(vcf_reader):
-    records = [vars(r) for r in vcf_reader]
-    if not records:
+# Function to fetch needed VCF fields and convert them to a DataFrame
+def vcf_to_df(vcf):
+    processed_variants: list[dict[str,any]] = []
+    for variant in vcf:
+        var_dict: dict[str,any] = {}
+        var_dict["CHROM"] = update_chroms(variant.CHROM)
+        var_dict["POS"] = variant.POS
+        var_dict["ID"] = variant.ID
+        var_dict["REF"] = variant.REF
+        var_dict["ALT"] = update_alt_chroms(variant.ALT)
+        var_dict["QUAL"] = variant.QUAL
+        var_dict["FILTER"] = variant.FILTER
+        var_dict["FORMAT"] = str(variant.FORMAT)
+        for column in VCF_INFO_COLUMNS:
+            var_dict[column] = variant.INFO.get(column, None)
+        processed_variants.append(var_dict)
+    df = pd.DataFrame(processed_variants)
+    if len(df.index) == 0:
         # Create an empty DataFrame with the appropriate headers if the VCF file is empty
-        headers = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
-        df = pd.DataFrame(columns=headers)
-    else:
-        df = pd.DataFrame(records)
-        out = pd.concat([df.drop('INFO', axis=1), df['INFO'].apply(pd.Series)], axis=1)
-        df = out
-        df["CHROM"] = df["CHROM"].apply(update_chroms)
-        df["ALT"] = df["ALT"].apply(update_alt_chroms)
+        return pd.DataFrame(columns=VCF_INFO_COLUMNS)
     return df
 
 # Adds chr to chromosomes missing it
@@ -60,11 +106,16 @@ def update_chroms(chrom:str) -> str:
     return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
 # Adds chr to alt allele chromosomes missing it
-def update_alt_chroms(alts:list[vcf.model._Breakend]) -> list[vcf.model._Breakend]:
+def update_alt_chroms(alts: list[str]) -> (list[str]|str):
+    outputs = []
     for alt in alts:
-        if not alt.chr.startswith("chr"):
-            alt.chr = f"chr{alt.chr}"
-    return alts
+        if "chr" not in alt:
+            chr_match = re.match(r"^.*[\[\]]([\dXY]{1,2}):.*$", alt)
+            if chr_match:
+                chrom:str = chr_match.group(1)
+                alt = alt.replace(f"{chrom}:", f"chr{chrom}:")
+        outputs.append(alt)
+    return outputs[0] if len(outputs) == 1 else outputs
 
 # Function to remove brackets and single quotes
 def remove_brackets(df, cols):
@@ -144,34 +195,27 @@ for filename in os.listdir(input_path):
 
 '''
 
-
 # Loop over all files in the folder
 for filename in os.listdir(input_path):
     # Check if the file is a VCF file
     if filename.endswith(".vcf"):
         # Full path to the VCF file
         vcf_path = os.path.join(input_path, filename)
-        with open(vcf_path, 'r') as vcf_file:
-            vcf_reader = vcf.Reader(vcf_file)
+        vcf = cyvcf2.VCF(vcf_path)
 
-            # Convert VCF to DataFrame
-            df = vcf_to_df(vcf_reader)
+        # Convert VCF to DataFrame
+        df = vcf_to_df(vcf)
 
-            # Get sample names
-            samples: list[str] = vcf_reader.samples
-            if len(samples) != 1:
-                raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
-            sample_name: str = samples[0]
+        # Get sample names
+        samples: list[str] = vcf.samples
+        if len(samples) != 1:
+            raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
+        sample_name: str = samples[0]
 
         # clean up data extracted from info
         # Specify the columns to apply the function to
-        cols_to_apply = ['GENEA', 'GENEB', 'POSA', 'POSB', 'SCORE', 'TOOL_HITS', 'SCORE',
-                         'TRANSCRIPT_ID_A', 'TRANSCRIPT_ID_B', 'EXON_NUMBER_A',
-                         'EXON_NUMBER_B', 'TRANSCRIPT_VERSION_A', 'TRANSCRIPT_VERSION_B',
-                         'HGNC_ID_A', 'HGNC_ID_B']
-
         # Apply the function to your DataFrame
-        df_clean = remove_brackets(df, cols_to_apply)
+        df_clean = remove_brackets(df, VCF_INFO_COLUMNS)
 
         # change annotation of reference sequence to one column
         # output is seen as float, not string (is sometimes empty so pandas consideres it as float)
@@ -250,21 +294,55 @@ for filename in os.listdir(input_path):
         # limit sf_ffmp to one decimal
         merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
 
-        # modify the df to remove some columns
-        # first select two groups of relevant columns
-        df_filt = pd.concat([merged_df.iloc[:, 16:36], merged_df.iloc[:, 39:58]], axis=1)
-        # then remove some individual columns
-        df_filt = df_filt.drop(['FOUND_DB', 'HGNC_ID_A', 'HGNC_ID_B', 'ANNOTATIONS'], axis = 1)
+        # subset the dataframe to only contain relevant columns
+        relevant_columns: list[str] = [
+            "Fusion",
+            "CHRA",
+            "CHRB",
+            "GENEA",
+            "GENEB",
+            "POSA",
+            "POSB",
+            "ORIENTATION",
+            "FOUND_IN",
+            "TOOL_HITS",
+            "SCORE",
+            "FRAME_STATUS",
+            "EXON_NUMBER_A",
+            "EXON_NUMBER_B",
+            "TRANSCRIPT_A",
+            "TRANSCRIPT_B",
+            "fc_common_mapping_reads",
+            "fc_fusion_type",
+            "fc_longest_anchor",
+            "fc_position",
+            "fc_spanning_pairs",
+            "fc_spanning_unique_reads",
+            "ar_confidence",
+            "ar_coverage1",
+            "ar_coverage2",
+            "ar_discordant_mates",
+            "ar_position",
+            "ar_reading-frame",
+            "ar_split_reads1",
+            "ar_split_reads2",
+            "ar_type",
+            "sf_ffmp",
+            "sf_junction_reads",
+            "sf_position",
+            "sf_spanning_reads"
+        ]
+        df_filt = merged_df[relevant_columns]
 
         # sort on score
         df_filt = df_filt.sort_values('SCORE', ascending = False)
 
         # move some columns
         column_to_move = df_filt.pop('EXON_NUMBER_A')
-        df_filt.insert(4, 'EXONA', column_to_move)
+        df_filt.insert(5, 'EXONA', column_to_move)
 
         column_to_move = df_filt.pop('EXON_NUMBER_B')
-        df_filt.insert(5, 'EXONB', column_to_move)
+        df_filt.insert(6, 'EXONB', column_to_move)
 
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
