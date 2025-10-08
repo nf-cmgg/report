@@ -5,33 +5,13 @@
     "description": "A post-processing reporting pipeline for internal use at CMGG",
     "type": "object",
     "$defs": {
-        "input_output_options": {
-            "title": "Input/output options",
+        "output_options": {
+            "title": "Output options",
             "type": "object",
             "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
+            "description": "Define where the pipeline should save output data.",
             "required": ["outdir"],
             "properties": {
-                "input": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "schema": "assets/schema_input.json",
-                    "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
-                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-                    "fa_icon": "fas fa-file-csv"
-                },
-                "rnafusion_input": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "schema": "assets/schema_rnafusion_input.json",
-                    "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
-                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-                    "fa_icon": "fas fa-file-csv"
-                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -47,6 +27,94 @@
                 }
             }
         },
+        "targeted_options": {
+            "title": "Options for the targeted flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the targeted reporting flow.",
+            "properties": {
+                "targeted": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_targeted_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "queries_dir": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "exists": true,
+                            "hidden": true
+                        },
+                        "fasta": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                            "description": "Path to FASTA genome file.",
+                            "fa_icon": "far fa-file-code"
+                        }
+                    }
+                }
+            }
+        },
+        "rnafusion_options": {
+            "title": "Options for the RNAfusion flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the RNAfusion flow.",
+            "properties": {
+                "rnafusion": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_rnafusion_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "genes": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.txt$",
+                            "description": "Path to a text file containing genes to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        },
+                        "fusions": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.txt$",
+                            "description": "Path to a text file containing fusions to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        },
+                        "mane": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.csv$",
+                            "description": "Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        }
+                    }
+                }
+            }
+        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
@@ -58,43 +126,6 @@
                     "description": "Name of iGenomes reference.",
                     "fa_icon": "fas fa-book",
                     "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
-                },
-                "fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
-                    "fa_icon": "far fa-file-code"
-                },
-                "genes": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.txt$",
-                    "description": "Path to a text file containing genes to analyze in the Rnafusion report",
-                    "fa_icon": "far fa-file-code"
-                },
-                "fusions": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.txt$",
-                    "description": "Path to a text file containing fusions to analyze in the Rnafusion report",
-                    "fa_icon": "far fa-file-code"
-                },
-                "mane": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.csv$",
-                    "description": "Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report",
-                    "fa_icon": "far fa-file-code"
                 },
                 "igenomes_ignore": {
                     "type": "boolean",
@@ -110,12 +141,6 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "default": "s3://ngi-igenomes/igenomes/"
-                },
-                "queries_dir": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "exists": true,
-                    "hidden": true
                 }
             }
         },
@@ -253,7 +278,13 @@
     },
     "allOf": [
         {
-            "$ref": "#/$defs/input_output_options"
+            "$ref": "#/$defs/output_options"
+        },
+        {
+            "$ref": "#/$defs/targeted_options"
+        },
+        {
+            "$ref": "#/$defs/rnafusion_options"
         },
         {
             "$ref": "#/$defs/reference_genome_options"

@@ -1,22 +1,22 @@
-include { SAMTOOLS_VIEW  } from '../../../modules/nf-core/samtools/view/main.nf'
-include { SAMTOOLS_SORT  } from '../../../modules/nf-core/samtools/sort/main.nf'
-include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
-include { PEAR           } from '../../../modules/nf-core/pear/main.nf'
-include { MERGE_READS    } from '../../../modules/local/mergereads/main.nf'
-include { HOTCOUNT       } from '../../../modules/local/hotcount/main.nf'
+include { SAMTOOLS_VIEW  } from '../modules/nf-core/samtools/view/main.nf'
+include { SAMTOOLS_SORT  } from '..//modules/nf-core/samtools/sort/main.nf'
+include { SAMTOOLS_FASTQ } from '..//modules/nf-core/samtools/fastq/main.nf'
+include { PEAR           } from '..//modules/nf-core/pear/main.nf'
+include { MERGE_READS    } from '..//modules/local/mergereads/main.nf'
+include { HOTCOUNT       } from '..//modules/local/hotcount/main.nf'
 
-workflow COUNT_READS_AT_TARGET {
+workflow TARGETED {
     take:
     ch_samplesheet
+    fasta
     queries
 
     main:
-    ch_reference = Channel.value([[:], file(params.fasta)])
     def ch_versions = Channel.empty()
 
     SAMTOOLS_VIEW(
         ch_samplesheet,
-        ch_reference,
+        fasta,
         [],
         [],
     )
@@ -24,7 +24,7 @@ workflow COUNT_READS_AT_TARGET {
 
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
-        ch_reference,
+        fasta,
         ""
     )
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
