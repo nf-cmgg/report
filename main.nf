@@ -88,13 +88,24 @@ workflow {
             workflow.manifest.version
         )
         out_rnafusion_excels = RNAFUSION.out.excels
-        ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
     //
     // Collate and save software versions
     //
+    def topic_versions = Channel.topic("versions")
+        .unique()
+        .map { process, tool, version ->
+            [ process[process.lastIndexOf(':')+1..-1], "  ${tool}: ${version}" ]
+        }
+        .groupTuple(by:0)
+        .map { process, tool_versions ->
+            tool_versions.unique()
+            "${process}:\n${tool_versions.join('\n')}"
+        }
+
     softwareVersionsToYAML(ch_versions)
+        .mix(topic_versions)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name: 'report_software_' + 'versions.yml',

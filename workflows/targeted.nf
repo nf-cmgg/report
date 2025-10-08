@@ -44,7 +44,6 @@ workflow TARGETED {
     MERGE_READS(
         ch_merge_input
     )
-    ch_versions = ch_versions.mix(MERGE_READS.out.versions.first())
 
     def query_list = file("${queries}/*.txt")
 
@@ -62,7 +61,6 @@ workflow TARGETED {
     HOTCOUNT(
         ch_hotcount_input
     )
-    ch_versions = ch_versions.mix(HOTCOUNT.out.versions.first())
 
     emit:
     hotcount = HOTCOUNT.out.counts

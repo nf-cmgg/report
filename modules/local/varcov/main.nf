@@ -16,7 +16,10 @@ process VARCOV {
 
     output:
     tuple val(meta), path("*.xlsx"), emit: output
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('python'), eval("python --version 2>&1 | sed 's/^Python //'"), topic: versions, emit: versions_python
+    tuple val("${task.process}"), val('pandas'), eval("pip freeze | grep pandas | sed 's/pandas==//'"), topic: versions, emit: versions_pandas
+    tuple val("${task.process}"), val('openpyxl'), eval("pip freeze | grep openpyxl | sed 's/openpyxl==//'"), topic: versions, emit: versions_openpyxl
+    tuple val("${task.process}"), val('cyvcf2'), eval("pip freeze | grep cyvcf2 | sed 's/cyvcf2==//'"), topic: versions, emit: versions_cyvcf2
 
     script:
     """
@@ -33,27 +36,11 @@ process VARCOV {
         --mane ${mane} \\
         --run ${run_nr} \\
         --pipeline_version ${pipeline_version}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python --version 2>&1 | sed 's/^Python //')
-        pandas: \$(pip freeze | grep pandas | sed 's/pandas==//')
-        openpyxl: \$(pip freeze | grep openpyxl | sed 's/openpyxl==//')
-        cyvcf2: \$(pip freeze | grep cyvcf2 | sed 's/cyvcf2==//')
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.xlsx
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        python: \$(python --version 2>&1 | sed 's/^Python //')
-        pandas: \$(pip freeze | grep pandas | sed 's/pandas==//')
-        openpyxl: \$(pip freeze | grep openpyxl | sed 's/openpyxl==//')
-        cyvcf2: \$(pip freeze | grep cyvcf2 | sed 's/cyvcf2==//')
-    END_VERSIONS
     """
 }

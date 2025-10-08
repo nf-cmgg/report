@@ -56,7 +56,6 @@ workflow RNAFUSION {
         ch_mane,
         workflow_version,
     )
-    ch_versions = ch_versions.mix(VARCOV.out.versions.first())
 
     emit:
     excels   = VARCOV.out.output // channel: [ val(meta), path(excel) ]
