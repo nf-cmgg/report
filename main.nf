@@ -7,6 +7,8 @@
 ----------------------------------------------------------------------------------------
 */
 
+nextflow.preview.output = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
@@ -31,6 +33,8 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 */
 
 workflow {
+
+    main:
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -47,6 +51,7 @@ workflow {
 
     def ch_versions = Channel.empty()
 
+    def out_targeted_hotcount = Channel.empty()
     if(params.targeted.input) {
         def required_parameters = ['fasta', 'queries_dir']
         check_required_params('targeted', required_parameters)
@@ -60,9 +65,11 @@ workflow {
             fasta,
             targeted_params.queries_dir
         )
+        out_targeted_hotcount = TARGETED.out.hotcount
         ch_versions = ch_versions.mix(TARGETED.out.versions)
     }
 
+    def out_rnafusion_excels = Channel.empty()
     if(params.rnafusion.input) {
         def required_parameters = ['genes', 'fusions', 'mane']
         check_required_params('rnafusion', required_parameters)
@@ -80,6 +87,7 @@ workflow {
             mane,
             workflow.manifest.version
         )
+        out_rnafusion_excels = RNAFUSION.out.excels
         ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
@@ -105,6 +113,29 @@ workflow {
         params.monochrome_logs,
         params.hook_url,
     )
+
+    publish:
+    targeted_hotcount = out_targeted_hotcount
+    rnafusion_excels  = out_rnafusion_excels
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    OUTPUTS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+output {
+    targeted_hotcount {
+        path { meta, counts ->
+            counts >> "targeted/hotcount/${meta.id}.counts.txt"
+        }
+    }
+    rnafusion_excels {
+        path { meta, excel ->
+            excel >> "rnafusion/varcov/${meta.run}/"
+        }
+    }
 }
 
 /*

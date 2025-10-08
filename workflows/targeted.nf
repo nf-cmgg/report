@@ -65,7 +65,6 @@ workflow TARGETED {
     ch_versions = ch_versions.mix(HOTCOUNT.out.versions.first())
 
     emit:
-    bam        = SAMTOOLS_VIEW.out.bam
-    sorted_bam = SAMTOOLS_SORT.out.bam
-    versions   = ch_versions
+    hotcount = HOTCOUNT.out.counts
+    versions = ch_versions
 }
