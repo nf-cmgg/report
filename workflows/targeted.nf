@@ -1,22 +1,22 @@
-include { SAMTOOLS_VIEW  } from '../../../modules/nf-core/samtools/view/main.nf'
-include { SAMTOOLS_SORT  } from '../../../modules/nf-core/samtools/sort/main.nf'
-include { SAMTOOLS_FASTQ } from '../../../modules/nf-core/samtools/fastq/main.nf'
-include { PEAR           } from '../../../modules/nf-core/pear/main.nf'
-include { MERGE_READS    } from '../../../modules/local/mergereads/main.nf'
-include { HOTCOUNT       } from '../../../modules/local/hotcount/main.nf'
+include { SAMTOOLS_VIEW  } from '../modules/nf-core/samtools/view/main.nf'
+include { SAMTOOLS_SORT  } from '..//modules/nf-core/samtools/sort/main.nf'
+include { SAMTOOLS_FASTQ } from '..//modules/nf-core/samtools/fastq/main.nf'
+include { PEAR           } from '..//modules/nf-core/pear/main.nf'
+include { MERGE_READS    } from '..//modules/local/mergereads/main.nf'
+include { HOTCOUNT       } from '..//modules/local/hotcount/main.nf'
 
-workflow COUNT_READS_AT_TARGET {
+workflow TARGETED {
     take:
     ch_samplesheet
+    fasta
     queries
 
     main:
-    ch_reference = Channel.value([[:], file(params.fasta)])
     def ch_versions = Channel.empty()
 
     SAMTOOLS_VIEW(
         ch_samplesheet,
-        ch_reference,
+        fasta,
         [],
         [],
     )
@@ -24,7 +24,7 @@ workflow COUNT_READS_AT_TARGET {
 
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
-        ch_reference,
+        fasta,
         ""
     )
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
@@ -44,7 +44,6 @@ workflow COUNT_READS_AT_TARGET {
     MERGE_READS(
         ch_merge_input
     )
-    ch_versions = ch_versions.mix(MERGE_READS.out.versions.first())
 
     def query_list = file("${queries}/*.txt")
 
@@ -62,10 +61,8 @@ workflow COUNT_READS_AT_TARGET {
     HOTCOUNT(
         ch_hotcount_input
     )
-    ch_versions = ch_versions.mix(HOTCOUNT.out.versions.first())
 
     emit:
-    bam        = SAMTOOLS_VIEW.out.bam
-    sorted_bam = SAMTOOLS_SORT.out.bam
-    versions   = ch_versions
+    hotcount = HOTCOUNT.out.counts
+    versions = ch_versions
 }

@@ -12,26 +12,17 @@ process HOTCOUNT {
 
     output:
     tuple val(meta), path("*counts.txt"), emit: counts
-    path "versions.yml", emit: versions
+    tuple val("${task.process}"), val('hotcount'), val("0.0"), topic: versions, emit: versions_hotcount
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     do_it_gz.sh ${query_file} ${assembled_fastq} > ${prefix}.counts.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        hotcount: \$(echo "0.0")
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.counts.txt
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        hotcount: \$(echo "0.0")
-    END_VERSIONS
     """
 }

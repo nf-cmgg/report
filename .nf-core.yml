@@ -20,11 +20,14 @@ lint:
   nextflow_config:
     - manifest.name
     - manifest.homePage
+    - validation.help.enabled
     - validation.help.beforeText
     - validation.help.afterText
     - validation.summary.beforeText
     - validation.summary.afterText
+    - params.input
   multiqc_config: false
+  schema_params: false
   files_exist:
     - assets/multiqc_config.yml
     - assets/multiqc_config.yml

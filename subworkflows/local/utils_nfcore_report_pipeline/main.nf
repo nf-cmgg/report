@@ -10,7 +10,6 @@
 
 include { UTILS_NFSCHEMA_PLUGIN   } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
-include { samplesheetToList       } from 'plugin/nf-schema'
 include { completionEmail         } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary       } from '../../nf-core/utils_nfcore_pipeline'
 include { imNotification          } from '../../nf-core/utils_nfcore_pipeline'
@@ -27,10 +26,8 @@ workflow PIPELINE_INITIALISATION {
     take:
     version           // boolean: Display version and exit
     validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
-    monochrome_logs   // boolean: Do not use coloured log outputs
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
-    input             //  string: Path to input samplesheet
 
     main:
 
@@ -85,23 +82,7 @@ workflow PIPELINE_INITIALISATION {
     //
     validateInputParameters()
 
-    //
-    // Create channel from input file provided through params.input
-    //
-
-    def ch_samplesheet = Channel.empty()
-    if (input) {
-        ch_samplesheet = Channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-    }
-
-    def ch_rnafusion_samplesheet = Channel.empty()
-    if (params.rnafusion_input) {
-        ch_rnafusion_samplesheet = Channel.fromList(samplesheetToList(params.rnafusion_input, "${projectDir}/assets/schema_rnafusion_input.json"))
-    }
-
     emit:
-    samplesheet           = ch_samplesheet
-    rnafusion_samplesheet = ch_rnafusion_samplesheet
     versions              = ch_versions
 }
 
@@ -159,28 +140,6 @@ workflow PIPELINE_COMPLETION {
 // Check and validate pipeline parameters
 //
 def validateInputParameters() {
-    if (!params.input && !params.rnafusion_input) {
-        error("No input files provided. Please specify either '--input' and/or '--rnafusion_input'.")
-    }
-
-    if (params.input) {
-        if (!params.fasta) {
-            error("`--fasta` is required when using `--input`.")
-        }
-    }
-
-    if (params.rnafusion_input) {
-        if (!params.genes) {
-            error("`--genes` is required when using `--rnafusion_input`.")
-        }
-        if (!params.fusions) {
-            error("`--fusions` is required when using `--rnafusion_input`.")
-        }
-        if (!params.mane) {
-            error("`--mane` is required when using `--rnafusion_input`.")
-        }
-    }
-
     genomeExistsError()
 }
 

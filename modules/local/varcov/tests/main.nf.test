@@ -36,7 +36,10 @@ nextflow_process{
                 { assert process.success },
                 { assert snapshot(
                     process.out.output.collect { [ it[0], file(it[1].toString()).name ]},
-                    process.out.versions
+                    process.out.versions_python,
+                    process.out.versions_pandas,
+                    process.out.versions_openpyxl,
+                    process.out.versions_cyvcf2
                 ).match() }
             )
         }

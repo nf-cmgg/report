@@ -11,7 +11,11 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,1ff6eed288472b269578ed2d3a367bd7"
+                    [
+                        "HOTCOUNT",
+                        "hotcount",
+                        "0.0"
+                    ]
                 ],
                 "counts": [
                     [
@@ -21,28 +25,36 @@
                         "test.counts.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,1ff6eed288472b269578ed2d3a367bd7"
+                "versions_hotcount": [
+                    [
+                        "HOTCOUNT",
+                        "hotcount",
+                        "0.0"
+                    ]
                 ]
             }
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-05-13T15:07:12.989927791"
+        "timestamp": "2025-10-13T10:39:11.686765364"
     },
     "chr2-subset - [meta, query_file, assembled_fastq]": {
         "content": [
             "## script do_it.sh running in version 0.0\nSample MSH2_c.942+3_wt MSH2_c.942+3A>T MSH2_c.942+2T>A MSH2_c.942+2T>C MSH2_c.942+2T>G\ntest1.merged.fastq.gz 57 51 0 0 3\n",
             [
-                "versions.yml:md5,1ff6eed288472b269578ed2d3a367bd7"
+                [
+                    "HOTCOUNT",
+                    "hotcount",
+                    "0.0"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-05-13T14:46:23.619328772"
+        "timestamp": "2025-10-13T10:39:01.791726198"
     }
 }
