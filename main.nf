@@ -107,8 +107,8 @@ workflow {
         }
         .groupTuple(by:0)
         .map { process, tool_versions ->
-            tool_versions.unique()
-            "${process}:\n${tool_versions.sort(false).join('\n')}"
+            tool_versions.unique().sort()
+            "${process}:\n${tool_versions.join('\n')}"
         }
 
     softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
