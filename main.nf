@@ -111,7 +111,7 @@ workflow {
         }
 
     softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
-        .mix(topic_versions)
+        .mix(topic_versions_string)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name: 'report_software_' + 'versions.yml',

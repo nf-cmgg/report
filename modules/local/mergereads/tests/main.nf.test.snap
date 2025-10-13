@@ -1,42 +1,140 @@
 {
     "stub": {
         "content": [
-            [
-                [
-                    {
-                        "id": "test"
-                    },
-                    "test.merged.fastq.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.merged.fastq.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "MERGE_READS",
+                        "cat",
+                        "9.5"
+                    ]
+                ],
+                "2": [
+                    [
+                        "MERGE_READS",
+                        "gunzip",
+                        "1.13"
+                    ]
+                ],
+                "3": [
+                    [
+                        "MERGE_READS",
+                        "gzip",
+                        "1.13"
+                    ]
+                ],
+                "merged": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.merged.fastq.gz:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_cat": [
+                    [
+                        "MERGE_READS",
+                        "cat",
+                        "9.5"
+                    ]
+                ],
+                "versions_gunzip": [
+                    [
+                        "MERGE_READS",
+                        "gunzip",
+                        "1.13"
+                    ]
+                ],
+                "versions_gzip": [
+                    [
+                        "MERGE_READS",
+                        "gzip",
+                        "1.13"
+                    ]
                 ]
-            ],
-            [
-                "versions.yml:md5,59ace0725ae632fac983529072150027"
-            ]
+            }
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-05-13T15:24:13.786557219"
+        "timestamp": "2025-10-13T10:39:32.107720042"
     },
     "chr2-subset - [meta, pear_assembled, samtools_singleton]": {
         "content": [
-            [
-                [
-                    {
-                        "id": "test"
-                    },
-                    "test.merged.fastq.gz:md5,59c73d5ea391b6c469b6989621a5cc45"
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.merged.fastq.gz:md5,59c73d5ea391b6c469b6989621a5cc45"
+                    ]
+                ],
+                "1": [
+                    [
+                        "MERGE_READS",
+                        "cat",
+                        "9.5"
+                    ]
+                ],
+                "2": [
+                    [
+                        "MERGE_READS",
+                        "gunzip",
+                        "1.13"
+                    ]
+                ],
+                "3": [
+                    [
+                        "MERGE_READS",
+                        "gzip",
+                        "1.13"
+                    ]
+                ],
+                "merged": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.merged.fastq.gz:md5,59c73d5ea391b6c469b6989621a5cc45"
+                    ]
+                ],
+                "versions_cat": [
+                    [
+                        "MERGE_READS",
+                        "cat",
+                        "9.5"
+                    ]
+                ],
+                "versions_gunzip": [
+                    [
+                        "MERGE_READS",
+                        "gunzip",
+                        "1.13"
+                    ]
+                ],
+                "versions_gzip": [
+                    [
+                        "MERGE_READS",
+                        "gzip",
+                        "1.13"
+                    ]
                 ]
-            ],
-            [
-                "versions.yml:md5,59ace0725ae632fac983529072150027"
-            ]
+            }
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-05-13T15:24:05.976757947"
+        "timestamp": "2025-10-13T10:39:21.775427847"
     }
 }

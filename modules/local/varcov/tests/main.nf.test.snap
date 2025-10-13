@@ -10,14 +10,39 @@
                 ]
             ],
             [
-                "versions.yml:md5,3f5f59226d38cfbeb67300bdfecad2d0"
+                [
+                    "VARCOV",
+                    "python",
+                    "3.13.7"
+                ]
+            ],
+            [
+                [
+                    "VARCOV",
+                    "pandas",
+                    "2.3.3"
+                ]
+            ],
+            [
+                [
+                    "VARCOV",
+                    "openpyxl",
+                    "3.1.5"
+                ]
+            ],
+            [
+                [
+                    "VARCOV",
+                    "cyvcf2",
+                    "0.31.2"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-10-07T15:40:23.041903079"
+        "timestamp": "2025-10-13T10:39:49.62448364"
     },
     "stub": {
         "content": [
@@ -31,7 +56,32 @@
                     ]
                 ],
                 "1": [
-                    "versions.yml:md5,3f5f59226d38cfbeb67300bdfecad2d0"
+                    [
+                        "VARCOV",
+                        "python",
+                        "3.13.7"
+                    ]
+                ],
+                "2": [
+                    [
+                        "VARCOV",
+                        "pandas",
+                        "2.3.3"
+                    ]
+                ],
+                "3": [
+                    [
+                        "VARCOV",
+                        "openpyxl",
+                        "3.1.5"
+                    ]
+                ],
+                "4": [
+                    [
+                        "VARCOV",
+                        "cyvcf2",
+                        "0.31.2"
+                    ]
                 ],
                 "output": [
                     [
@@ -41,8 +91,33 @@
                         "test.xlsx:md5,d41d8cd98f00b204e9800998ecf8427e"
                     ]
                 ],
-                "versions": [
-                    "versions.yml:md5,3f5f59226d38cfbeb67300bdfecad2d0"
+                "versions_cyvcf2": [
+                    [
+                        "VARCOV",
+                        "cyvcf2",
+                        "0.31.2"
+                    ]
+                ],
+                "versions_openpyxl": [
+                    [
+                        "VARCOV",
+                        "openpyxl",
+                        "3.1.5"
+                    ]
+                ],
+                "versions_pandas": [
+                    [
+                        "VARCOV",
+                        "pandas",
+                        "2.3.3"
+                    ]
+                ],
+                "versions_python": [
+                    [
+                        "VARCOV",
+                        "python",
+                        "3.13.7"
+                    ]
                 ]
             }
         ],
@@ -50,6 +125,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-10-07T15:40:37.685546414"
+        "timestamp": "2025-10-13T10:40:01.260867978"
     }
 }
