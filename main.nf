@@ -88,6 +88,7 @@ workflow {
             workflow.manifest.version
         )
         out_rnafusion_excels = RNAFUSION.out.excels
+        ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
     //
@@ -107,7 +108,7 @@ workflow {
         .groupTuple(by:0)
         .map { process, tool_versions ->
             tool_versions.unique()
-            "${process}:\n${tool_versions.join('\n')}"
+            "${process}:\n${tool_versions.sort(false).join('\n')}"
         }
 
     softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
