@@ -395,22 +395,21 @@ for filename in os.listdir(input_path):
         fusions_in_df = fusions['gene A']
         df_fusions = df_filt[df_filt['GENEA'].isin(fusions_in_df) | df_filt['GENEB'].isin(fusions_in_df)]
 
-        '''
         # calculate coverage for DUX4 (mapping quality 0)
         # finaal path nog eens controleren van bashCommand!
-        bashCommand = "samtools coverage -r 4:190,173,000-190,175,500 " + bam_path + basename + " -q 0 -A -H > " + basename + "_DUX4.txt"
+        bashCommand = "samtools coverage -r chr4:190173000-190175500 " + bam_path + basename + " -q 0 -A -H > " + basename + "_DUX4.txt"
         os.system(bashCommand)
 
-        DUX4_file = main_dir + ... + basename + "_DUX4.txt"
+        DUX4_file = basename + "_DUX4.txt"
 
-        with(open(DUX4_file, 'r') as file:
-            data = file.read()
-            # alternatively look for 'Number of reads' and print these (see separate script for this code)
-            result = re.search(r'\((.*?) filtered\)', data)
-            if result:
-                DUX4_reads = result.group(1)
-
-        '''
+        DUX4_reads = "0"
+        if(os.path.exists(DUX4_file)):
+            with open(DUX4_file, 'r') as file:
+                data = file.read()
+                # alternatively look for 'Number of reads' and print these (see separate script for this code)
+                result = re.search(r'\((.*?) filtered\)', data)
+                if result:
+                    DUX4_reads = result.group(1)
 
         #####################
         ### Splicing data ###
@@ -581,12 +580,10 @@ for filename in os.listdir(input_path):
 
             ws.column_dimensions["A"].width = 20
 
-        '''
         # add DUX4 data to coverage file
         ws = workbook["coverage_all"]
 
         ws['J26'] = DUX4_reads + " filtered reads"
-        '''
 
         # change layout of splicing worksheet
         for worksheet in ["CTAT splicing"]:
@@ -652,8 +649,5 @@ for filename in os.listdir(input_path):
 
         # save file
         workbook.save(excel_path)
-
-        print(excel_path)
-
 
 # remove unzipped .vcf files again / not necessary if zipped files have been read
