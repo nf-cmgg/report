@@ -1,10 +1,10 @@
 channels:
-  - conda-forge
-  - bioconda
+- conda-forge
+- bioconda
 dependencies:
-  - conda-forge::python=3.13.7
-  - pip
-  - pip:
-      - cyvcf2==0.31.2
-      - openpyxl==3.1.5
-      - pandas==2.3.3
+- bioconda::samtools=1.22.1
+- pip
+- pip:
+  - cyvcf2==0.31.4
+  - openpyxl==3.1.5
+  - pandas==2.3.3

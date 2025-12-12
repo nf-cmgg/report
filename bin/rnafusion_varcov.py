@@ -397,7 +397,7 @@ for filename in os.listdir(input_path):
 
         # calculate coverage for DUX4 (mapping quality 0)
         # finaal path nog eens controleren van bashCommand!
-        bashCommand = "samtools coverage -r chr4:190173000-190175500 " + bam_path + basename + " -q 0 -A -H > " + basename + "_DUX4.txt"
+        bashCommand = "samtools coverage -r chr4:190173000-190175500 " + bam_path + basename + "*.bam" + " -q 0 -A -H > " + basename + "_DUX4.txt"
         os.system(bashCommand)
 
         DUX4_file = basename + "_DUX4.txt"
@@ -435,31 +435,13 @@ for filename in os.listdir(input_path):
         # filter so only the data from this sample are retained
         qc_filt = qc[qc['Sample'].str.contains(basename)]
 
-        # move columns 6 and 11 to the front
-        col_name = qc_filt.columns[6]
-        col = qc_filt.pop(col_name)
-        qc_filt.insert(4, col_name, col)
+        def clean_column_name(col_name: str) -> str:
+            col_name = col_name.strip().replace('-', ' ').replace('_', ' ')
+            return col_name.title()
 
-        col_name = qc_filt.columns[11]
-        col = qc_filt.pop(col_name)
-        qc_filt.insert(5, col_name, col)
-
-        # change column names
-        qc_filt.columns.values[1] = "Median Insert Size"
-        qc_filt.columns.values[2] = "Summed Mean Insert Size"
-        qc_filt.columns.values[3] = "Percent duplication"
-        qc_filt.columns.values[4] = "Uniquely Mapped (%)"
-        qc_filt.columns.values[5] = "Passed Filter Reads"
-
-        # Round the columns with numerical values to one digit
-        # check again as it doesn't work
-        qc_filt.iloc[:, 2] = qc_filt.iloc[:, 2].astype(float)
-
-
-        # move columns of interest up front for easy identification
-        #qc_column_to_move = qc_filt.pop('Sample')
-        #qc_filt.insert(3, 'Sample', qc_column_to_move)
-
+        qc_filt.columns = [clean_column_name(col) for col in qc_filt.columns]
+        # Set Sample as a temporary index to convert all other columns to a float
+        qc_filt = qc_filt.set_index(['Sample'], append=True).astype(float).round(2).reset_index(['Sample'])
 
         ####################################
         ### Save all df to an Excel file ###
@@ -641,11 +623,6 @@ for filename in os.listdir(input_path):
                 cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
 
             ws.row_dimensions[2].height = 100
-
-            # round the result of mean insert size to one decimal
-            cells_to_round = ['C3', 'D3']
-            for cell in cells_to_round:
-                ws[cell].value = round(ws[cell].value, 2)
 
         # save file
         workbook.save(excel_path)
