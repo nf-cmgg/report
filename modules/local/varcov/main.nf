@@ -20,6 +20,7 @@ process VARCOV {
     tuple val("${task.process}"), val('pandas'), eval("pip freeze | grep pandas | sed 's/pandas==//'"), topic: versions, emit: versions_pandas
     tuple val("${task.process}"), val('openpyxl'), eval("pip freeze | grep openpyxl | sed 's/openpyxl==//'"), topic: versions, emit: versions_openpyxl
     tuple val("${task.process}"), val('cyvcf2'), eval("pip freeze | grep cyvcf2 | sed 's/cyvcf2==//'"), topic: versions, emit: versions_cyvcf2
+    tuple val("${task.process}"), val('samtools'), eval("samtools --version 2>&1 | head -n 1 | sed 's/^.* //'"), topic: versions, emit: versions_samtools
 
     script:
     """
