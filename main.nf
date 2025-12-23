@@ -21,6 +21,7 @@ params.targeted.queries_dir = "${projectDir}/assets/queries/"
 
 include { TARGETED                } from './workflows/targeted'
 include { RNAFUSION               } from './workflows/rnafusion'
+include { PACVAR_REPEAT           } from './modules/local/pacvarrepeat'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { softwareVersionsToYAML  } from './subworkflows/nf-core/utils_nfcore_pipeline'
@@ -91,6 +92,18 @@ workflow {
         ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
+    def out_pacvar_repeat_excels = Channel.empty()
+    if(params.pacvar_repeat.input) {
+        def pacvar_repeat_params = params.pacvar_repeat
+
+        def ch_samplesheet = Channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
+
+        PACVAR_REPEAT(
+            ch_samplesheet.map { meta, dir -> tuple(meta, dir, dir) }
+        )
+        out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
+    }
+
     //
     // Collate and save software versions
     //
@@ -135,6 +148,7 @@ workflow {
     publish:
     targeted_hotcount = out_targeted_hotcount
     rnafusion_excels  = out_rnafusion_excels
+    //pacvar_repeat_excels  = out_pacvar_repeat_excels
 }
 
 /*
@@ -154,6 +168,11 @@ output {
             excel >> "rnafusion/varcov/${meta.run}/"
         }
     }
+    // pacvar_repeat_excels {
+    //     path { meta, excel ->
+    //          excel >> "pacvar_repeat/reports/"
+    //     }
+    // }
 }
 
 /*

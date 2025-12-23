@@ -12,8 +12,14 @@
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
                 "meta": ["id"]
+            },
+            "outdir": {
+                "type": "string",
+                "format": "directory-path",
+                "errorMessage": "Path to nf-core/pacvar repeat output directory, containing the input VCFs in the trgt subfolder, must be provided and cannot contain spaces",
+                "exists": true
             }
         },
-        "required": ["sample"]
+        "required": ["sample","outdir"]
     }
 }

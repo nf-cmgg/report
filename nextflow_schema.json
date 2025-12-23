@@ -130,15 +130,9 @@
                             "exists": true,
                             "schema": "assets/schema_pacvar_repeat_input.json",
                             "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
-                            "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                            "description": "Path to comma-separated file containing sample names and corresponding path to nf-core/pacvar repeat output directory, containing the input VCFs in the trgt subfolder",
                             "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                             "fa_icon": "fas fa-file-csv"
-                        },
-                        "vcf_dir": {
-                            "type": "string",
-                            "format": "directory-path",
-                            "description": "Path to directory with the output from the nf-core/pacvar repeat workflow, containing subfolders such as 'trgt', 'multiqc' and 'pipeline_info'.",
-                            "fa_icon": "fas fa-folder-open"
                         }
                     }
                 }
