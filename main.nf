@@ -97,10 +97,29 @@ workflow {
         def pacvar_repeat_params = params.pacvar_repeat
 
         def ch_samplesheet = Channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
+        
+        ch_pacvar_repeat_input = ch_samplesheet
+            .flatMap { row ->
 
-        PACVAR_REPEAT(
-            ch_samplesheet.map { meta, dir -> tuple(meta, dir, dir) }
-        )
+                def sample = row[0]
+                def outdir = row[1]
+                def dir = file("${outdir}/output_report/")
+
+                if (sample && sample.size() > 0) {
+                    def meta = [ id: sample ]
+                    def vcf  = file("${outdir}/trgt/${sample}.vcf.gz")
+                    return [ tuple(meta, vcf, dir) ] 
+
+                } else {
+                    return file("${outdir}/trgt/*.vcf.gz")
+                        .collect { vcf ->
+                            def meta = [ id: vcf.baseName.replaceAll(/\.vcf$/, '') ]
+                            tuple(meta, vcf, dir)
+                        }
+                }
+            }
+
+        PACVAR_REPEAT(ch_pacvar_repeat_input)
         out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
     }
 
