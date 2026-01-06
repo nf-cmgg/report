@@ -28,7 +28,7 @@ process PACVAR_REPEAT {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
 
-    """ 
+    """
     touch ${prefix}.pacvar_repeat_report.xlsx
     """
 }

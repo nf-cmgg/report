@@ -18,14 +18,14 @@ from openpyxl.cell.rich_text import CellRichText, TextBlock, InlineFont
 
 # Function to color motifs in sequence
 def color_motifs_in_sequence(seq, motifs, header):
-    motif_colors = ['2B8FCC','8E60D6', 'E47941','EF4D8E','F1D22E','1AA760','E64B35','F2E998']   
+    motif_colors = ['2B8FCC','8E60D6', 'E47941','EF4D8E','F1D22E','1AA760','E64B35','F2E998']
     color_map = {}
     motifs = sorted(motifs, key=len, reverse=True)
     for i in range(len(motifs)):
         motif = motifs[i]
         color = motif_colors[i % len(motif_colors)]  # wrap around if more motifs than colors
         color_map[motif] = color
-    colored_seq = CellRichText()    
+    colored_seq = CellRichText()
 
     i = 0
     while i < len(seq):
@@ -39,14 +39,14 @@ def color_motifs_in_sequence(seq, motifs, header):
         if not matched:
             if header:
                 colored_seq.append(TextBlock(InlineFont(color="000000"), seq[i]))
-            else: 
+            else:
                 colored_seq.append(TextBlock(InlineFont(color="FF0000", b=True, u="single", rFont="Consolas"), seq[i]))
             i += 1
     return colored_seq
 
 
 # Function to write the Excel report
-def write_report(sample_name, vcf_file):  
+def write_report(sample_name, vcf_file):
 
     output_excel = f"{sample_name}.pacvar_repeat_report.xlsx"
 
@@ -165,10 +165,10 @@ def write_report(sample_name, vcf_file):
                 allele_indices = gt.split("/")
             else:
                 # "0" or "1" for chrX
-                allele_indices = [gt]       
+                allele_indices = [gt]
 
             # Convert to integers (ignore '.')
-            allele_indices = [int(a) for a in allele_indices if a.isdigit()]   
+            allele_indices = [int(a) for a in allele_indices if a.isdigit()]
 
             # Helper to safely split list fields
             def safe_split(value):
@@ -194,7 +194,7 @@ def write_report(sample_name, vcf_file):
             for idx, allele_index in enumerate(allele_indices):
                 allele_seq = allele_map.get(allele_index, "")
                 allele_seq_colored = color_motifs_in_sequence(seq=allele_seq, motifs=row['MOTIFS'].split(','), header=False)
-                allele_label = f"Allele {idx+1}"            
+                allele_label = f"Allele {idx+1}"
                 row_cells = [
                     allele_label,
                     al_list[idx],
@@ -209,7 +209,7 @@ def write_report(sample_name, vcf_file):
                 ws_trid.append(row_cells)
             ws_trid.append([])
             ws_trid.append([])
-        
+
             # Final formatting of 'report' sheet
             for col in ws_trid.columns:
                 ws_trid.column_dimensions[col[0].column_letter].width = 15

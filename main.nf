@@ -97,7 +97,7 @@ workflow {
         def pacvar_repeat_params = params.pacvar_repeat
 
         def ch_samplesheet = Channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
-        
+
         PACVAR_REPEAT(ch_samplesheet)
         out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
     }
@@ -168,7 +168,7 @@ output {
     }
     pacvar_repeat_excels {
         path { meta, excel ->
-             excel >> "pacvar_repeat/reports/"
+            excel >> "pacvar_repeat/reports/"
         }
     }
 }
