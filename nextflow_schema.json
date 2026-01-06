@@ -310,6 +310,9 @@
             "$ref": "#/$defs/rnafusion_options"
         },
         {
+            "$ref": "#/$defs/pacvar_repeat_options"
+        },
+        {
             "$ref": "#/$defs/reference_genome_options"
         },
         {
