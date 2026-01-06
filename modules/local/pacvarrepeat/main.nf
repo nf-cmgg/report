@@ -7,10 +7,8 @@ process PACVAR_REPEAT {
         ? 'oras://community.wave.seqera.io/library/pip_openpyxl_pandas:d73ced3a164f683e'
         : 'community.wave.seqera.io/library/pip_openpyxl_pandas:9248bb616642565e' }"
 
-    publishDir "${dir}", mode: 'copy', overwrite: true
-
     input:
-    tuple val(meta), path(vcf), val(dir)
+    tuple val(meta), path(vcf)
 
     output:
     tuple val(meta), path("*.xlsx"), emit: excels

@@ -10,17 +10,17 @@
             "sample": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "description": "Sample name. If provided, only this sample will be processed.",
                 "errorMessage": "Sample name cannot contain spaces",
+                "meta": ["id"]
             },
-            "outdir": {
+            "vcf": {
                 "type": "string",
-                "format": "directory-path",
-                "description": "Absolute path to the run output directory",
-                "errorMessage": "Path to nf-core/pacvar repeat output directory, containing the input VCFs in the trgt subfolder, must be provided and cannot contain spaces",
+                "format": "file-path",
+                "pattern": "^\\S+\\.vcf.gz$",
+                "errorMessage": "Path to vcf output files after nf-core/pacvar repeat analysis, must be provided and cannot contain spaces",
                 "exists": true
             }
         },
-        "required": ["outdir"]
+        "required": ["sample","vcf"]
     }
 }
