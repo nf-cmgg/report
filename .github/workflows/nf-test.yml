@@ -78,7 +78,7 @@ jobs:
             profile: "singularity"
         NXF_VER:
           # renovate: datasource=github-releases depName=nextflow/nextflow versioning=semver
-          - 25.10.2
+          - 25.10.0
           - latest-everything
     env:
       NXF_ANSI_LOG: false
