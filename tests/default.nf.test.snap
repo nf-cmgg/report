@@ -1,7 +1,7 @@
 {
     "-profile test": {
         "content": [
-            14,
+            16,
             {
                 "HOTCOUNT": {
                     "hotcount": 0.0
@@ -38,6 +38,10 @@
                 }
             },
             [
+                "pacvar_repeat",
+                "pacvar_repeat/reports",
+                "pacvar_repeat/reports/sample1A.pacvar_repeat_report.xlsx",
+                "pacvar_repeat/reports/sample2A.pacvar_repeat_report.xlsx",
                 "pipeline_info",
                 "pipeline_info/report_software_versions.yml",
                 "rnafusion",
@@ -54,9 +58,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.10.2"
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.8"
         },
-        "timestamp": "2025-12-16T10:10:29.805113321"
+        "timestamp": "2026-01-06T15:28:13.800829579"
     }
 }

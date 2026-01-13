@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "pacvarrepeat"
+description: module to generate structured and user-friendly Excel reports from the nf-core/pacvar repeat workflow.
+keywords:
+  - report
+  - excel
+  - xlsx
+  - repeat
+  - pacvar
+  - nf-core
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - vcf:
+        type: file
+        description: Sorted tandem repeat genotypes called by TRGT
+        pattern: "*.vcf.gz"
+
+output:
+  - report:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "*.xlsx":
+          type: file
+          description: Excel (.xlsx) report containing the same information as the input VCF files,
+            reformatted for readability. Each tandem repeat is presented in a separate worksheet,
+            with a summary menu as the first worksheet providing hyperlinks for easy navigation
+            to individual repeat tabs.
+          pattern: "*.xlsx"
+  - versions:
+      - "versions.yml":
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+
+authors:
+  - "@stvdsomp"
+maintainers:
+  - "@stvdsomp"
