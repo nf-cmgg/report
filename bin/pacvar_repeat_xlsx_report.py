@@ -17,6 +17,7 @@ from openpyxl.cell.rich_text import CellRichText, TextBlock, InlineFont
 
 
 # Function to color motifs in sequence
+# The motifs are extracted from the MOTIFS field in the VCF and are colored to match the scheme used in the TRGT plot output.
 def color_motifs_in_sequence(seq, motifs, header):
     motif_colors = ['2B8FCC','8E60D6', 'E47941','EF4D8E','F1D22E','1AA760','E64B35','F2E998']
     color_map = {}

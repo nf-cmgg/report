@@ -1,0 +1,45 @@
+{
+    "stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.pacvar_repeat_report.xlsx:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "excels": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.pacvar_repeat_report.xlsx:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2026-01-13T11:37:12.652425919"
+    },
+    "nf-core/pacvar output reporting [meta, vcf_file]": {
+        "content": [
+            {
+                "metaValue": {
+                    "id": "test"
+                },
+                "xlsxName": "test.pacvar_repeat_report.xlsx",
+                "xlsxSize": 120319
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.8"
+        },
+        "timestamp": "2026-01-13T11:37:06.072407911"
+    }
+}

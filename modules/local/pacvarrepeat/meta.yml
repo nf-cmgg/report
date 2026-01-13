@@ -1,61 +1,44 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
-# # TODO nf-core: Add a description of the module and list keywords
 name: "pacvarrepeat"
-description: write your description here
+description: module to generate structured and user-friendly Excel reports from the nf-core/pacvar repeat workflow.
 keywords:
-  - sort
-  - example
-  - genomics
-tools:
-  ## TODO nf-core: Add a description and other details for the software below
-  - "pacvarrepeat":
-      description: ""
-      homepage: ""
-      documentation: ""
-      tool_dev_url: ""
-      doi: ""
-      licence: null
-      identifier: null
+  - report
+  - excel
+  - xlsx
+  - repeat
+  - pacvar
+  - nf-core
 
 input:
-  ### TODO nf-core: Add a description of all of the variables used as input
   - - meta:
         type: map
         description: |
           Groovy Map containing sample information
           e.g. `[ id:'sample1' ]`
-    - bam:
+    - vcf:
         type: file
-        description: Sorted BAM/CRAM/SAM file
-        pattern: "*.{bam,cram,sam}"
-        ontologies:
-          - edam: "http://edamontology.org/format_2572" # BAM
-          - edam: "http://edamontology.org/format_2573" # CRAM
-          - edam: "http://edamontology.org/format_3462" # SAM
+        description: Sorted tandem repeat genotypes called by TRGT
+        pattern: "*.vcf.gz"
 
 output:
-  ### TODO nf-core: Add a description of all of the variables used as output
-  bam:
-    - - meta:
+  - report:
+      - meta:
           type: map
           description: |
             Groovy Map containing sample information
             e.g. `[ id:'sample1' ]`
-      - "*.bam":
+      - "*.xlsx":
           type: file
-          description: Sorted BAM/CRAM/SAM file
-          pattern: "*.{bam,cram,sam}"
-          ontologies:
-            - edam: "http://edamontology.org/format_2572" # BAM
-            - edam: "http://edamontology.org/format_2573" # CRAM
-            - edam: "http://edamontology.org/format_3462" # SAM
-  versions:
-    - "versions.yml":
-        type: file
-        description: File containing software versions
-        pattern: "versions.yml"
-        ontologies:
-          - edam: "http://edamontology.org/format_3750" # YAML
+          description: Excel (.xlsx) report containing the same information as the input VCF files,
+            reformatted for readability. Each tandem repeat is presented in a separate worksheet,
+            with a summary menu as the first worksheet providing hyperlinks for easy navigation
+            to individual repeat tabs.
+          pattern: "*.xlsx"
+  - versions:
+      - "versions.yml":
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
 
 authors:
   - "@stvdsomp"
