@@ -4,8 +4,8 @@ process VARCOV {
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
-        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/7c/7cf2e3c528dc84a9bdb9c207cadddb82b01525ceb781a5d161732a95cfd8f6a3/data'
-        : 'community.wave.seqera.io/library/python_pip_cyvcf2_openpyxl_pandas:efe7b43e28d234eb'}"
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/59/59cf2a3b7b08e2c3b188333bef269e49a44da3bc46d2bbe46407fc5d59e275dd/data'
+        : 'community.wave.seqera.io/library/samtools_pip_cyvcf2_openpyxl_pandas:5f705f003fd04932'}"
 
     input:
     tuple val(meta), path(vcfs, stageAs: 'vcfs/*'), path(stringtie, stageAs: 'stringtie/*'), path(fusionreport, stageAs: 'fusionreport/*'), path(ctat, stageAs: 'ctat/*'), path(multiqc, stageAs: 'multiqc/*'), path(bams, stageAs: 'bams/*'), path(bais, stageAs: 'bams/*'), val(run_nr)
@@ -20,6 +20,7 @@ process VARCOV {
     tuple val("${task.process}"), val('pandas'), eval("pip freeze | grep pandas | sed 's/pandas==//'"), topic: versions, emit: versions_pandas
     tuple val("${task.process}"), val('openpyxl'), eval("pip freeze | grep openpyxl | sed 's/openpyxl==//'"), topic: versions, emit: versions_openpyxl
     tuple val("${task.process}"), val('cyvcf2'), eval("pip freeze | grep cyvcf2 | sed 's/cyvcf2==//'"), topic: versions, emit: versions_cyvcf2
+    tuple val("${task.process}"), val('samtools'), eval("samtools --version 2>&1 | head -n 1 | sed 's/^.* //'"), topic: versions, emit: versions_samtools
 
     script:
     """
