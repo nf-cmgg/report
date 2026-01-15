@@ -4,7 +4,7 @@ process PACVAR_REPEAT {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
-        ? 'oras://community.wave.seqera.io/library/pip_openpyxl_pandas:d73ced3a164f683e'
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/92/92f382f0f3c2af60bdaa142a038896267c45fa6c34ee6a9b04a3eae5b4bb1639/data'
         : 'community.wave.seqera.io/library/pip_openpyxl_pandas:9248bb616642565e' }"
 
     input:
