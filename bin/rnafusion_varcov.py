@@ -240,15 +240,15 @@ for filename in os.listdir(input_path):
         df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
 
         # split into distinct columns so the positions can be reads
-        df_reads_fc['fc_position'] = df_reads_fc.get('fc_position', default=pd.NA).astype(str)
+        df_reads_fc['fc_position'] = df_reads_fc.get('fc_position', default='nan').astype(str)
         df_reads_fc[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_fc['fc_position'].apply(lambda x: pd.Series(x.split(':')))
         df_reads_fc = df_reads_fc.drop(['CHRA', 'junk', 'junk2'], axis = 1)
 
-        df_reads_ar['ar_position'] = df_reads_ar.get('ar_position', default=pd.NA).astype(str)
+        df_reads_ar['ar_position'] = df_reads_ar.get('ar_position', default='nan').astype(str)
         df_reads_ar[['CHRA', 'POSA', 'CHRB', 'POSB']] = df_reads_ar['ar_position'].apply(lambda x: pd.Series(re.split('[:#]', x)))
         df_reads_ar = df_reads_ar.drop(['CHRA', 'CHRB'], axis = 1)
 
-        df_reads_sf['sf_position'] = df_reads_sf.get('sf_position', default=pd.NA).astype(str)
+        df_reads_sf['sf_position'] = df_reads_sf.get('sf_position', default='nan').astype(str)
         df_reads_sf[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_sf['sf_position'].apply(lambda x: pd.Series(x.split(':')))
         df_reads_sf = df_reads_sf.drop(['CHRA', 'junk', 'junk2'], axis = 1)
 
