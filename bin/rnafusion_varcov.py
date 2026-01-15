@@ -236,49 +236,41 @@ for filename in os.listdir(input_path):
 
         # split into different df, depending on algorithm
         df_reads_fc = df_reads.apply(split_string, args=('fusioncatcher', 'fc_'), axis=1)
-        if df_reads['arriba'].notna().any():
-            df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
-        if df_reads['starfusion'].notna().any():
-            df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
+        df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
+        df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
 
         # split into distinct columns so the positions can be reads
         df_reads_fc['fc_position'] = df_reads_fc['fc_position'].astype(str)
         df_reads_fc[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_fc['fc_position'].apply(lambda x: pd.Series(x.split(':')))
         df_reads_fc = df_reads_fc.drop(['CHRA', 'junk', 'junk2'], axis = 1)
 
-        if 'df_reads_ar' in globals():
-            df_reads_ar['ar_position'] = df_reads_ar['ar_position'].astype(str)
-            df_reads_ar[['CHRA', 'POSA', 'CHRB', 'POSB']] = df_reads_ar['ar_position'].apply(lambda x: pd.Series(re.split('[:#]', x)))
-            df_reads_ar = df_reads_ar.drop(['CHRA', 'CHRB'], axis = 1)
+        df_reads_ar['ar_position'] = df_reads_ar['ar_position'].astype(str)
+        df_reads_ar[['CHRA', 'POSA', 'CHRB', 'POSB']] = df_reads_ar['ar_position'].apply(lambda x: pd.Series(re.split('[:#]', x)))
+        df_reads_ar = df_reads_ar.drop(['CHRA', 'CHRB'], axis = 1)
 
-        if 'df_reads_sf' in globals():
-            df_reads_sf['sf_position'] = df_reads_sf['sf_position'].astype(str)
-            df_reads_sf[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_sf['sf_position'].apply(lambda x: pd.Series(x.split(':')))
-            df_reads_sf = df_reads_sf.drop(['CHRA', 'junk', 'junk2'], axis = 1)
+        df_reads_sf['sf_position'] = df_reads_sf['sf_position'].astype(str)
+        df_reads_sf[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_sf['sf_position'].apply(lambda x: pd.Series(x.split(':')))
+        df_reads_sf = df_reads_sf.drop(['CHRA', 'junk', 'junk2'], axis = 1)
 
         # combine fusion df with reads df on 'Fusion' column
         df_clean['Fusion'] = df_clean['GENEA'] + "--" + df_clean['GENEB']
 
         # merge read info one by one into the overview
         merged_df1 = pd.merge(df_clean, df_reads_fc, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        merged_df1["CHRA"] = merged_df1["CHRA"].apply(update_chroms)
-        merged_df1["CHRB"] = merged_df1["CHRB"].apply(update_chroms)
 
-        if 'df_reads_ar' in globals():
-            merged_df2 = pd.merge(df_clean, df_reads_ar, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        else:
-            merged_df2 = pd.DataFrame()
 
-        if 'df_reads_sf' in globals():
-            merged_df3 = pd.merge(df_clean, df_reads_sf, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        else:
-            merged_df3 = pd.DataFrame()
+        merged_df2 = pd.merge(df_clean, df_reads_ar, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
+        merged_df3 = pd.merge(df_clean, df_reads_sf, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
 
         # concatenate the merged df
         merged_df = pd.concat([merged_df1, merged_df2, merged_df3], axis = 1)
 
         # drop duplicate columns
         merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+
+        # update chromsome names to have chr in front
+        merged_df["CHRA"] = merged_df["CHRA"].apply(update_chroms)
+        merged_df["CHRB"] = merged_df["CHRB"].apply(update_chroms)
 
         # drop original fusioncatcher, arribe and starfusion columns
         merged_df = merged_df.drop(['fusioncatcher', 'arriba', 'starfusion'], axis = 1)
@@ -317,29 +309,46 @@ for filename in os.listdir(input_path):
             "fc_longest_anchor",
             "fc_position",
             "fc_spanning_pairs",
-            "fc_spanning_unique_reads"
+            "fc_spanning_unique_reads",
+            "ar_confidence",
+            "ar_coverage1",
+            "ar_coverage2",
+            "ar_discordant_mates",
+            "ar_position",
+            "ar_reading-frame",
+            "ar_split_reads1",
+            "ar_split_reads2",
+            "ar_type",
+            "sf_ffmp",
+            "sf_junction_reads",
+            "sf_position",
+            "sf_spanning_reads"
         ]
 
-        if 'df_reads_ar' in globals():
-            relevant_columns.extend([
-                "ar_confidence",
-                "ar_coverage1",
-                "ar_coverage2",
-                "ar_discordant_mates",
-                "ar_position",
-                "ar_reading-frame",
-                "ar_split_reads1",
-                "ar_split_reads2",
-                "ar_type"
-            ])
+        tool_specific_columns: list[str] = [
+            "fc_common_mapping_reads",
+            "fc_fusion_type",
+            "fc_longest_anchor",
+            "fc_position",
+            "fc_spanning_pairs",
+            "fc_spanning_unique_reads",
+            "ar_confidence",
+            "ar_coverage1",
+            "ar_coverage2",
+            "ar_discordant_mates",
+            "ar_position",
+            "ar_reading-frame",
+            "ar_split_reads1",
+            "ar_split_reads2",
+            "ar_type",
+            "sf_ffmp",
+            "sf_junction_reads",
+            "sf_position",
+            "sf_spanning_reads"
+        ]
 
-        if 'df_reads_sf' in globals():
-            relevant_columns.extend([
-                "sf_ffmp",
-                "sf_junction_reads",
-                "sf_position",
-                "sf_spanning_reads"
-            ])
+        relevant_columns.extend(tool_specific_columns)
+
         df_filt = merged_df[relevant_columns]
 
         # sort on score
@@ -354,6 +363,8 @@ for filename in os.listdir(input_path):
 
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
+
+        df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
 
         # filter base on score and number of callers, both conditions have to be true
         df_final = df_filt[(df_filt['SCORE'] > 0.18) & (df_filt['TOOL_HITS'] > 1)]
