@@ -102,7 +102,7 @@ def vcf_to_df(vcf):
 
 # Adds chr to chromosomes missing it
 def update_chroms(chrom:any) -> str:
-    if chrom is not str: return chrom
+    if pd.isna(chrom): return chrom
     str_chrom = str(chrom)
     return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
