@@ -101,7 +101,8 @@ def vcf_to_df(vcf):
     return df
 
 # Adds chr to chromosomes missing it
-def update_chroms(chrom:str) -> str:
+def update_chroms(chrom:any) -> str:
+    if chrom is not str: return chrom
     str_chrom = str(chrom)
     return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
@@ -241,50 +242,50 @@ for filename in os.listdir(input_path):
         df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
         df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
 
-        # split into distinct columns so the positions can be reads
-        df_reads_fc['fc_position'] = df_reads_fc.get('fc_position', default=pd.Series(['nan'] * len(df_reads_fc))).astype(str)
-        df_reads_fc[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_fc['fc_position'].apply(lambda x: pd.Series(x.split(':')))
-        df_reads_fc = df_reads_fc.drop(['CHRA', 'junk', 'junk2'], axis = 1)
-
-        df_reads_ar['ar_position'] = df_reads_ar.get('ar_position', default=pd.Series(['nan'] * len(df_reads_ar))).astype(str)
-        df_reads_ar[['CHRA', 'POSA', 'CHRB', 'POSB']] = df_reads_ar['ar_position'].apply(lambda x: pd.Series(re.split('[:#]', x)))
-        df_reads_ar = df_reads_ar.drop(['CHRA', 'CHRB'], axis = 1)
-
-        df_reads_sf['sf_position'] = df_reads_sf.get('sf_position', default=pd.Series(['nan'] * len(df_reads_sf))).astype(str)
-        df_reads_sf[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_sf['sf_position'].apply(lambda x: pd.Series(x.split(':')))
-        df_reads_sf = df_reads_sf.drop(['CHRA', 'junk', 'junk2'], axis = 1)
+        def define_position(df: pd.DataFrame, column_to_split: str, split_prefix:str, fetch_function: function) -> pd.DataFrame:
+            df = df.apply(split_string, args=(column_to_split, split_prefix + '_'), axis=1)
+            if f"{split_prefix}_position" in df.columns:
+                df[['CHRA', 'POSA', 'CHRB', 'POSB']] = df[f'{split_prefix}_position'][df[f'{split_prefix}_position'].notna()].apply(fetch_function)
+                df.drop(columns=[f'{split_prefix}_position', column_to_split], inplace=True)
+                df["CHRA"] = df["CHRA"].apply(update_chroms)
+                df["CHRB"] = df["CHRB"].apply(update_chroms)
+                return df
+            else:
+                return pd.DataFrame()
 
         # combine fusion df with reads df on 'Fusion' column
         df_clean['Fusion'] = df_clean['GENEA'] + "--" + df_clean['GENEB']
 
-        # merge read info one by one into the overview
-        merged_df1 = pd.merge(df_clean, df_reads_fc, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        merged_df2 = pd.merge(df_clean, df_reads_ar, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        merged_df3 = pd.merge(df_clean, df_reads_sf, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
+        merged_df = df_clean
+        df_reads_fc = define_position(df_reads, 'fusioncatcher', 'fc', lambda x: pd.Series(re.split(r':\+?-?#?', x)[:-1]))
+        if not df_reads_fc.empty:
+            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
-        # concatenate the merged df
-        merged_df = pd.concat([merged_df1, merged_df2, merged_df3], axis = 1)
+        df_reads_ar = define_position(df_reads, 'arriba', 'ar', lambda x: pd.Series(re.split(r'[:#]', x)))
+        if not df_reads_ar.empty:
+            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
+
+        df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':-?#?', x)[:-1]))
+        if not df_reads_sf.empty:
+            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
+
+        # drop original fusioncatcher, arriba and starfusion columns
+        merged_df = merged_df.drop(merged_df.filter(regex='^(fusioncatcher|arriba|starfusion).*$').columns, axis = 1)
 
         # drop duplicate columns
         merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
 
-        # update chromsome names to have chr in front
-        merged_df["CHRA"] = merged_df["CHRA"].apply(update_chroms)
-        merged_df["CHRB"] = merged_df["CHRB"].apply(update_chroms)
-
-        # drop original fusioncatcher, arribe and starfusion columns
-        merged_df = merged_df.drop(['fusioncatcher', 'arriba', 'starfusion'], axis = 1)
-
         # set certain columns to numerical
-        list_numerical = ["POSA", "POSB", 'fc_longest_anchor', 'fc_common_mapping_reads', 'fc_spanning_pairs',
-                          'fc_spanning_unique_reads', 'ar_coverage1', 'ar_coverage2', 'ar_discordant_mates', 'ar_split_reads1',
-                          'ar_split_reads2', 'sf_ffmp', 'sf_junction_reads', 'sf_spanning_reads']
-
-        for column in list_numerical:
-            merged_df[column] = pd.to_numeric(merged_df[column], errors = 'coerce')
+        present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
+            'fc_common_mapping_reads', 'fc_spanning_pairs','fc_spanning_unique_reads', 'ar_coverage1',
+            'ar_coverage2', 'ar_discordant_mates', 'ar_split_reads1', 'ar_split_reads2', 'sf_ffmp',
+            'sf_junction_reads', 'sf_spanning_reads']))
+        for column in present_columns_numerical:
+            merged_df[column] = pd.to_numeric(merged_df[column])
 
         # limit sf_ffmp to one decimal
-        merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
+        if 'sf_ffmp' in merged_df.columns:
+            merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
 
         # subset the dataframe to only contain relevant columns
         relevant_columns: list[str] = [
@@ -303,49 +304,13 @@ for filename in os.listdir(input_path):
             "EXON_NUMBER_A",
             "EXON_NUMBER_B",
             "TRANSCRIPT_A",
-            "TRANSCRIPT_B",
-            "fc_common_mapping_reads",
-            "fc_fusion_type",
-            "fc_longest_anchor",
-            "fc_position",
-            "fc_spanning_pairs",
-            "fc_spanning_unique_reads",
-            "ar_confidence",
-            "ar_coverage1",
-            "ar_coverage2",
-            "ar_discordant_mates",
-            "ar_position",
-            "ar_reading-frame",
-            "ar_split_reads1",
-            "ar_split_reads2",
-            "ar_type",
-            "sf_ffmp",
-            "sf_junction_reads",
-            "sf_position",
-            "sf_spanning_reads"
+            "TRANSCRIPT_B"
         ]
 
-        tool_specific_columns: list[str] = [
-            "fc_common_mapping_reads",
-            "fc_fusion_type",
-            "fc_longest_anchor",
-            "fc_position",
-            "fc_spanning_pairs",
-            "fc_spanning_unique_reads",
-            "ar_confidence",
-            "ar_coverage1",
-            "ar_coverage2",
-            "ar_discordant_mates",
-            "ar_position",
-            "ar_reading-frame",
-            "ar_split_reads1",
-            "ar_split_reads2",
-            "ar_type",
-            "sf_ffmp",
-            "sf_junction_reads",
-            "sf_position",
-            "sf_spanning_reads"
-        ]
+        def starts_with_list(string:str, prefixes:list[str]) -> bool:
+            return any(string.startswith(prefix) for prefix in prefixes)
+
+        tool_specific_columns: list[str] = [column for column in merged_df.columns if starts_with_list(column, ['fc_', 'ar_', 'sf_'])]
 
         relevant_columns.extend(tool_specific_columns)
 
