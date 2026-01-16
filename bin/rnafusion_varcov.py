@@ -212,6 +212,8 @@ for filename in os.listdir(input_path):
             raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
         sample_name: str = samples[0]
 
+        print(f"Creating report for sample: {sample_name}")
+
         # clean up data extracted from info
         # Specify the columns to apply the function to
         # Apply the function to your DataFrame
