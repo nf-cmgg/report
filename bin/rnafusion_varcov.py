@@ -164,6 +164,22 @@ def create_cell_button(ws, cell_ref, text, link=None,
     col_letter = get_column_letter(c.column)
     ws.column_dimensions[col_letter].width = max(len(text) + 6, 18)
 
+def read_arriba_file(arriba_file:str) -> pd.DataFrame:
+    df = pd.read_csv(arriba_file, sep='\t')
+    df['Fusion'] = df['#gene1'] + "--" + df['gene2']
+    df[['str1gene', 'str1fusion']] = df['strand1(gene/fusion)'].str.split('/', n=1,expand=True)
+    df[['str2gene', 'str2fusion']] = df['strand2(gene/fusion)'].str.split('/', n=1,expand=True)
+    df['ORIENTATION'] = df['str1fusion'] + '/' + df['str2fusion']
+    df[['TRANSCRIPT_A', 'TRANSCRIPT_A_VERSION']] = df['transcript_id1'].str.split('.', n=1, expand=True)
+    df[['TRANSCRIPT_B', 'TRANSCRIPT_B_VERSION']] = df['transcript_id2'].str.split('.', n=1, expand=True)
+    df['FRAME_STATUS'] = df['reading_frame']
+    df[['CHRA', 'POSA']] = df['breakpoint1'].str.split(':', n=1, expand=True)
+    df[['CHRB', 'POSB']] = df['breakpoint2'].str.split(':', n=1, expand=True)
+    df['POSA'] = pd.to_numeric(df['POSA'])
+    df['POSB'] = pd.to_numeric(df['POSB'])
+    df = df[['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'ORIENTATION', 'TRANSCRIPT_A', 'TRANSCRIPT_A_VERSION', 'TRANSCRIPT_B', 'TRANSCRIPT_B_VERSION', 'FRAME_STATUS']]
+    return df
+
 #############################################
 ## read in arguments and store as variable ##
 #############################################
@@ -181,6 +197,7 @@ parser.add_argument('--fusion_whitelist', metavar='FILE', type=str, help="Path t
 parser.add_argument('--mane', metavar='FILE', type=str, help="Path to a file containing the MANE transcripts for filtering.", required=True)
 parser.add_argument('--run', metavar='STR', type=str, help="Name of the run analysed", required=True)
 parser.add_argument('--pipeline_version', metavar='STR', type=str, help="Version of the reporting pipeline used", required=True)
+parser.add_argument('--arriba', metavar='STR', type=str, help="Path to arriba output directory", required=True)
 
 args = parser.parse_args()
 input_path:str = args.input + "/"
@@ -195,6 +212,7 @@ fusions:str = pd.read_csv(args.fusion_whitelist, sep='\t')
 mane:str = pd.read_csv(args.mane)
 run_nr:str = args.run
 pipeline_version:str = args.pipeline_version
+arriba_path:str = args.arriba + "/"
 
 ###############################################################
 ### Loop over .vcf files, extract info and export to report ###
@@ -311,6 +329,16 @@ for filename in os.listdir(input_path):
         # limit sf_ffmp to one decimal
         if 'sf_ffmp' in merged_df.columns:
             merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
+
+        # add missing annotation data
+        ## arriba check
+        arriba_nan_df: pd.DataFrame = merged_df[merged_df['FOUND_IN'].str.contains('arriba')]
+        arriba_nan_df = arriba_nan_df[arriba_nan_df["TRANSCRIPT_A"] == 'nan']
+        if not arriba_nan_df.empty:
+            arriba_df = read_arriba_file(os.path.join(arriba_path + basename + ".arriba.fusions.tsv"))
+            arriba_indexed = arriba_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
+            merged_indexed = merged_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
+            merged_df = arriba_indexed.combine_first(merged_indexed).reset_index()
 
         # subset the dataframe to only contain relevant columns
         relevant_columns: list[str] = [
