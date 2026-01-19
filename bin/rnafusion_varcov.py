@@ -426,15 +426,26 @@ for filename in os.listdir(input_path):
 
         excel_path: str = f"{output_dir}/{sample_name}.xlsx"
 
+        # Sheet names
+        fusions_filt_sheet = "fusions_filt"
+        fusions_filt_MANE_sheet = "fusions_filt_MANE"
+        fusions_specific_sheet = "fusions_specific"
+        fusions_all_sheet = "fusions_all"
+        splicing_sheet = "CTAT splicing"
+        coverage_ref_sheet = "coverage_ref"
+        coverage_all_sheet = "coverage_all"
+        qc_sheet = "QC"
+        summary_sheet = "Summary"
+
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-            df_final.to_excel(writer, index=False, sheet_name="fusions_filt")
-            df_final_MANE.to_excel(writer, index = False, sheet_name = "fusions_filt_MANE")
-            df_fusions.to_excel(writer, index= False, sheet_name="fusions_specific")
-            merged_df.to_excel(writer, index=False, sheet_name="fusions_all")
-            splicing.to_excel(writer, index=False, sheet_name = "CTAT splicing")
-            ref_genes_expr.to_excel(writer, index= False, sheet_name="coverage_ref")
-            genes_expr.to_excel(writer, index=False, sheet_name="coverage_all")
-            qc_filt.to_excel(writer, index=False, sheet_name="QC")
+            df_final.to_excel(writer, index=False, sheet_name=fusions_filt_sheet)
+            df_final_MANE.to_excel(writer, index = False, sheet_name = fusions_filt_MANE_sheet)
+            df_fusions.to_excel(writer, index= False, sheet_name=fusions_specific_sheet)
+            merged_df.to_excel(writer, index=False, sheet_name=fusions_all_sheet)
+            splicing.to_excel(writer, index=False, sheet_name = splicing_sheet)
+            ref_genes_expr.to_excel(writer, index= False, sheet_name=coverage_ref_sheet)
+            genes_expr.to_excel(writer, index=False, sheet_name=coverage_all_sheet)
+            qc_filt.to_excel(writer, index=False, sheet_name=qc_sheet)
 
 
         ###############################
@@ -444,8 +455,11 @@ for filename in os.listdir(input_path):
         # open report file
         workbook = openpyxl.load_workbook(excel_path)
 
+        # create a summary sheet
+        workbook.create_sheet(title=summary_sheet, index=0)
+
         # modify fusion worksheets
-        for worksheet in ["fusions_all", "fusions_filt", "fusions_filt_MANE", "fusions_specific"]:
+        for worksheet in [fusions_all_sheet, fusions_filt_sheet, fusions_filt_MANE_sheet, fusions_specific_sheet]:
             ws = workbook[worksheet]
 
             # insert sample name in new empty row and add hyperlink to visualisation files
@@ -454,7 +468,7 @@ for filename in os.listdir(input_path):
 
             # Add link to ctat if a variant has been found
             if ctat_variants_found > 0:
-                ctat_link = "#CTAT splicing"
+                ctat_link = f"#{splicing_sheet}"
                 ws['C1'].hyperlink = ctat_link
                 ws['C1'].value = f"{ctat_variants_found} CTAT variant{'s' if ctat_variants_found > 1 else ''} found"
                 ws['C1'].style = "Hyperlink"
@@ -484,7 +498,7 @@ for filename in os.listdir(input_path):
             ws.row_dimensions[2].height = 50
 
         #loop over coverage worksheets to change layout
-        for worksheet in ["coverage_ref", "coverage_all"]:
+        for worksheet in [coverage_ref_sheet, coverage_all_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
@@ -503,12 +517,12 @@ for filename in os.listdir(input_path):
             ws.column_dimensions["A"].width = 20
 
         # add DUX4 data to coverage file
-        ws = workbook["coverage_all"]
+        ws = workbook[coverage_all_sheet]
 
         ws['J26'] = DUX4_reads + " filtered reads"
 
         # change layout of splicing worksheet
-        for worksheet in ["CTAT splicing"]:
+        for worksheet in [splicing_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
@@ -529,7 +543,7 @@ for filename in os.listdir(input_path):
             ws.column_dimensions["H"].width = 40
 
         # change layout of QC worksheet
-        for worksheet in ["QC"]:
+        for worksheet in [qc_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
