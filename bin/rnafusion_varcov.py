@@ -399,6 +399,7 @@ for filename in os.listdir(input_path):
         column_to_move = splicing.pop('variant_name')
         splicing.insert(0, 'variant_name', column_to_move)
 
+        ctat_variants_found: bool = splicing['variant_name'].count()
 
         ###############
         ### QC data ###
@@ -451,30 +452,12 @@ for filename in os.listdir(input_path):
             ws.insert_rows(1)
             ws['A1'] = "fusions " + basename
 
-            # TODO: Nextflow -> Find another way to make this work
-            # # format links
-            # link_arriba = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/arriba_visualisation/" + basename + "_combined_fusions_arriba_visualisation.pdf"
-
-            # link_fusioninspector = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/fusioninspector/" + basename + ".fusion_inspector_web.html"
-
-            # # check full path to .bam once on server!
-            # link_igv = "http://localhost:60151/load?file=" + bam_path + "/" + basename + ".bam&genome=hg38"
-
-            # # change layout so it is recognized as hyperlink
-            # # links not functional so far (Excel removes a / after fs, to change once on final server)
-            # ws['D1'].hyperlink = link_arriba
-            # ws['D1'].value = "Arriba visualisation"
-            # ws['D1'].font = Font(color="0000EE", underline="single")
-
-            # ws['F1'].hyperlink = link_fusioninspector
-            # ws['F1'].value = "FusionInspector"
-            # ws['F1'].font = Font(color="0000EE", underline="single")
-
-            # ws['H1'].hyperlink = link_igv
-            # ws['H1'].value = "IGV visualisation"
-            # ws['H1'].font = Font(color="0000EE", underline="single")
+            # Add link to ctat if a variant has been found
+            if ctat_variants_found > 0:
+                ctat_link = "#CTAT splicing"
+                ws['C1'].hyperlink = ctat_link
+                ws['C1'].value = f"{ctat_variants_found} CTAT variant{'s' if ctat_variants_found > 1 else ''} found"
+                ws['C1'].style = "Hyperlink"
 
             # change layout
             c = ws['A1']
@@ -499,25 +482,6 @@ for filename in os.listdir(input_path):
                 cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
 
             ws.row_dimensions[2].height = 50
-
-        # TODO: Nextflow -> Find another way to make this work
-        # # add extra hyperlinks to the worksheets that are useful (if needed for fusions_all, columns have to be changed)
-        # for worksheet in ["fusions_filt", "fusions_filt_MANE", "fusions_specific"]:
-        #     ws = workbook[worksheet]
-
-        #     # individual links to positions of fusions (added as links in columns H and I)
-        #     for row in ws.iter_rows(min_row=3):
-        #         cell_B = row[1]
-        #         cell_H = row[7]
-
-        #         bp_link = f"http://localhost:60151/goto?locus=chr{cell_B.value}:{cell_H.value}"
-        #         cell_H.hyperlink = bp_link
-
-        #         cell_C = row[2]
-        #         cell_I = row[8]
-        #         bp_link = f"http://localhost:60151/goto?locus=chr{cell_C.value}:{cell_I.value}"
-        #         cell_I.hyperlink = bp_link
-
 
         #loop over coverage worksheets to change layout
         for worksheet in ["coverage_ref", "coverage_all"]:
@@ -550,15 +514,6 @@ for filename in os.listdir(input_path):
             # add new line and add sample name
             ws.insert_rows(1)
             ws['A1']= "CTAT splicing " + basename
-
-            # TODO: Nextflow -> Find another way to make this work
-            # link_splicing = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/ctat_splicing_arriba/" + basename + ".ctat-splicing.igv.html"
-
-            # # links not functional so far (Excel removes a / after fs, to change once on final server)
-            # ws['D1'].hyperlink = link_splicing
-            # ws['D1'].value = "CTAT IGV"
-            # ws['D1'].font = Font(color="0000EE", underline="single")
 
             # change layout
             c = ws['A1']
