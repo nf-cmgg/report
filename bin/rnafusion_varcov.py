@@ -23,8 +23,9 @@ import os
 import pandas as pd
 import openpyxl
 import cyvcf2
-from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils.cell import get_column_letter
+from openpyxl.utils import get_column_letter
 
 ###############
 ## constants ##
@@ -65,6 +66,9 @@ VCF_COLUMNS = [
     "FILTER",
     "FORMAT"
 ]
+
+SCORE_THRESHOLD: float = 0.18
+TOOL_HITS_THRESHOLD: int = 1
 
 ########################
 ## defining functions ##
@@ -138,6 +142,27 @@ def split_string(row, column_name, prefix):
     # convert the dictionary to a Series and add it to the row
     return pd.concat([row, pd.Series(data, dtype = 'object')])
 
+def create_cell_button(ws, cell_ref, text, link=None,
+                        fill='00E8F4F8', font_color='000000',
+                        border_color='00B3E5FC', border_style='medium', bold=True):
+    c = ws[cell_ref]
+    c.value = text
+    c.font = Font(color=font_color, bold=bold)
+    c.alignment = Alignment(horizontal='center', vertical='center')
+    c.fill = PatternFill('solid', fgColor=fill)
+
+    # Medium border for “button” frame
+    side = Side(style=border_style, color=border_color)
+    c.border = Border(left=side, right=side, top=side, bottom=side)
+
+    # Optional hyperlink
+    if link:
+        c.hyperlink = link
+
+    # Tidy sizing for a button feel
+    ws.row_dimensions[c.row].height = 20
+    col_letter = get_column_letter(c.column)
+    ws.column_dimensions[col_letter].width = max(len(text) + 6, 18)
 
 #############################################
 ## read in arguments and store as variable ##
@@ -332,7 +357,7 @@ for filename in os.listdir(input_path):
         df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
 
         # filter base on score and number of callers, both conditions have to be true
-        df_final = df_filt[(df_filt['SCORE'] > 0.18) & (df_filt['TOOL_HITS'] > 1)]
+        df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
 
         # ALTERNATIVE: either one of the two conditions is true: gives too many hits
         # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
@@ -457,6 +482,56 @@ for filename in os.listdir(input_path):
 
         # create a summary sheet
         workbook.create_sheet(title=summary_sheet, index=0)
+        ws = workbook[summary_sheet]
+        ws['A1'] = f"Summary for {basename}"
+        ws['A1'].font = Font(size = 14, bold = True)
+        ws['A1'].fill = PatternFill("solid", fgColor='00FFCC99')
+
+        ws['A3'] = "Filtered fusions found:"
+        ws['B3'] = df_final.shape[0]
+        create_cell_button(ws, 'C3', 'Go to data', link=f"#{fusions_filt_sheet}")
+
+        ws['A4'] = "Filtered fusion present in MANE transcripts:"
+        ws['B4'] = df_final_MANE.shape[0]
+        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}")
+
+        ws['A5'] = "Fusions in whitelist found:"
+        ws['B5'] = df_fusions.shape[0]
+        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_specific_sheet}")
+
+        ws['A6'] = "Total fusions found:"
+        ws['B6'] = merged_df.shape[0]
+        create_cell_button(ws, 'C6', 'Go to data', link=f"#{fusions_all_sheet}")
+
+        ws['A7'] = 'Splice sites found:'
+        ws['B7'] = splicing.shape[0]
+        create_cell_button(ws, 'C7', 'Go to data', link=f"#{splicing_sheet}")
+        ws['D7'] = f' {ctat_variants_found} CTAT variant{"s" if ctat_variants_found != 1 else ""} found'
+        if ctat_variants_found > 0:
+            ws['D7'].font = Font(color='00FF0000', bold=True)
+
+        ws['A9'] = "Coverage analysis of control genes:"
+        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_ref_sheet}")
+
+        ws['A10'] = "Coverage analysis of all targeted genes:"
+        create_cell_button(ws, 'B10', 'Go to data', link=f"#{coverage_all_sheet}")
+
+        ws['A11'] = "QC metrics:"
+        create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}")
+
+        ws.column_dimensions["A"].width = 40
+        ws.column_dimensions["D"].width = 25
+
+        # apply styling to columns in summary
+        for idx, cell in enumerate(ws['A']):
+            if idx == 0: continue  # skip header
+            cell.alignment = Alignment(horizontal='right', vertical='center')
+
+        for cell in ws['B']:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        for cell in ws['D']:
+            cell.alignment = Alignment(horizontal='left', vertical='center')
 
         # modify fusion worksheets
         for worksheet in [fusions_all_sheet, fusions_filt_sheet, fusions_filt_MANE_sheet, fusions_specific_sheet]:
@@ -465,13 +540,6 @@ for filename in os.listdir(input_path):
             # insert sample name in new empty row and add hyperlink to visualisation files
             ws.insert_rows(1)
             ws['A1'] = "fusions " + basename
-
-            # Add link to ctat if a variant has been found
-            if ctat_variants_found > 0:
-                ctat_link = f"#{splicing_sheet}"
-                ws['C1'].hyperlink = ctat_link
-                ws['C1'].value = f"{ctat_variants_found} CTAT variant{'s' if ctat_variants_found > 1 else ''} found"
-                ws['C1'].style = "Hyperlink"
 
             # change layout
             c = ws['A1']
@@ -551,7 +619,7 @@ for filename in os.listdir(input_path):
             ws['A1']= "QC " + basename
 
             # add script version for logging, to be replaced in the future
-            ws['D1'] = "nf-cmgg/report version: " + pipeline_version
+            ws['E1'] = "nf-cmgg/report version: " + pipeline_version
 
             # change layout
             c = ws['A1']
@@ -569,7 +637,12 @@ for filename in os.listdir(input_path):
 
             ws.row_dimensions[2].height = 100
 
+        # add back to summary button on all sheets except for summary
+        for sheet_name in workbook.sheetnames:
+            if sheet_name != summary_sheet:
+                ws = workbook[sheet_name]
+                create_cell_button(ws, 'C1', 'Back to summary', link=f"#{summary_sheet}", border_style='thin', border_color='000000')
+
         # save file
         workbook.save(excel_path)
 
-# remove unzipped .vcf files again / not necessary if zipped files have been read
