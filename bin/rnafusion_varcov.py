@@ -170,14 +170,14 @@ def read_arriba_file(arriba_file:str) -> pd.DataFrame:
     df[['str1gene', 'str1fusion']] = df['strand1(gene/fusion)'].str.split('/', n=1,expand=True)
     df[['str2gene', 'str2fusion']] = df['strand2(gene/fusion)'].str.split('/', n=1,expand=True)
     df['ORIENTATION'] = df['str1fusion'] + '/' + df['str2fusion']
-    df[['TRANSCRIPT_A', 'TRANSCRIPT_A_VERSION']] = df['transcript_id1'].str.split('.', n=1, expand=True)
-    df[['TRANSCRIPT_B', 'TRANSCRIPT_B_VERSION']] = df['transcript_id2'].str.split('.', n=1, expand=True)
+    df['TRANSCRIPT_A'] = df['transcript_id1']
+    df['TRANSCRIPT_B'] = df['transcript_id2']
     df['FRAME_STATUS'] = df['reading_frame']
     df[['CHRA', 'POSA']] = df['breakpoint1'].str.split(':', n=1, expand=True)
     df[['CHRB', 'POSB']] = df['breakpoint2'].str.split(':', n=1, expand=True)
     df['POSA'] = pd.to_numeric(df['POSA'])
     df['POSB'] = pd.to_numeric(df['POSB'])
-    df = df[['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'ORIENTATION', 'TRANSCRIPT_A', 'TRANSCRIPT_A_VERSION', 'TRANSCRIPT_B', 'TRANSCRIPT_B_VERSION', 'FRAME_STATUS']]
+    df = df[['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'ORIENTATION', 'TRANSCRIPT_A', 'TRANSCRIPT_B', 'FRAME_STATUS']]
     return df
 
 #############################################
@@ -391,7 +391,7 @@ for filename in os.listdir(input_path):
         # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
 
         # limit filtered to versioned MANE transcript only
-        df_MANE = mane['MANE'].astype(str) + "." + mane['Version'].astype(str)
+        df_MANE = mane['Transcript stable ID version'].astype(str)
         df_final_MANE = df_final[df_final['TRANSCRIPT_A'].apply(lambda x: any(i in x for i in df_MANE)) & df_final['TRANSCRIPT_B'].apply(lambda x: any(i in x for i in df_MANE))]
 
         #df_final_MANE = df_final[df_final['TRANSCRIPT_A'].isin(df_MANE) | df_final['TRANSCRIPT_B'].isin(df_MANE)]
@@ -517,35 +517,35 @@ for filename in os.listdir(input_path):
 
         ws['A3'] = "Filtered fusions found:"
         ws['B3'] = df_final.shape[0]
-        create_cell_button(ws, 'C3', 'Go to data', link=f"#{fusions_filt_sheet}")
+        create_cell_button(ws, 'C3', 'Go to data', link=f"#{fusions_filt_sheet}!A1")
 
         ws['A4'] = "Filtered fusion present in MANE transcripts:"
         ws['B4'] = df_final_MANE.shape[0]
-        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}")
+        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}!A1")
 
         ws['A5'] = "Fusions in whitelist found:"
         ws['B5'] = df_fusions.shape[0]
-        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_specific_sheet}")
+        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_specific_sheet}!A1")
 
         ws['A6'] = "Total fusions found:"
         ws['B6'] = merged_df.shape[0]
-        create_cell_button(ws, 'C6', 'Go to data', link=f"#{fusions_all_sheet}")
+        create_cell_button(ws, 'C6', 'Go to data', link=f"#{fusions_all_sheet}!A1")
 
         ws['A7'] = 'Splice sites found:'
         ws['B7'] = splicing.shape[0]
-        create_cell_button(ws, 'C7', 'Go to data', link=f"#{splicing_sheet}")
+        create_cell_button(ws, 'C7', 'Go to data', link=f"#{splicing_sheet}!A1")
         ws['D7'] = f' {ctat_variants_found} CTAT variant{"s" if ctat_variants_found != 1 else ""} found'
         if ctat_variants_found > 0:
             ws['D7'].font = Font(color='00FF0000', bold=True)
 
         ws['A9'] = "Coverage analysis of control genes:"
-        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_ref_sheet}")
+        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_ref_sheet}!A1")
 
         ws['A10'] = "Coverage analysis of all targeted genes:"
-        create_cell_button(ws, 'B10', 'Go to data', link=f"#{coverage_all_sheet}")
+        create_cell_button(ws, 'B10', 'Go to data', link=f"#{coverage_all_sheet}!A1")
 
         ws['A11'] = "QC metrics:"
-        create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}")
+        create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}!A1")
 
         ws.column_dimensions["A"].width = 40
         ws.column_dimensions["D"].width = 25
@@ -669,7 +669,7 @@ for filename in os.listdir(input_path):
         for sheet_name in workbook.sheetnames:
             if sheet_name != summary_sheet:
                 ws = workbook[sheet_name]
-                create_cell_button(ws, 'C1', 'Back to summary', link=f"#{summary_sheet}", border_style='thin', border_color='000000')
+                create_cell_button(ws, 'C1', 'Back to summary', link=f"#{summary_sheet}!A1", border_style='thin', border_color='000000')
 
         # save file
         workbook.save(excel_path)
