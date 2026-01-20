@@ -333,7 +333,7 @@ for filename in os.listdir(input_path):
         # add missing annotation data
         ## arriba check
         arriba_nan_df: pd.DataFrame = merged_df[merged_df['FOUND_IN'].str.contains('arriba')]
-        arriba_nan_df = arriba_nan_df[arriba_nan_df["TRANSCRIPT_A"] == 'nan']
+        arriba_nan_df = arriba_nan_df[(arriba_nan_df["TRANSCRIPT_A"] == 'nan') | (arriba_nan_df["TRANSCRIPT_B"] == 'nan')]
         if not arriba_nan_df.empty:
             arriba_df = read_arriba_file(os.path.join(arriba_path + basename + ".arriba.fusions.tsv"))
             arriba_indexed = arriba_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
