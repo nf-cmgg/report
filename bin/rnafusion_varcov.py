@@ -484,7 +484,7 @@ for filename in os.listdir(input_path):
         fusions_filt_MANE_sheet = "fusions_filt_MANE"
         fusions_specific_sheet = "fusions_specific"
         fusions_all_sheet = "fusions_all"
-        splicing_sheet = "CTAT splicing"
+        splicing_sheet = "CTAT_splicing"
         coverage_ref_sheet = "coverage_ref"
         coverage_all_sheet = "coverage_all"
         qc_sheet = "QC"
