@@ -198,6 +198,7 @@ parser.add_argument('--mane', metavar='FILE', type=str, help="Path to a file con
 parser.add_argument('--run', metavar='STR', type=str, help="Name of the run analysed", required=True)
 parser.add_argument('--pipeline_version', metavar='STR', type=str, help="Version of the reporting pipeline used", required=True)
 parser.add_argument('--arriba', metavar='STR', type=str, help="Path to arriba output directory", required=True)
+parser.add_argument('--design', metavar='STR', type=str, help="TWIST design used in the analysis")
 
 args = parser.parse_args()
 input_path:str = args.input + "/"
@@ -213,6 +214,7 @@ mane:str = pd.read_csv(args.mane)
 run_nr:str = args.run
 pipeline_version:str = args.pipeline_version
 arriba_path:str = args.arriba + "/"
+design:str = args.design
 
 ###############################################################
 ### Loop over .vcf files, extract info and export to report ###
@@ -547,13 +549,24 @@ for filename in os.listdir(input_path):
         ws['A11'] = "QC metrics:"
         create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}!A1")
 
+        ws['A13'] = "Patient:"
+        ws['A14'] = "RNA-nr:"
+        ws['B14'] = basename
+        ws['A15'] = "Date of birth:"
+        ws['A16'] = "TWIST design:"
+        ws['B16'] = design if design != None else "?"
+        ws['A17'] = "Sequencing run:"
+        ws['B17'] = run_nr
+
         ws.column_dimensions["A"].width = 40
+        ws.column_dimensions["B"].width = len(design) + 5 if design != None and len(design) > 20 else 20
         ws.column_dimensions["D"].width = 25
 
         # apply styling to columns in summary
         for idx, cell in enumerate(ws['A']):
             if idx == 0: continue  # skip header
             cell.alignment = Alignment(horizontal='right', vertical='center')
+            cell.font = Font(bold=True)
 
         for cell in ws['B']:
             cell.alignment = Alignment(horizontal='center', vertical='center')
@@ -594,8 +607,7 @@ for filename in os.listdir(input_path):
             ws.row_dimensions[2].height = 50
 
             # add ensembl link to transcript columns
-            #
-            def link_transcripts(column:str) -> None:
+            def link_transcript(column:str) -> None:
                 column_letter: str = openpyxl.utils.cell.get_column_letter(column)
                 for cell in ws[f'{column_letter}3:{column_letter}{ws.max_row}']:
                     cell0 = cell[0]
@@ -604,9 +616,9 @@ for filename in os.listdir(input_path):
 
             for cell in ws['2']:
                 if cell.value == 'TRANSCRIPT_A':
-                    link_transcripts(cell.column)
+                    link_transcript(cell.column)
                 if cell.value == 'TRANSCRIPT_B':
-                    link_transcripts(cell.column)
+                    link_transcript(cell.column)
 
 
         #loop over coverage worksheets to change layout

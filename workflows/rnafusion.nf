@@ -47,6 +47,7 @@ workflow RNAFUSION {
                 getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"),
                 getFilesAndCheck(dir, "arriba/*.fusions.tsv"),
                 meta.run,
+                meta.design
             ]
         }
 
