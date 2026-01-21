@@ -593,6 +593,22 @@ for filename in os.listdir(input_path):
 
             ws.row_dimensions[2].height = 50
 
+            # add ensembl link to transcript columns
+            #
+            def link_transcripts(column:str) -> None:
+                column_letter: str = openpyxl.utils.cell.get_column_letter(column)
+                for cell in ws[f'{column_letter}3:{column_letter}{ws.max_row}']:
+                    cell0 = cell[0]
+                    if cell0.value not in ["", "nan"]:
+                        cell0.hyperlink = f"https://www.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={cell0.value}"
+
+            for cell in ws['2']:
+                if cell.value == 'TRANSCRIPT_A':
+                    link_transcripts(cell.column)
+                if cell.value == 'TRANSCRIPT_B':
+                    link_transcripts(cell.column)
+
+
         #loop over coverage worksheets to change layout
         for worksheet in [coverage_ref_sheet, coverage_all_sheet]:
             ws = workbook[worksheet]
