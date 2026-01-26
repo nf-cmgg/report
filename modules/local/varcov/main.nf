@@ -8,7 +8,7 @@ process VARCOV {
         : 'community.wave.seqera.io/library/samtools_pip_cyvcf2_openpyxl_pandas:5f705f003fd04932'}"
 
     input:
-    tuple val(meta), path(vcfs, stageAs: 'vcfs/*'), path(stringtie, stageAs: 'stringtie/*'), path(fusionreport, stageAs: 'fusionreport/*'), path(ctat, stageAs: 'ctat/*'), path(multiqc, stageAs: 'multiqc/*'), path(bams, stageAs: 'bams/*'), path(bais, stageAs: 'bams/*'), val(run_nr)
+    tuple val(meta), path(vcfs, stageAs: 'vcfs/*'), path(stringtie, stageAs: 'stringtie/*'), path(fusionreport, stageAs: 'fusionreport/*'), path(ctat, stageAs: 'ctat/*'), path(multiqc, stageAs: 'multiqc/*'), path(bams, stageAs: 'bams/*'), path(bais, stageAs: 'bams/*'), path(arriba, stageAs: 'arriba/*'), val(run_nr), val(design)
     path genes
     path fusions
     path mane
@@ -26,6 +26,7 @@ process VARCOV {
     """
     rnafusion_varcov.py \\
         --input vcfs \\
+        --arriba arriba \\
         --stringtie stringtie \\
         --fusionreport fusionreport \\
         --ctat ctat \\
@@ -36,7 +37,8 @@ process VARCOV {
         --fusion_whitelist ${fusions} \\
         --mane ${mane} \\
         --run ${run_nr} \\
-        --pipeline_version ${pipeline_version}
+        --pipeline_version ${pipeline_version} \\
+        --design '${design}'
     """
 
     stub:

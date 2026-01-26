@@ -45,7 +45,9 @@ workflow RNAFUSION {
                 getFilesAndCheck(dir, "multiqc/multiqc_data/multiqc_general_stats.txt"),
                 getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam"),
                 getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"),
+                getFilesAndCheck(dir, "arriba/*.fusions.tsv"),
                 meta.run,
+                meta.design
             ]
         }
 

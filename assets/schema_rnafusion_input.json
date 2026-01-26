@@ -27,6 +27,11 @@
                         "pattern": "^\\S+\\.tar.gz$"
                     }
                 ]
+            },
+            "design": {
+                "type": "string",
+                "meta": ["design"],
+                "default": "PanCancer (175 genes)"
             }
         },
         "required": ["run", "outdir"]

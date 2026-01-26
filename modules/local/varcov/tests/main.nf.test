@@ -21,11 +21,12 @@ nextflow_process{
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/multiqc/multiqc_data/multiqc_general_stats.txt", checkIfExists:true)],
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/star/test.Aligned.sortedByCoord.out.bam", checkIfExists:true)],
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/star/test.Aligned.sortedByCoord.out.bam.bai", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/arriba/test.arriba.fusions.tsv", checkIfExists:true)],
                     'test_run'
                 ]
                 input[1] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt', checkIfExists:true)
                 input[2] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt', checkIfExists:true)
-                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/MANE_all_noVer.csv', checkIfExists:true)
+                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/2026_01_20_MANE.csv', checkIfExists:true)
                 input[4] = 'test_version'
                 """
             }
@@ -62,11 +63,12 @@ nextflow_process{
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/multiqc/multiqc_data/multiqc_general_stats.txt", checkIfExists:true)],
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/star/test.Aligned.sortedByCoord.out.bam", checkIfExists:true)],
                     [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/star/test.Aligned.sortedByCoord.out.bam.bai", checkIfExists:true)],
+                    [file("https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion/arriba/test.arriba.fusions.tsv", checkIfExists:true)],
                     'test_run'
                 ]
                 input[1] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt', checkIfExists:true)
                 input[2] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt', checkIfExists:true)
-                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/MANE_all_noVer.csv', checkIfExists:true)
+                input[3] = file('https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/2026_01_20_MANE.csv', checkIfExists:true)
                 input[4] = 'test_version'
                 """
             }

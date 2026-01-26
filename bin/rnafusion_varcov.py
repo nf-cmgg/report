@@ -23,8 +23,9 @@ import os
 import pandas as pd
 import openpyxl
 import cyvcf2
-from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils.cell import get_column_letter
+from openpyxl.utils import get_column_letter
 
 ###############
 ## constants ##
@@ -66,6 +67,9 @@ VCF_COLUMNS = [
     "FORMAT"
 ]
 
+SCORE_THRESHOLD: float = 0.18
+TOOL_HITS_THRESHOLD: int = 1
+
 ########################
 ## defining functions ##
 ########################
@@ -101,7 +105,8 @@ def vcf_to_df(vcf):
     return df
 
 # Adds chr to chromosomes missing it
-def update_chroms(chrom:str) -> str:
+def update_chroms(chrom:any) -> str:
+    if pd.isna(chrom): return chrom
     str_chrom = str(chrom)
     return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
@@ -137,6 +142,43 @@ def split_string(row, column_name, prefix):
     # convert the dictionary to a Series and add it to the row
     return pd.concat([row, pd.Series(data, dtype = 'object')])
 
+def create_cell_button(ws, cell_ref, text, link=None,
+                        fill='00E8F4F8', font_color='000000',
+                        border_color='00B3E5FC', border_style='medium', bold=True):
+    c = ws[cell_ref]
+    c.value = text
+    c.font = Font(color=font_color, bold=bold)
+    c.alignment = Alignment(horizontal='center', vertical='center')
+    c.fill = PatternFill('solid', fgColor=fill)
+
+    # Medium border for “button” frame
+    side = Side(style=border_style, color=border_color)
+    c.border = Border(left=side, right=side, top=side, bottom=side)
+
+    # Optional hyperlink
+    if link:
+        c.hyperlink = link
+
+    # Tidy sizing for a button feel
+    ws.row_dimensions[c.row].height = 20
+    col_letter = get_column_letter(c.column)
+    ws.column_dimensions[col_letter].width = max(len(text) + 6, 18)
+
+def read_arriba_file(arriba_file:str) -> pd.DataFrame:
+    df = pd.read_csv(arriba_file, sep='\t')
+    df['Fusion'] = df['#gene1'] + "--" + df['gene2']
+    df[['str1gene', 'str1fusion']] = df['strand1(gene/fusion)'].str.split('/', n=1,expand=True)
+    df[['str2gene', 'str2fusion']] = df['strand2(gene/fusion)'].str.split('/', n=1,expand=True)
+    df['ORIENTATION'] = df['str1fusion'] + '/' + df['str2fusion']
+    df['TRANSCRIPT_A'] = df['transcript_id1']
+    df['TRANSCRIPT_B'] = df['transcript_id2']
+    df['FRAME_STATUS'] = df['reading_frame']
+    df[['CHRA', 'POSA']] = df['breakpoint1'].str.split(':', n=1, expand=True)
+    df[['CHRB', 'POSB']] = df['breakpoint2'].str.split(':', n=1, expand=True)
+    df['POSA'] = pd.to_numeric(df['POSA'])
+    df['POSB'] = pd.to_numeric(df['POSB'])
+    df = df[['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'ORIENTATION', 'TRANSCRIPT_A', 'TRANSCRIPT_B', 'FRAME_STATUS']]
+    return df
 
 #############################################
 ## read in arguments and store as variable ##
@@ -155,6 +197,8 @@ parser.add_argument('--fusion_whitelist', metavar='FILE', type=str, help="Path t
 parser.add_argument('--mane', metavar='FILE', type=str, help="Path to a file containing the MANE transcripts for filtering.", required=True)
 parser.add_argument('--run', metavar='STR', type=str, help="Name of the run analysed", required=True)
 parser.add_argument('--pipeline_version', metavar='STR', type=str, help="Version of the reporting pipeline used", required=True)
+parser.add_argument('--arriba', metavar='STR', type=str, help="Path to arriba output directory", required=True)
+parser.add_argument('--design', metavar='STR', type=str, help="TWIST design used in the analysis")
 
 args = parser.parse_args()
 input_path:str = args.input + "/"
@@ -169,6 +213,8 @@ fusions:str = pd.read_csv(args.fusion_whitelist, sep='\t')
 mane:str = pd.read_csv(args.mane)
 run_nr:str = args.run
 pipeline_version:str = args.pipeline_version
+arriba_path:str = args.arriba + "/"
+design:str = args.design
 
 ###############################################################
 ### Loop over .vcf files, extract info and export to report ###
@@ -212,6 +258,8 @@ for filename in os.listdir(input_path):
             raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
         sample_name: str = samples[0]
 
+        print(f"Creating report for sample: {sample_name}")
+
         # clean up data extracted from info
         # Specify the columns to apply the function to
         # Apply the function to your DataFrame
@@ -236,63 +284,63 @@ for filename in os.listdir(input_path):
 
         # split into different df, depending on algorithm
         df_reads_fc = df_reads.apply(split_string, args=('fusioncatcher', 'fc_'), axis=1)
-        if df_reads['arriba'].notna().any():
-            df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
-        if df_reads['starfusion'].notna().any():
-            df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
+        df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
+        df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
 
-        # split into distinct columns so the positions can be reads
-        df_reads_fc['fc_position'] = df_reads_fc['fc_position'].astype(str)
-        df_reads_fc[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_fc['fc_position'].apply(lambda x: pd.Series(x.split(':')))
-        df_reads_fc = df_reads_fc.drop(['CHRA', 'junk', 'junk2'], axis = 1)
-
-        if 'df_reads_ar' in globals():
-            df_reads_ar['ar_position'] = df_reads_ar['ar_position'].astype(str)
-            df_reads_ar[['CHRA', 'POSA', 'CHRB', 'POSB']] = df_reads_ar['ar_position'].apply(lambda x: pd.Series(re.split('[:#]', x)))
-            df_reads_ar = df_reads_ar.drop(['CHRA', 'CHRB'], axis = 1)
-
-        if 'df_reads_sf' in globals():
-            df_reads_sf['sf_position'] = df_reads_sf['sf_position'].astype(str)
-            df_reads_sf[['CHRA', 'POSA', 'junk', 'POSB', 'junk2']] = df_reads_sf['sf_position'].apply(lambda x: pd.Series(x.split(':')))
-            df_reads_sf = df_reads_sf.drop(['CHRA', 'junk', 'junk2'], axis = 1)
+        def define_position(df: pd.DataFrame, column_to_split: str, split_prefix:str, fetch_function: function) -> pd.DataFrame:
+            df = df.apply(split_string, args=(column_to_split, split_prefix + '_'), axis=1)
+            if f"{split_prefix}_position" in df.columns:
+                df[['CHRA', 'POSA', 'CHRB', 'POSB']] = df[f'{split_prefix}_position'][df[f'{split_prefix}_position'].notna()].apply(fetch_function)
+                df.drop(columns=[f'{split_prefix}_position', column_to_split], inplace=True)
+                df["CHRA"] = df["CHRA"].apply(update_chroms)
+                df["CHRB"] = df["CHRB"].apply(update_chroms)
+                return df
+            else:
+                return pd.DataFrame()
 
         # combine fusion df with reads df on 'Fusion' column
         df_clean['Fusion'] = df_clean['GENEA'] + "--" + df_clean['GENEB']
 
-        # merge read info one by one into the overview
-        merged_df1 = pd.merge(df_clean, df_reads_fc, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        merged_df1["CHRA"] = merged_df1["CHRA"].apply(update_chroms)
-        merged_df1["CHRB"] = merged_df1["CHRB"].apply(update_chroms)
+        merged_df = df_clean
+        df_reads_fc = define_position(df_reads, 'fusioncatcher', 'fc', lambda x: pd.Series(re.split(r':\+?-?#?', x)[:-1]))
+        if not df_reads_fc.empty:
+            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
-        if 'df_reads_ar' in globals():
-            merged_df2 = pd.merge(df_clean, df_reads_ar, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        else:
-            merged_df2 = pd.DataFrame()
+        df_reads_ar = define_position(df_reads, 'arriba', 'ar', lambda x: pd.Series(re.split(r'[:#]', x)))
+        if not df_reads_ar.empty:
+            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
-        if 'df_reads_sf' in globals():
-            merged_df3 = pd.merge(df_clean, df_reads_sf, on = ['Fusion', 'POSA', 'POSB'], how = 'left')
-        else:
-            merged_df3 = pd.DataFrame()
+        df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':-?#?', x)[:-1]))
+        if not df_reads_sf.empty:
+            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
-        # concatenate the merged df
-        merged_df = pd.concat([merged_df1, merged_df2, merged_df3], axis = 1)
+        # drop original fusioncatcher, arriba and starfusion columns
+        merged_df = merged_df.drop(merged_df.filter(regex='^(fusioncatcher|arriba|starfusion).*$').columns, axis = 1)
 
         # drop duplicate columns
         merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
 
-        # drop original fusioncatcher, arribe and starfusion columns
-        merged_df = merged_df.drop(['fusioncatcher', 'arriba', 'starfusion'], axis = 1)
-
         # set certain columns to numerical
-        list_numerical = ["POSA", "POSB", 'fc_longest_anchor', 'fc_common_mapping_reads', 'fc_spanning_pairs',
-                          'fc_spanning_unique_reads', 'ar_coverage1', 'ar_coverage2', 'ar_discordant_mates', 'ar_split_reads1',
-                          'ar_split_reads2', 'sf_ffmp', 'sf_junction_reads', 'sf_spanning_reads']
-
-        for column in list_numerical:
-            merged_df[column] = pd.to_numeric(merged_df[column], errors = 'coerce')
+        present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
+            'fc_common_mapping_reads', 'fc_spanning_pairs','fc_spanning_unique_reads', 'ar_coverage1',
+            'ar_coverage2', 'ar_discordant_mates', 'ar_split_reads1', 'ar_split_reads2', 'sf_ffmp',
+            'sf_junction_reads', 'sf_spanning_reads']))
+        for column in present_columns_numerical:
+            merged_df[column] = pd.to_numeric(merged_df[column])
 
         # limit sf_ffmp to one decimal
-        merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
+        if 'sf_ffmp' in merged_df.columns:
+            merged_df['sf_ffmp'] = round(merged_df['sf_ffmp'], 1)
+
+        # add missing annotation data
+        ## arriba check
+        arriba_nan_df: pd.DataFrame = merged_df[merged_df['FOUND_IN'].str.contains('arriba')]
+        arriba_nan_df = arriba_nan_df[(arriba_nan_df["TRANSCRIPT_A"] == 'nan') | (arriba_nan_df["TRANSCRIPT_B"] == 'nan')]
+        if not arriba_nan_df.empty:
+            arriba_df = read_arriba_file(os.path.join(arriba_path + basename + ".arriba.fusions.tsv"))
+            arriba_indexed = arriba_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
+            merged_indexed = merged_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
+            merged_df = arriba_indexed.combine_first(merged_indexed).reset_index()
 
         # subset the dataframe to only contain relevant columns
         relevant_columns: list[str] = [
@@ -311,35 +359,16 @@ for filename in os.listdir(input_path):
             "EXON_NUMBER_A",
             "EXON_NUMBER_B",
             "TRANSCRIPT_A",
-            "TRANSCRIPT_B",
-            "fc_common_mapping_reads",
-            "fc_fusion_type",
-            "fc_longest_anchor",
-            "fc_position",
-            "fc_spanning_pairs",
-            "fc_spanning_unique_reads"
+            "TRANSCRIPT_B"
         ]
 
-        if 'df_reads_ar' in globals():
-            relevant_columns.extend([
-                "ar_confidence",
-                "ar_coverage1",
-                "ar_coverage2",
-                "ar_discordant_mates",
-                "ar_position",
-                "ar_reading-frame",
-                "ar_split_reads1",
-                "ar_split_reads2",
-                "ar_type"
-            ])
+        def starts_with_list(string:str, prefixes:list[str]) -> bool:
+            return any(string.startswith(prefix) for prefix in prefixes)
 
-        if 'df_reads_sf' in globals():
-            relevant_columns.extend([
-                "sf_ffmp",
-                "sf_junction_reads",
-                "sf_position",
-                "sf_spanning_reads"
-            ])
+        tool_specific_columns: list[str] = [column for column in merged_df.columns if starts_with_list(column, ['fc_', 'ar_', 'sf_'])]
+
+        relevant_columns.extend(tool_specific_columns)
+
         df_filt = merged_df[relevant_columns]
 
         # sort on score
@@ -355,14 +384,16 @@ for filename in os.listdir(input_path):
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
 
+        df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
+
         # filter base on score and number of callers, both conditions have to be true
-        df_final = df_filt[(df_filt['SCORE'] > 0.18) & (df_filt['TOOL_HITS'] > 1)]
+        df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
 
         # ALTERNATIVE: either one of the two conditions is true: gives too many hits
         # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
 
         # limit filtered to versioned MANE transcript only
-        df_MANE = mane['MANE'].astype(str) + "." + mane['Version'].astype(str)
+        df_MANE = mane['Transcript stable ID version'].astype(str)
         df_final_MANE = df_final[df_final['TRANSCRIPT_A'].apply(lambda x: any(i in x for i in df_MANE)) & df_final['TRANSCRIPT_B'].apply(lambda x: any(i in x for i in df_MANE))]
 
         #df_final_MANE = df_final[df_final['TRANSCRIPT_A'].isin(df_MANE) | df_final['TRANSCRIPT_B'].isin(df_MANE)]
@@ -423,6 +454,7 @@ for filename in os.listdir(input_path):
         column_to_move = splicing.pop('variant_name')
         splicing.insert(0, 'variant_name', column_to_move)
 
+        ctat_variants_found: bool = splicing['variant_name'].count()
 
         ###############
         ### QC data ###
@@ -449,15 +481,26 @@ for filename in os.listdir(input_path):
 
         excel_path: str = f"{output_dir}/{sample_name}.xlsx"
 
+        # Sheet names
+        fusions_filt_sheet = "fusions_filt"
+        fusions_filt_MANE_sheet = "fusions_filt_MANE"
+        fusions_specific_sheet = "fusions_specific"
+        fusions_all_sheet = "fusions_all"
+        splicing_sheet = "CTAT_splicing"
+        coverage_ref_sheet = "coverage_ref"
+        coverage_all_sheet = "coverage_all"
+        qc_sheet = "QC"
+        summary_sheet = "Summary"
+
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-            df_final.to_excel(writer, index=False, sheet_name="fusions_filt")
-            df_final_MANE.to_excel(writer, index = False, sheet_name = "fusions_filt_MANE")
-            df_fusions.to_excel(writer, index= False, sheet_name="fusions_specific")
-            merged_df.to_excel(writer, index=False, sheet_name="fusions_all")
-            splicing.to_excel(writer, index=False, sheet_name = "CTAT splicing")
-            ref_genes_expr.to_excel(writer, index= False, sheet_name="coverage_ref")
-            genes_expr.to_excel(writer, index=False, sheet_name="coverage_all")
-            qc_filt.to_excel(writer, index=False, sheet_name="QC")
+            df_final.to_excel(writer, index=False, sheet_name=fusions_filt_sheet)
+            df_final_MANE.to_excel(writer, index = False, sheet_name = fusions_filt_MANE_sheet)
+            df_fusions.to_excel(writer, index= False, sheet_name=fusions_specific_sheet)
+            merged_df.to_excel(writer, index=False, sheet_name=fusions_all_sheet)
+            splicing.to_excel(writer, index=False, sheet_name = splicing_sheet)
+            ref_genes_expr.to_excel(writer, index= False, sheet_name=coverage_ref_sheet)
+            genes_expr.to_excel(writer, index=False, sheet_name=coverage_all_sheet)
+            qc_filt.to_excel(writer, index=False, sheet_name=qc_sheet)
 
 
         ###############################
@@ -467,38 +510,77 @@ for filename in os.listdir(input_path):
         # open report file
         workbook = openpyxl.load_workbook(excel_path)
 
+        # create a summary sheet
+        workbook.create_sheet(title=summary_sheet, index=0)
+        ws = workbook[summary_sheet]
+        ws['A1'] = f"Summary for {basename}"
+        ws['A1'].font = Font(size = 14, bold = True)
+        ws['A1'].fill = PatternFill("solid", fgColor='00FFCC99')
+
+        ws['A3'] = "Filtered fusions found:"
+        ws['B3'] = df_final.shape[0]
+        create_cell_button(ws, 'C3', 'Go to data', link=f"#{fusions_filt_sheet}!A1")
+
+        ws['A4'] = "Filtered fusion present in MANE transcripts:"
+        ws['B4'] = df_final_MANE.shape[0]
+        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}!A1")
+
+        ws['A5'] = "Fusions in whitelist found:"
+        ws['B5'] = df_fusions.shape[0]
+        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_specific_sheet}!A1")
+
+        ws['A6'] = "Total fusions found:"
+        ws['B6'] = merged_df.shape[0]
+        create_cell_button(ws, 'C6', 'Go to data', link=f"#{fusions_all_sheet}!A1")
+
+        ws['A7'] = 'Splice sites found:'
+        ws['B7'] = splicing.shape[0]
+        create_cell_button(ws, 'C7', 'Go to data', link=f"#{splicing_sheet}!A1")
+        ws['D7'] = f' {ctat_variants_found} CTAT variant{"s" if ctat_variants_found != 1 else ""} found'
+        if ctat_variants_found > 0:
+            ws['D7'].font = Font(color='00FF0000', bold=True)
+
+        ws['A9'] = "Coverage analysis of control genes:"
+        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_ref_sheet}!A1")
+
+        ws['A10'] = "Coverage analysis of all targeted genes:"
+        create_cell_button(ws, 'B10', 'Go to data', link=f"#{coverage_all_sheet}!A1")
+
+        ws['A11'] = "QC metrics:"
+        create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}!A1")
+
+        ws['A13'] = "Patient:"
+        ws['A14'] = "RNA-nr:"
+        ws['B14'] = basename
+        ws['A15'] = "Date of birth:"
+        ws['A16'] = "TWIST design:"
+        ws['B16'] = design if design != None else "?"
+        ws['A17'] = "Sequencing run:"
+        ws['B17'] = run_nr
+
+        ws.column_dimensions["A"].width = 40
+        ws.column_dimensions["B"].width = len(design) + 5 if design != None and len(design) > 20 else 20
+        ws.column_dimensions["D"].width = 25
+
+        # apply styling to columns in summary
+        for idx, cell in enumerate(ws['A']):
+            if idx == 0: continue  # skip header
+            cell.alignment = Alignment(horizontal='right', vertical='center')
+            cell.font = Font(bold=True)
+
+        for cell in ws['B']:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        for cell in ws['D']:
+            cell.alignment = Alignment(horizontal='left', vertical='center')
+
         # modify fusion worksheets
-        for worksheet in ["fusions_all", "fusions_filt", "fusions_filt_MANE", "fusions_specific"]:
+        for worksheet in [fusions_all_sheet, fusions_filt_sheet, fusions_filt_MANE_sheet, fusions_specific_sheet]:
             ws = workbook[worksheet]
 
             # insert sample name in new empty row and add hyperlink to visualisation files
             ws.insert_rows(1)
             ws['A1'] = "fusions " + basename
-
-            # TODO: Nextflow -> Find another way to make this work
-            # # format links
-            # link_arriba = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/arriba_visualisation/" + basename + "_combined_fusions_arriba_visualisation.pdf"
-
-            # link_fusioninspector = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/fusioninspector/" + basename + ".fusion_inspector_web.html"
-
-            # # check full path to .bam once on server!
-            # link_igv = "http://localhost:60151/load?file=" + bam_path + "/" + basename + ".bam&genome=hg38"
-
-            # # change layout so it is recognized as hyperlink
-            # # links not functional so far (Excel removes a / after fs, to change once on final server)
-            # ws['D1'].hyperlink = link_arriba
-            # ws['D1'].value = "Arriba visualisation"
-            # ws['D1'].font = Font(color="0000EE", underline="single")
-
-            # ws['F1'].hyperlink = link_fusioninspector
-            # ws['F1'].value = "FusionInspector"
-            # ws['F1'].font = Font(color="0000EE", underline="single")
-
-            # ws['H1'].hyperlink = link_igv
-            # ws['H1'].value = "IGV visualisation"
-            # ws['H1'].font = Font(color="0000EE", underline="single")
 
             # change layout
             c = ws['A1']
@@ -524,27 +606,23 @@ for filename in os.listdir(input_path):
 
             ws.row_dimensions[2].height = 50
 
-        # TODO: Nextflow -> Find another way to make this work
-        # # add extra hyperlinks to the worksheets that are useful (if needed for fusions_all, columns have to be changed)
-        # for worksheet in ["fusions_filt", "fusions_filt_MANE", "fusions_specific"]:
-        #     ws = workbook[worksheet]
+            # add ensembl link to transcript columns
+            def link_transcript(column:str) -> None:
+                column_letter: str = openpyxl.utils.cell.get_column_letter(column)
+                for cell in ws[f'{column_letter}3:{column_letter}{ws.max_row}']:
+                    cell0 = cell[0]
+                    if cell0.value not in ["", "nan"]:
+                        cell0.hyperlink = f"https://www.ensembl.org/Homo_sapiens/Transcript/Summary?db=core;t={cell0.value}"
 
-        #     # individual links to positions of fusions (added as links in columns H and I)
-        #     for row in ws.iter_rows(min_row=3):
-        #         cell_B = row[1]
-        #         cell_H = row[7]
-
-        #         bp_link = f"http://localhost:60151/goto?locus=chr{cell_B.value}:{cell_H.value}"
-        #         cell_H.hyperlink = bp_link
-
-        #         cell_C = row[2]
-        #         cell_I = row[8]
-        #         bp_link = f"http://localhost:60151/goto?locus=chr{cell_C.value}:{cell_I.value}"
-        #         cell_I.hyperlink = bp_link
+            for cell in ws['2']:
+                if cell.value == 'TRANSCRIPT_A':
+                    link_transcript(cell.column)
+                if cell.value == 'TRANSCRIPT_B':
+                    link_transcript(cell.column)
 
 
         #loop over coverage worksheets to change layout
-        for worksheet in ["coverage_ref", "coverage_all"]:
+        for worksheet in [coverage_ref_sheet, coverage_all_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
@@ -563,26 +641,17 @@ for filename in os.listdir(input_path):
             ws.column_dimensions["A"].width = 20
 
         # add DUX4 data to coverage file
-        ws = workbook["coverage_all"]
+        ws = workbook[coverage_all_sheet]
 
         ws['J26'] = DUX4_reads + " filtered reads"
 
         # change layout of splicing worksheet
-        for worksheet in ["CTAT splicing"]:
+        for worksheet in [splicing_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
             ws.insert_rows(1)
             ws['A1']= "CTAT splicing " + basename
-
-            # TODO: Nextflow -> Find another way to make this work
-            # link_splicing = "https://login.hpc.ugent.be/pun/sys/dashboard/files/fs//data/gent/vo/000/gvo00082/research/LabMDG/RNASeq/" + \
-            #     run_nr + "/output/ctat_splicing_arriba/" + basename + ".ctat-splicing.igv.html"
-
-            # # links not functional so far (Excel removes a / after fs, to change once on final server)
-            # ws['D1'].hyperlink = link_splicing
-            # ws['D1'].value = "CTAT IGV"
-            # ws['D1'].font = Font(color="0000EE", underline="single")
 
             # change layout
             c = ws['A1']
@@ -598,7 +667,7 @@ for filename in os.listdir(input_path):
             ws.column_dimensions["H"].width = 40
 
         # change layout of QC worksheet
-        for worksheet in ["QC"]:
+        for worksheet in [qc_sheet]:
             ws = workbook[worksheet]
 
             # add new line and add sample name
@@ -606,7 +675,7 @@ for filename in os.listdir(input_path):
             ws['A1']= "QC " + basename
 
             # add script version for logging, to be replaced in the future
-            ws['D1'] = "nf-cmgg/report version: " + pipeline_version
+            ws['E1'] = "nf-cmgg/report version: " + pipeline_version
 
             # change layout
             c = ws['A1']
@@ -624,7 +693,12 @@ for filename in os.listdir(input_path):
 
             ws.row_dimensions[2].height = 100
 
+        # add back to summary button on all sheets except for summary
+        for sheet_name in workbook.sheetnames:
+            if sheet_name != summary_sheet:
+                ws = workbook[sheet_name]
+                create_cell_button(ws, 'C1', 'Back to summary', link=f"#{summary_sheet}!A1", border_style='thin', border_color='000000')
+
         # save file
         workbook.save(excel_path)
 
-# remove unzipped .vcf files again / not necessary if zipped files have been read
