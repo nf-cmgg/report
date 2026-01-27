@@ -97,6 +97,8 @@ def vcf_to_df(vcf):
         var_dict["FORMAT"] = str(variant.FORMAT)
         for column in VCF_INFO_COLUMNS:
             var_dict[column] = variant.INFO.get(column, None)
+        var_dict['CHRA'] = update_chroms(var_dict['CHRA'])
+        var_dict['CHRB'] = update_chroms(var_dict['CHRB'])
         processed_variants.append(var_dict)
     df = pd.DataFrame(processed_variants)
     if len(df.index) == 0:
@@ -175,6 +177,8 @@ def read_arriba_file(arriba_file:str) -> pd.DataFrame:
     df['FRAME_STATUS'] = df['reading_frame']
     df[['CHRA', 'POSA']] = df['breakpoint1'].str.split(':', n=1, expand=True)
     df[['CHRB', 'POSB']] = df['breakpoint2'].str.split(':', n=1, expand=True)
+    df['CHRA'] = df['CHRA'].apply(update_chroms)
+    df['CHRB'] = df['CHRB'].apply(update_chroms)
     df['POSA'] = pd.to_numeric(df['POSA'])
     df['POSB'] = pd.to_numeric(df['POSB'])
     df = df[['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'ORIENTATION', 'TRANSCRIPT_A', 'TRANSCRIPT_B', 'FRAME_STATUS']]
