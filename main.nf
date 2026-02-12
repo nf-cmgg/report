@@ -48,8 +48,6 @@ workflow {
     // Run reporting flows
     //
 
-    def ch_versions = channel.empty()
-
     def out_targeted_hotcount = channel.empty()
     if(params.targeted.input) {
         def required_parameters = ['fasta', 'queries_dir']
@@ -65,7 +63,6 @@ workflow {
             targeted_params.queries_dir
         )
         out_targeted_hotcount = TARGETED.out.hotcount
-        ch_versions = ch_versions.mix(TARGETED.out.versions)
     }
 
     def out_rnafusion_excels = channel.empty()
@@ -87,7 +84,6 @@ workflow {
             workflow.manifest.version
         )
         out_rnafusion_excels = RNAFUSION.out.excels
-        ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
     def out_pacvar_repeat_excels = channel.empty()
@@ -121,7 +117,7 @@ workflow {
             "${process}:\n${tool_versions.join('\n')}"
         }
 
-    softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
+    softwareVersionsToYAML(topic_versions.versions_file)
         .mix(topic_versions_string)
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",

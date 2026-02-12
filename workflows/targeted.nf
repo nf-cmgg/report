@@ -12,8 +12,6 @@ workflow TARGETED {
     queries
 
     main:
-    def ch_versions = channel.empty()
-
     SAMTOOLS_VIEW(
         ch_samplesheet,
         fasta.map { meta, fa -> tuple(meta, fa, [])},
@@ -60,5 +58,4 @@ workflow TARGETED {
 
     emit:
     hotcount = HOTCOUNT.out.counts
-    versions = ch_versions
 }
