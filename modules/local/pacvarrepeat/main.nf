@@ -12,15 +12,15 @@ process PACVAR_REPEAT {
 
     output:
     tuple val(meta), path("*.xlsx"), emit: excels
-
-    when:
-    task.ext.when == null || task.ext.when
+    tuple val("${task.process}"), val('python'), eval("python --version 2>&1 | sed 's/^Python //'"), topic: versions, emit: versions_python
+    tuple val("${task.process}"), val('pandas'), eval("pip freeze | grep pandas | sed 's/pandas==//'"), topic: versions, emit: versions_pandas
+    tuple val("${task.process}"), val('openpyxl'), eval("pip freeze | grep openpyxl | sed 's/openpyxl==//'"), topic: versions, emit: versions_openpyxl
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    python3 ${projectDir}/bin/pacvar_repeat_xlsx_report.py \\
+    pacvar_repeat_xlsx_report.py \\
         --sample_name ${prefix} \\
         --vcf_file ${vcf}
     """

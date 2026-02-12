@@ -12,33 +12,27 @@ workflow TARGETED {
     queries
 
     main:
-    def ch_versions = Channel.empty()
-
     SAMTOOLS_VIEW(
         ch_samplesheet,
-        fasta,
+        fasta.map { meta, fa -> tuple(meta, fa, [])},
         [],
         [],
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_VIEW.out.versions.first())
 
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
         fasta,
         ""
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
 
     SAMTOOLS_FASTQ(
         SAMTOOLS_SORT.out.bam,
         false,
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_FASTQ.out.versions.first())
 
     PEAR(
         SAMTOOLS_FASTQ.out.fastq
     )
-    ch_versions = ch_versions.mix(PEAR.out.versions.first())
     ch_merge_input = PEAR.out.assembled.join(SAMTOOLS_FASTQ.out.singleton, failOnDuplicate: true, failOnMismatch: true)
 
     MERGE_READS(
@@ -64,5 +58,4 @@ workflow TARGETED {
 
     emit:
     hotcount = HOTCOUNT.out.counts
-    versions = ch_versions
 }

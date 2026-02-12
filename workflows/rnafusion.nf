@@ -23,15 +23,12 @@ workflow RNAFUSION {
 
     main:
 
-    def ch_versions = Channel.empty()
-
     def ch_input_branch = ch_samplesheet.branch { _meta, dir ->
         tarzipped: dir.extension == "gz"
         dir: true
     }
 
     UNTAR(ch_input_branch.tarzipped)
-    ch_versions = ch_versions.mix(UNTAR.out.versions.first())
 
     def ch_varcov_input = ch_input_branch.dir
         .mix(UNTAR.out.untar)
@@ -61,7 +58,6 @@ workflow RNAFUSION {
 
     emit:
     excels   = VARCOV.out.output // channel: [ val(meta), path(excel) ]
-    versions = ch_versions // channel: [ path(versions.yml) ]
 }
 
 /*
