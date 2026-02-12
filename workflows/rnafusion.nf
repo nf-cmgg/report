@@ -23,7 +23,7 @@ workflow RNAFUSION {
 
     main:
 
-    def ch_versions = Channel.empty()
+    def ch_versions = channel.empty()
 
     def ch_input_branch = ch_samplesheet.branch { _meta, dir ->
         tarzipped: dir.extension == "gz"
@@ -31,7 +31,6 @@ workflow RNAFUSION {
     }
 
     UNTAR(ch_input_branch.tarzipped)
-    ch_versions = ch_versions.mix(UNTAR.out.versions.first())
 
     def ch_varcov_input = ch_input_branch.dir
         .mix(UNTAR.out.untar)

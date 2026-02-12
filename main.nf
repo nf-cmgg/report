@@ -48,16 +48,16 @@ workflow {
     // Run reporting flows
     //
 
-    def ch_versions = Channel.empty()
+    def ch_versions = channel.empty()
 
-    def out_targeted_hotcount = Channel.empty()
+    def out_targeted_hotcount = channel.empty()
     if(params.targeted.input) {
         def required_parameters = ['fasta', 'queries_dir']
         check_required_params('targeted', required_parameters)
         def targeted_params = params.targeted
 
-        def ch_samplesheet = Channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
-        def fasta = Channel.value([[id:'reference'], file(targeted_params.fasta)])
+        def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
+        def fasta = channel.value([[id:'reference'], file(targeted_params.fasta)])
 
         TARGETED(
             ch_samplesheet,
@@ -68,16 +68,16 @@ workflow {
         ch_versions = ch_versions.mix(TARGETED.out.versions)
     }
 
-    def out_rnafusion_excels = Channel.empty()
+    def out_rnafusion_excels = channel.empty()
     if(params.rnafusion.input) {
         def required_parameters = ['genes', 'fusions', 'mane']
         check_required_params('rnafusion', required_parameters)
         def rnafusion_params = params.rnafusion
 
-        def ch_samplesheet = Channel.fromList(samplesheetToList(rnafusion_params.input, "${projectDir}/assets/schema_rnafusion_input.json"))
-        def genes = Channel.value(file(rnafusion_params.genes))
-        def fusions = Channel.value(file(rnafusion_params.fusions))
-        def mane = Channel.value(file(rnafusion_params.mane))
+        def ch_samplesheet = channel.fromList(samplesheetToList(rnafusion_params.input, "${projectDir}/assets/schema_rnafusion_input.json"))
+        def genes = channel.value(file(rnafusion_params.genes))
+        def fusions = channel.value(file(rnafusion_params.fusions))
+        def mane = channel.value(file(rnafusion_params.mane))
 
         RNAFUSION(
             ch_samplesheet,
@@ -90,11 +90,11 @@ workflow {
         ch_versions = ch_versions.mix(RNAFUSION.out.versions)
     }
 
-    def out_pacvar_repeat_excels = Channel.empty()
+    def out_pacvar_repeat_excels = channel.empty()
     if(params.pacvar_repeat.input) {
         def pacvar_repeat_params = params.pacvar_repeat
 
-        def ch_samplesheet = Channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
+        def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
 
         PACVAR_REPEAT(ch_samplesheet)
         out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
@@ -103,7 +103,7 @@ workflow {
     //
     // Collate and save software versions
     //
-    def topic_versions = Channel.topic("versions")
+    def topic_versions = channel.topic("versions")
         .distinct()
         .branch { entry ->
             versions_file: entry instanceof Path

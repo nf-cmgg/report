@@ -13,14 +13,11 @@ process PACVAR_REPEAT {
     output:
     tuple val(meta), path("*.xlsx"), emit: excels
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    python3 ${projectDir}/bin/pacvar_repeat_xlsx_report.py \\
+    pacvar_repeat_xlsx_report.py \\
         --sample_name ${prefix} \\
         --vcf_file ${vcf}
     """
