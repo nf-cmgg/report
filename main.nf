@@ -53,7 +53,7 @@ workflow {
     def out_targeted_hotcount = channel.empty()
     if(params.targeted.input) {
         def required_parameters = ['fasta', 'queries_dir']
-        check_required_params('targeted', required_parameters)
+        check_required_params(params.get('targeted'), 'targeted', required_parameters)
         def targeted_params = params.targeted
 
         def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
@@ -71,7 +71,7 @@ workflow {
     def out_rnafusion_excels = channel.empty()
     if(params.rnafusion.input) {
         def required_parameters = ['genes', 'fusions', 'mane']
-        check_required_params('rnafusion', required_parameters)
+        check_required_params(params.get('rnafusion'), 'rnafusion', required_parameters)
         def rnafusion_params = params.rnafusion
 
         def ch_samplesheet = channel.fromList(samplesheetToList(rnafusion_params.input, "${projectDir}/assets/schema_rnafusion_input.json"))
@@ -92,8 +92,9 @@ workflow {
 
     def out_pacvar_repeat_excels = channel.empty()
     if(params.pacvar_repeat.input) {
+        def required_parameters = ['input']
+        check_required_params(params.get('pacvar_repeat'), 'pacvar_repeat', required_parameters)
         def pacvar_repeat_params = params.pacvar_repeat
-
         def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
 
         PACVAR_REPEAT(ch_samplesheet)
@@ -165,7 +166,7 @@ output {
         }
     }
     pacvar_repeat_excels {
-        path { meta, excel ->
+        path { _meta, excel ->
             excel >> "pacvar_repeat/reports/"
         }
     }
@@ -177,8 +178,7 @@ output {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def check_required_params(scope_name, required_params) {
-    def scope_params = params.get(scope_name, null)
+def check_required_params(Map scope_params, String scope_name, List<String> required_params) {
     if (scope_params == null) {
         error "Could not find a parameters scope called '${scope_name}'"
     }
