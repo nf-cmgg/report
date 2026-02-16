@@ -10,6 +10,7 @@ workflow TARGETED {
     ch_samplesheet
     fasta
     queries
+    gene
 
     main:
     SAMTOOLS_VIEW(
@@ -39,7 +40,7 @@ workflow TARGETED {
         ch_merge_input
     )
 
-    def query_list = file("${queries}/*.txt")
+    def query_list = file("${queries}/${gene}/*.txt")
 
     ch_queries = ch_samplesheet.map { meta, _cram, _crai ->
         def query = query_list.find { file -> file.name.startsWith(meta.design) }

@@ -52,8 +52,9 @@ Less common options for the pipeline, typically set in a config file.
 | `pipelines_testdata_base_path` | Base URL or local path to location of pipeline test dataset files                                                                                                                                                                                                                                                                                                                                            | `string`  | https://raw.githubusercontent.com/nf-core/test-datasets/ |          | True   |
 | `trace_report_suffix`          | Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.                                                                                                                                                                                                                                                                                                  | `string`  |                                                          |          | True   |
 
-## Other parameters
+## Targeted parameters
 
 | Parameter     | Description | Type     | Default | Required | Hidden |
 | ------------- | ----------- | -------- | ------- | -------- | ------ |
-| `queries_dir` |             | `string` |         |          |        |
+| `queries_dir` | Directory with variant query files | `string` | `../assets/targeted`  |   yes      |        |
+| `gene` | Genename (e.g. MSH2) | `string` |  | yes       |        |

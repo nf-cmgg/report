@@ -15,7 +15,8 @@
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 params.targeted.fasta       = params.targeted.fasta ?: getGenomeAttribute('fasta')
-params.targeted.queries_dir = "${projectDir}/assets/queries/"
+params.targeted.gene        = params.targeted.gene
+params.targeted.queries_dir = "${projectDir}/assets/targeted/"
 
 include { TARGETED                } from './workflows/targeted'
 include { RNAFUSION               } from './workflows/rnafusion'
@@ -50,7 +51,7 @@ workflow {
 
     def out_targeted_hotcount = channel.empty()
     if(params.targeted.input) {
-        def required_parameters = ['fasta', 'queries_dir']
+        def required_parameters = ['fasta', 'queries_dir', 'gene']
         check_required_params(params.get('targeted'), 'targeted', required_parameters)
         def targeted_params = params.targeted
 
@@ -60,7 +61,8 @@ workflow {
         TARGETED(
             ch_samplesheet,
             fasta,
-            targeted_params.queries_dir
+            targeted_params.queries_dir,
+            targeted_params.gene
         )
         out_targeted_hotcount = TARGETED.out.hotcount
     }
@@ -153,7 +155,7 @@ workflow {
 output {
     targeted_hotcount {
         path { meta, counts ->
-            counts >> "targeted/hotcount/${meta.id}.counts.txt"
+            counts >> "targeted/${params.targeted.gene}/${meta.id}.counts.txt"
         }
     }
     rnafusion_excels {

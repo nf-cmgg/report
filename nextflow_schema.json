@@ -52,6 +52,11 @@
                             "exists": true,
                             "hidden": true
                         },
+                        "gene": {
+                            "type": "string",
+                            "pattern": "^(MSH2)$",
+                            "description": "Gene name of targeted query"
+                        },
                         "fasta": {
                             "type": "string",
                             "format": "file-path",
