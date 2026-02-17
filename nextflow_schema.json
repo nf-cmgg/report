@@ -54,7 +54,7 @@
                         },
                         "gene": {
                             "type": "string",
-                            "pattern": "^(MSH2)$",
+                            "enum": ["MSH2"],
                             "description": "Gene name of targeted query"
                         },
                         "fasta": {
