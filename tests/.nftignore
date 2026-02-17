@@ -1,4 +1,4 @@
 pipeline_info/*.{html,json,txt,yml}
 rnafusion/varcov/**.xlsx
-targeted/hotcount/*.counts.txt
+targeted/**.counts.txt
 pacvar_repeat/reports/*.xlsx
