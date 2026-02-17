@@ -31,14 +31,35 @@ workflow TARGETED {
         false,
     )
 
+    // Combine fastq and singleton before branching
+    ch_fastq_and_singleton = SAMTOOLS_FASTQ.out.fastq
+        .join(SAMTOOLS_FASTQ.out.singleton)
+
+    // Branch based on fastq content (keeping both fastq and singleton together)
+    ch_branched = ch_fastq_and_singleton.branch {
+        non_empty: it[1].any { f -> f.countLines() > 0 }  // it[1] is the fastq files
+        empty: true
+    }
+
+    // Run PEAR only on non-empty fastq files
     PEAR(
-        SAMTOOLS_FASTQ.out.fastq
+        ch_branched.non_empty.map { meta, fastq, singleton -> tuple(meta, fastq) }
     )
-    ch_merge_input = PEAR.out.assembled.join(SAMTOOLS_FASTQ.out.singleton, failOnDuplicate: true, failOnMismatch: true)
+
+    // For non-empty fastq: merge PEAR assembled with singleton from branched output
+    ch_pear_with_singleton = PEAR.out.assembled
+        .join(ch_branched.non_empty.map { meta, fastq, singleton -> tuple(meta, singleton) })
 
     MERGE_READS(
-        ch_merge_input
+        ch_pear_with_singleton
     )
+
+    // For empty fastq: use singleton files directly (skip PEAR and MERGE_READS)
+    ch_singleton_only = ch_branched.empty
+        .map { meta, fastq, singleton -> tuple(meta, singleton) }
+
+    // Combine MERGE_READS output with singleton-only samples
+    ch_final_fastq = MERGE_READS.out.merged.mix(ch_singleton_only)
 
     def query_list = file("${queries}/${gene}/*.txt")
 
@@ -49,7 +70,7 @@ workflow TARGETED {
         }
         tuple(meta, query)
     }
-    ch_hotcount_input = MERGE_READS.out.merged
+    ch_hotcount_input = ch_final_fastq
         .join(ch_queries, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, fastq, query -> tuple(meta, query, fastq) }
 
