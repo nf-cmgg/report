@@ -54,7 +54,7 @@ Less common options for the pipeline, typically set in a config file.
 
 ## Targeted parameters
 
-| Parameter     | Description | Type     | Default | Required | Hidden |
-| ------------- | ----------- | -------- | ------- | -------- | ------ |
-| `queries_dir` | Directory with variant query files | `string` | `../assets/targeted`  |   yes      |        |
-| `gene` | Genename (e.g. MSH2) | `string` |  | yes       |        |
+| Parameter     | Description                        | Type     | Default              | Required | Hidden |
+| ------------- | ---------------------------------- | -------- | -------------------- | -------- | ------ |
+| `queries_dir` | Directory with variant query files | `string` | `../assets/targeted` | yes      |        |
+| `gene`        | Genename (e.g. MSH2)               | `string` |                      | yes      |        |

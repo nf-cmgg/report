@@ -7,17 +7,17 @@
 You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can either be a CSV, TSV, JSON or YAML file.
 
 ```bash
---input '[path to samplesheet file]'
+--targeted.input '[path to samplesheet file of targeted workflow]'
 ```
 
 Example CSV-file:
 
 ```bash
 sample,cram,crai,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
 ```
 
-### Full samplesheet
+### Full samplesheet targeted flow
 
 | Column   | Description                                                                                |
 | -------- | ------------------------------------------------------------------------------------------ |
@@ -26,17 +26,17 @@ CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v
 | `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
 | `design` | MANDATORY - Indicates the sequencing panel or assay used for each sample.                  |
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-cmgg/report --input ./samplesheet.csv --outdir ./results --fasta <path-to-fasta> -profile docker
+nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --outdir ./results --fasta <path-to-fasta> -profile docker,targeted_msh2
 ```
 
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
+This will launch the pipeline with the `docker` and `targeted_msh2` configuration profile. See below for more information about profiles.
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -132,6 +132,8 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow ` 24.03.0-edge` or later).
 - `conda`
   - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
+- `targeted_msh2`
+  - A MSH2 specific configuration profile for the `targeted` workflow.
 
 ### `-resume`
 
