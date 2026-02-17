@@ -15,7 +15,6 @@
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 params.targeted.fasta       = params.targeted.fasta ?: getGenomeAttribute('fasta')
-params.targeted.gene        = params.targeted.gene
 params.targeted.queries_dir = "${projectDir}/assets/targeted/"
 
 include { TARGETED                } from './workflows/targeted'
