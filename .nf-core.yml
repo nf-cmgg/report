@@ -26,10 +26,10 @@ lint:
     - validation.summary.beforeText
     - validation.summary.afterText
     - params.input
-  multiqc_config: false
+  multiqc_config:
+    - report_comment
   schema_params: false
   files_exist:
-    - assets/multiqc_config.yml
     - assets/multiqc_config.yml
     - CODE_OF_CONDUCT.md
     - assets/nf-core-report_logo_light.png
