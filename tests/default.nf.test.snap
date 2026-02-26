@@ -1,7 +1,7 @@
 {
     "-profile test": {
         "content": [
-            12,
+            13,
             {
                 "HOTCOUNT": {
                     "hotcount": 0.0
@@ -63,13 +63,13 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-
+                
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-02-17T14:58:29.502131567"
+        "timestamp": "2026-02-26T17:14:30.923751797"
     }
 }
