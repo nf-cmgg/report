@@ -1,9 +1,9 @@
-include { SAMTOOLS_VIEW  } from '../modules/nf-core/samtools/view/main.nf'
-include { SAMTOOLS_SORT  } from '..//modules/nf-core/samtools/sort/main.nf'
-include { SAMTOOLS_FASTQ } from '..//modules/nf-core/samtools/fastq/main.nf'
-include { PEAR           } from '..//modules/nf-core/pear/main.nf'
-include { MERGE_READS    } from '..//modules/local/mergereads/main.nf'
-include { HOTCOUNT       } from '..//modules/local/hotcount/main.nf'
+include { SAMTOOLS_VIEW             } from '../modules/nf-core/samtools/view/main.nf'
+include { SAMTOOLS_SORT             } from '../modules/nf-core/samtools/sort/main.nf'
+include { SAMTOOLS_FASTQ            } from '../modules/nf-core/samtools/fastq/main.nf'
+include { PEAR                      } from '../modules/nf-core/pear/main.nf'
+include { MERGE_READS               } from '../modules/local/mergereads/main.nf'
+include { HOTCOUNT                  } from '../modules/local/hotcount/main.nf'
 
 workflow TARGETED {
     take:
@@ -13,6 +13,7 @@ workflow TARGETED {
     gene
 
     main:
+
     SAMTOOLS_VIEW(
         ch_samplesheet,
         fasta.map { meta, fa -> tuple(meta, fa, [])},
@@ -78,6 +79,7 @@ workflow TARGETED {
         ch_hotcount_input
     )
 
+
     emit:
-    hotcount = HOTCOUNT.out.counts
+    hotcount            = HOTCOUNT.out.counts
 }
