@@ -13,7 +13,6 @@ workflow TARGETED {
     gene
 
     main:
-    def ch_multiqc_files = channel.empty()
 
     SAMTOOLS_VIEW(
         ch_samplesheet,

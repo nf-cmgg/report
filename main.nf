@@ -24,9 +24,12 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_repo
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { softwareVersionsToYAML  } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { samplesheetToList       } from 'plugin/nf-schema'
+include { paramsSummaryMap        } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc    } from './subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText  } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 // Modules
-include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
+include { MULTIQC                 } from './modules/nf-core/multiqc/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -224,7 +227,6 @@ output {
         path { plots ->
             plots >> "multiqc/multiqc_plots"
         }
-        optional true
     }
 }
 
