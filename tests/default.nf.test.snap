@@ -35,12 +35,24 @@
                 }
             },
             [
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/llms-full.txt",
+                "multiqc/multiqc_data/multiqc.log",
+                "multiqc/multiqc_data/multiqc.parquet",
+                "multiqc/multiqc_data/multiqc_citations.txt",
+                "multiqc/multiqc_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/multiqc_data/multiqc_sources.txt",
+                "multiqc/multiqc_data/multiqc_targeted_MSH2.txt",
+                "multiqc/multiqc_data/targeted_MSH2.txt",
+                "multiqc/multiqc_report.html",
                 "pacvar_repeat",
                 "pacvar_repeat/reports",
                 "pacvar_repeat/reports/sample1A.pacvar_repeat_report.xlsx",
                 "pacvar_repeat/reports/sample2A.pacvar_repeat_report.xlsx",
                 "pipeline_info",
-                "pipeline_info/report_software_versions.yml",
+                "pipeline_info/report_mqc_versions.yml",
                 "rnafusion",
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
@@ -51,7 +63,7 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+
             ]
         ],
         "meta": {

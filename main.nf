@@ -130,7 +130,7 @@ workflow {
     def ch_versions_file = ch_versions_yaml
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name: 'software_versions_mqc_versions.yml',
+            name: 'report_mqc_versions.yml',
             sort: true,
             newLine: true
         )
