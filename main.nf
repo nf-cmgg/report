@@ -25,6 +25,9 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_repo
 include { softwareVersionsToYAML  } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { samplesheetToList       } from 'plugin/nf-schema'
 
+// Modules
+include { MULTIQC                 } from '../modules/nf-core/multiqc/main'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -128,6 +131,43 @@ workflow {
         )
 
     //
+    // Perform multiQC on all QC data
+    //
+
+    def ch_multiqc_config                     = channel.fromPath(
+                                                "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    def ch_multiqc_custom_config              = params.multiqc_config ?
+                                                channel.fromPath(params.multiqc_config, checkIfExists: true) :
+                                                channel.empty()
+    def ch_multiqc_logo                       = params.multiqc_logo ?
+                                                channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+                                                channel.empty()
+
+    def summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    def ch_workflow_summary                   = channel.value(paramsSummaryMultiqc(summary_params))
+    def ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
+                                                file(params.multiqc_methods_description, checkIfExists: true) :
+                                                file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+    def ch_methods_description                = channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+
+    def ch_multiqc_files                      = channel.empty()
+    ch_multiqc_files                          = ch_multiqc_files.mix(
+                                                    ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'),
+                                                    ch_methods_description.collectFile(
+                                                        name: 'methods_description_mqc.yaml',
+                                                        sort: false
+                                                    )
+                                                )
+
+    MULTIQC (
+        ch_multiqc_files.collect(),
+        ch_multiqc_config.toList(),
+        ch_multiqc_custom_config.toList(),
+        ch_multiqc_logo.toList(),
+        [],
+        []
+    )
+    //
     // SUBWORKFLOW: Run completion tasks
     //
     PIPELINE_COMPLETION(
@@ -143,6 +183,9 @@ workflow {
     targeted_hotcount = out_targeted_hotcount
     rnafusion_excels  = out_rnafusion_excels
     pacvar_repeat_excels  = out_pacvar_repeat_excels
+    multiqc_report = MULTIQC.out.report
+    multiqc_data = MULTIQC.out.data
+    multiqc_plots = MULTIQC.out.plots
 }
 
 /*
@@ -166,6 +209,22 @@ output {
         path { _meta, excel ->
             excel >> "pacvar_repeat/reports/"
         }
+    }
+    multiqc_report {
+        path { report ->
+            report >> "multiqc/multiqc_report.html"
+        }
+    }
+    multiqc_data {
+        path { data ->
+            data >> "multiqc/multiqc_data"
+        }
+    }
+    multiqc_plots {
+        path { plots ->
+            plots >> "multiqc/multiqc_plots"
+        }
+        optional true
     }
 }
 

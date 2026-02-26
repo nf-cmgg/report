@@ -4,21 +4,27 @@
 
 This document describes the output produced by the pipeline.
 
-The directories listed below will be created in the results directory after the pipeline has finished. For this example, a samplesheet (targeted subworkflow) with 2 samples (test1 and test2) was used.
+The directories listed below will be created in the results directory after the pipeline has finished.
 
 ```bash
 results/
+├── multiqc
+│   ├── multiqc_report.html
+│   ├── multiqc_data
+│   └── multiqc_plots
 ├── targeted
 │   └── MSH2
 │        ├── test1.counts.txt
 │        └── test2.counts.txt
-├── pipeline_info
-│   ├── execution_report_2025-05-14_10-34-56.html
-│   ├── execution_timeline_2025-05-14_10-34-56.html
-│   ├── execution_trace_2025-05-14_10-34-56.txt
-│   ├── params_2025-05-14_10-34-59.json
-│   ├── pipeline_dag_2025-05-14_10-34-56.html
-│   └── report_software_versions.yml
+├── rnafusion
+├── pacvar_repeat
+└── pipeline_info
+    ├── execution_report_2025-05-14_10-34-56.html
+    ├── execution_timeline_2025-05-14_10-34-56.html
+    ├── execution_trace_2025-05-14_10-34-56.txt
+    ├── params_2025-05-14_10-34-59.json
+    ├── pipeline_dag_2025-05-14_10-34-56.html
+    └── report_software_versions.yml
 ```
 
 The output directory is specified using `--outdir`. All intermediate output of each tools is saved in it's respective subfolder.
@@ -28,6 +34,10 @@ The output directory is specified using `--outdir`. All intermediate output of e
 ## Pipeline overview
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
+
+- **Targeted**: Targeted variant analysis with HOTCOUNT
+- **RnaFusion**: generating report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
+- **PacVar Repeat**: generating report for [nf-core pacvar - repeat flow](https://nf-co.re/pacvar)
 
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
