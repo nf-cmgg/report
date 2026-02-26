@@ -38,11 +38,11 @@ title: "nf-cmgg/report - Multi-workflow Analysis Report"
 max_table_rows: 500
 table_cond_formatting_rules:
   pass:
-    - s_eq: "PASS"
+    - s_eq: PASS
   fail:
-    - s_eq: "FAIL"
+    - s_eq: FAIL
   warn:
-    - s_eq: "WARN"
+    - s_eq: WARN
 
 # Disable warnings for missing samples
 quiet: false
