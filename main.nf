@@ -127,10 +127,10 @@ workflow {
     def ch_versions_yaml = softwareVersionsToYAML(topic_versions.versions_file)
         .mix(topic_versions_string)
 
-    ch_versions_yaml
+    def ch_versions_file = ch_versions_yaml
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
-            name: 'report_software_' + 'versions.yml',
+            name: 'software_versions_mqc_versions.yml',
             sort: true,
             newLine: true
         )
@@ -159,7 +159,7 @@ workflow {
     def ch_multiqc_files                      = channel.empty()
     ch_multiqc_files                          = ch_multiqc_files.mix(
                                                     ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'),
-                                                    ch_versions_yaml.collectFile(name: 'software_versions.yml', sort: true, newLine: true),
+                                                    ch_versions_file,
                                                     ch_methods_description.collectFile(
                                                         name: 'methods_description_mqc.yaml',
                                                         sort: false
