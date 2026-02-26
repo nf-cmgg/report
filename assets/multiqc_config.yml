@@ -32,10 +32,6 @@ custom_plot_config:
       - column: "MSH2_c.942+2T>C"
         direction: desc
 
-# Assigning modules to run (customize based on your data types)
-run_modules:
-  - targeted_MSH2
-
 # Set report title and description
 title: "nf-cmgg/report - Multi-workflow Analysis Report"
 # General report options
