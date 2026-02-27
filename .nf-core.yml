@@ -17,15 +17,7 @@ lint:
     - .github/PULL_REQUEST_TEMPLATE.md
     - assets/email_template.txt
     - docs/README.md
-  nextflow_config:
-    - manifest.name
-    - manifest.homePage
-    - validation.help.enabled
-    - validation.help.beforeText
-    - validation.help.afterText
-    - validation.summary.beforeText
-    - validation.summary.afterText
-    - params.input
+  nextflow_config: false
   multiqc_config:
     - report_comment
   schema_params: false
@@ -39,7 +31,6 @@ lint:
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
     - tests/default.nf.test
-
 template:
   org: nf-cmgg
   name: report
