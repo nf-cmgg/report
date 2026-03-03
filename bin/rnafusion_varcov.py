@@ -308,15 +308,15 @@ for filename in os.listdir(input_path):
         merged_df = df_clean
         df_reads_fc = define_position(df_reads, 'fusioncatcher', 'fc', lambda x: pd.Series(re.split(r':\+?-?#?', x)[:-1]))
         if not df_reads_fc.empty:
-            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'EXON_NUMBER_A', 'EXON_NUMBER_B'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
         df_reads_ar = define_position(df_reads, 'arriba', 'ar', lambda x: pd.Series(re.split(r'[:#]', x)))
         if not df_reads_ar.empty:
-            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'EXON_NUMBER_A', 'EXON_NUMBER_B'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
         df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':-?#?', x)[:-1]))
         if not df_reads_sf.empty:
-            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB', 'EXON_NUMBER_A', 'EXON_NUMBER_B'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
 
         # drop original fusioncatcher, arriba and starfusion columns
         merged_df = merged_df.drop(merged_df.filter(regex='^(fusioncatcher|arriba|starfusion).*$').columns, axis = 1)
@@ -387,8 +387,6 @@ for filename in os.listdir(input_path):
 
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
-
-        df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
 
         # filter base on score and number of callers, both conditions have to be true
         df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
