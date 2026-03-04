@@ -308,21 +308,48 @@ for filename in os.listdir(input_path):
         merged_df = df_clean
         df_reads_fc = define_position(df_reads, 'fusioncatcher', 'fc', lambda x: pd.Series(re.split(r':\+?-?#?', x)[:-1]))
         if not df_reads_fc.empty:
-            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'outer')
 
         df_reads_ar = define_position(df_reads, 'arriba', 'ar', lambda x: pd.Series(re.split(r'[:#]', x)))
         if not df_reads_ar.empty:
-            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'outer')
 
-        df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':-?#?', x)[:-1]))
+        df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':[-\+]?#?', x)[:-1]))
         if not df_reads_sf.empty:
-            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
+            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'outer')
 
         # drop original fusioncatcher, arriba and starfusion columns
         merged_df = merged_df.drop(merged_df.filter(regex='^(fusioncatcher|arriba|starfusion).*$').columns, axis = 1)
 
         # drop duplicate columns
         merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+
+        # clean up the dataframe and consolidate separate data
+        merged_df = merged_df.dropna(subset=['POSA', 'POSB'], how='all') # Drop fusions with no position
+        merged_df['CHROM'] = merged_df['CHROM'].combine_first(merged_df['CHRA'])
+        x_y_columns: list[str] = []
+        for column in merged_df.columns:
+            if f"{column}_x" in merged_df.columns and f"{column}_y" in merged_df.columns:
+                x_y_columns.append(column)
+
+        for split_col in x_y_columns:
+            merged_df[split_col] = merged_df[split_col + '_x'].combine_first(merged_df[split_col + '_y'])
+            merged_df = merged_df.drop(columns=[split_col + '_x', split_col + '_y'])
+
+        def calc_found_in(row):
+            found_in = []
+            if pd.notna(row['fc_common_mapping_reads']):
+                found_in.append('fusioncatcher')
+            if pd.notna(row['ar_confidence']):
+                found_in.append('arriba')
+            if pd.notna(row['sf_ffmp']):
+                found_in.append('starfusion')
+            return ', '.join(found_in) if found_in else None
+        merged_df['FOUND_IN'] = merged_df['FOUND_IN'].combine_first(merged_df.apply(calc_found_in, axis=1))
+        merged_df['SCORE'] = merged_df['SCORE'].combine_first(merged_df['Fusion Indication Index (FII)'])
+        merged_df['Fusion Indication Index (FII)'] = merged_df['Fusion Indication Index (FII)'].combine_first(merged_df['SCORE'])
+        merged_df['TRANSCRIPT_A'] = merged_df['TRANSCRIPT_A'].fillna('nan')
+        merged_df['TRANSCRIPT_B'] = merged_df['TRANSCRIPT_B'].fillna('nan')
 
         # set certain columns to numerical
         present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
@@ -338,7 +365,7 @@ for filename in os.listdir(input_path):
 
         # add missing annotation data
         ## arriba check
-        arriba_nan_df: pd.DataFrame = merged_df[merged_df['FOUND_IN'].str.contains('arriba')]
+        arriba_nan_df: pd.DataFrame = merged_df[merged_df['FOUND_IN'].notna() & merged_df['FOUND_IN'].str.contains('arriba')]
         arriba_nan_df = arriba_nan_df[(arriba_nan_df["TRANSCRIPT_A"] == 'nan') | (arriba_nan_df["TRANSCRIPT_B"] == 'nan')]
         if not arriba_nan_df.empty:
             arriba_df = read_arriba_file(os.path.join(arriba_path + basename + ".arriba.fusions.tsv"))
@@ -703,4 +730,3 @@ for filename in os.listdir(input_path):
 
         # save file
         workbook.save(excel_path)
-
