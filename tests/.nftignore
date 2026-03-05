@@ -1,5 +1,5 @@
 pipeline_info/*.{html,json,txt,yml}
-rnafusion/varcov/**.xlsx
+rnafusion/**.xlsx
 targeted/**.counts.txt
 pacvar_repeat/reports/*.xlsx
 multiqc/multiqc_report.html

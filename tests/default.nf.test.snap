@@ -54,16 +54,15 @@
                 "pipeline_info",
                 "pipeline_info/report_mqc_versions.yml",
                 "rnafusion",
-                "rnafusion/varcov",
-                "rnafusion/varcov/NVQTEST_123",
-                "rnafusion/varcov/NVQTEST_123/test.xlsx",
+                "rnafusion/NVQTEST_123",
+                "rnafusion/NVQTEST_123/test.xlsx",
                 "targeted",
                 "targeted/MSH2",
                 "targeted/MSH2/test1.counts.txt",
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+
             ]
         ],
         "meta": {

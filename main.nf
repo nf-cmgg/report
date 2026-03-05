@@ -209,7 +209,7 @@ output {
     }
     rnafusion_excels {
         path { meta, excel ->
-            excel >> "rnafusion/varcov/${meta.run}/"
+            excel >> "rnafusion/${meta.run}/"
         }
     }
     pacvar_repeat_excels {
