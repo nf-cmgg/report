@@ -351,7 +351,7 @@ for filename in os.listdir(input_path):
             if contains_non_empty_column_with_prefix(row, 'sf_'):
                 found_in.append('starfusion')
             return ','.join(found_in) if found_in else None
-        merged_df['FOUND_IN'] = merged_df['FOUND_IN'].combine_first(merged_df.apply(calc_found_in, axis=1))
+        merged_df['FOUND_IN'] = merged_df.apply(calc_found_in, axis=1)
         merged_df['SCORE'] = merged_df['SCORE'].combine_first(merged_df.get('Fusion Indication Index (FII)', pd.Series()))
         merged_df['Fusion Indication Index (FII)'] = merged_df.get('Fusion Indication Index (FII)', pd.Series()).combine_first(merged_df['SCORE'])
         merged_df['TRANSCRIPT_A'] = merged_df['TRANSCRIPT_A'].fillna('nan')
