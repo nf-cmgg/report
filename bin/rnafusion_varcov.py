@@ -425,7 +425,7 @@ for filename in os.listdir(input_path):
         df_filt.insert(0, 'Fusion', column_to_move)
 
         # filter base on score and number of callers, both conditions have to be true
-        df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
+        df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] >= TOOL_HITS_THRESHOLD)]
 
         # ALTERNATIVE: either one of the two conditions is true: gives too many hits
         # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
