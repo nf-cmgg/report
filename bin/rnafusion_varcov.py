@@ -336,13 +336,19 @@ for filename in os.listdir(input_path):
             merged_df[split_col] = merged_df[split_col + '_x'].combine_first(merged_df[split_col + '_y'])
             merged_df = merged_df.drop(columns=[split_col + '_x', split_col + '_y'])
 
+        def contains_non_empty_column_with_prefix(row, prefix:str) -> bool:
+            for column in merged_df.columns:
+                if column.startswith(prefix) and pd.notna(row[column]):
+                    return True
+            return False
+
         def calc_found_in(row):
             found_in = []
-            if pd.notna(row['fc_common_mapping_reads']):
+            if contains_non_empty_column_with_prefix(row, 'fc_'):
                 found_in.append('fusioncatcher')
-            if pd.notna(row['ar_confidence']):
+            if contains_non_empty_column_with_prefix(row, 'ar_'):
                 found_in.append('arriba')
-            if pd.notna(row['sf_ffmp']):
+            if contains_non_empty_column_with_prefix(row, 'sf_'):
                 found_in.append('starfusion')
             return ', '.join(found_in) if found_in else None
         merged_df['FOUND_IN'] = merged_df['FOUND_IN'].combine_first(merged_df.apply(calc_found_in, axis=1))
