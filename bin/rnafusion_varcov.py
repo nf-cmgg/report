@@ -350,13 +350,15 @@ for filename in os.listdir(input_path):
                 found_in.append('arriba')
             if contains_non_empty_column_with_prefix(row, 'sf_'):
                 found_in.append('starfusion')
-            return ', '.join(found_in) if found_in else None
+            return ','.join(found_in) if found_in else None
         merged_df['FOUND_IN'] = merged_df['FOUND_IN'].combine_first(merged_df.apply(calc_found_in, axis=1))
         merged_df['SCORE'] = merged_df['SCORE'].combine_first(merged_df.get('Fusion Indication Index (FII)', pd.Series()))
         merged_df['Fusion Indication Index (FII)'] = merged_df.get('Fusion Indication Index (FII)', pd.Series()).combine_first(merged_df['SCORE'])
         merged_df['TRANSCRIPT_A'] = merged_df['TRANSCRIPT_A'].fillna('nan')
         merged_df['TRANSCRIPT_B'] = merged_df['TRANSCRIPT_B'].fillna('nan')
         merged_df['TOOL_HITS'] = merged_df['TOOL_HITS'].combine_first(merged_df['FOUND_IN'].apply(lambda x: len(x.split(',')) if pd.notna(x) else 0))
+        merged_df['GENEA'] = merged_df['GENEA'].combine_first(merged_df['Fusion'].apply(lambda x: x.split('--')[0] if pd.notna(x) else None))
+        merged_df['GENEB'] = merged_df['GENEB'].combine_first(merged_df['Fusion'].apply(lambda x: x.split('--')[1] if pd.notna(x) else None))
 
         # set certain columns to numerical
         present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
