@@ -356,6 +356,7 @@ for filename in os.listdir(input_path):
         merged_df['Fusion Indication Index (FII)'] = merged_df.get('Fusion Indication Index (FII)', pd.Series()).combine_first(merged_df['SCORE'])
         merged_df['TRANSCRIPT_A'] = merged_df['TRANSCRIPT_A'].fillna('nan')
         merged_df['TRANSCRIPT_B'] = merged_df['TRANSCRIPT_B'].fillna('nan')
+        merged_df['TOOL_HITS'] = merged_df['TOOL_HITS'].combine_first(merged_df['FOUND_IN'].apply(lambda x: len(x.split(',')) if pd.notna(x) else 0))
 
         # set certain columns to numerical
         present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
