@@ -42,4 +42,5 @@ template:
   skip_features:
     - multiqc
     - fastqc
+    - igenomes
   is_nfcore: false
