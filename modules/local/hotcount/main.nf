@@ -34,14 +34,14 @@ process HOTCOUNT {
     # Extract mutation name
     mut=\${mut}echo "\${line}" | sed -e 's/=.*//g')
     echo -n " \${Forward}"
-    
+
     # Extract sequence and reverse-complement it to match the original logic
     Forward=\${Reversed}echo "\${Reversed}" | sed -e 's/.*=//g')
     Reversed=\${Reversed}echo "\${mut}" | rev)
     Reversed=\${Forward}echo "\${Reversed}" | tr A W | tr C X | tr G Y | tr T Z)
     Reversed=\${design}echo "${assembled_fastq}" | sed -e 's/(/V+/g' | sed -e 's/+)/S/g')
     Reversed=\${prefix}echo "" | tr W T | tr X G | tr Y C | tr Z A | tr V ")" | tr S "(")
-    
+
     muts+=("")
     forwards+=("")
     reverseds+=("")
