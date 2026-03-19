@@ -21,8 +21,8 @@
         {
             "@id": "./",
             "@type": "Dataset",
-            "creativeWorkStatus": "InProgress",
-            "datePublished": "2025-04-22T07:29:01+00:00",
+            "creativeWorkStatus": "Stable",
+            "datePublished": "2026-03-19T14:56:30+00:00",
             "description": "# nf-cmgg/report\n\n[![GitHub Actions CI Status](https://github.com/nf-cmgg/report/actions/workflows/ci.yml/badge.svg)](https://github.com/nf-cmgg/report/actions/workflows/ci.yml)\n[![GitHub Actions Linting Status](https://github.com/nf-cmgg/report/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-cmgg/report/actions/workflows/linting.yml)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)\n[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)\n\n[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A525.10.0-23aa62.svg)](https://www.nextflow.io/)\n[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)\n[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)\n[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)\n[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-cmgg/report)\n\n## Introduction\n\n**nf-cmgg/report** is a bioinformatics pipeline that will do some common reporting whitin our institute.\n\nThe pipeline is built using Nextflow, a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The Nextflow DSL2 implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from nf-core/modules in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!\n\n<!-- TODO nf-core:\n   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the\n   major pipeline sections and the types of output it produces. You're giving an overview to someone new\n   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction\n-->\n\n<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core\n     workflows use the \"tube map\" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->\n\n## Pipeline summary\n\n1. Extract and filter reads from input CRAM files (SAMtools)\n2. Merge overlapping paired end reads (pear)\n3. Combine PEAR output and singletons (mergereads)\n4. Count the reads at location of mutation (hotcount)\n\n## Summary of tools and version used in the pipeline\n\n| Tool     | Version |\n| -------- | ------- |\n| SAMtools | 1.21    |\n| PEAR     | 0.9.6   |\n| hotcount | 0.0.0   |\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,cram,crai,design\nCONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2\n```\n\nEach row represents a sample name, the cram file associated with the sample, the crai file of the sample, the design used for the sample.\n\nNow, you can run the pipeline using:\n\n```bash\nnextflow run nf-cmgg/report -profile <docker/singularity> --input samplesheet.csv --outdir <OUTDIR>\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).\n\n## Credits\n\nnf-cmgg/report was originally written by Tuur-ds,nvnieuwk.\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n<!-- TODO nf-core: If applicable, make list of people who have also contributed -->\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).\n\n## Citations\n\n<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->\n<!-- If you use nf-cmgg/report for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->\n\n<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nThis pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/main/LICENSE).\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
             "hasPart": [
                 {
@@ -32,10 +32,22 @@
                     "@id": "assets/"
                 },
                 {
+                    "@id": "bin/"
+                },
+                {
                     "@id": "conf/"
                 },
                 {
                     "@id": "docs/"
+                },
+                {
+                    "@id": "modules/"
+                },
+                {
+                    "@id": "modules/local/"
+                },
+                {
+                    "@id": "modules/nf-core/"
                 },
                 {
                     "@id": "workflows/"
@@ -87,7 +99,7 @@
             },
             "mentions": [
                 {
-                    "@id": "#456d9603-dc6f-4362-aec5-97c63a87cfe3"
+                    "@id": "#54edac5c-0b6b-46f8-a9fb-fcc7d06aa863"
                 }
             ],
             "name": "nf-cmgg/report"
@@ -114,8 +126,13 @@
                 "SoftwareSourceCode",
                 "ComputationalWorkflow"
             ],
+            "creator": [
+                {
+                    "@id": "https://orcid.org/0009-0003-5619-1555"
+                }
+            ],
             "dateCreated": "",
-            "dateModified": "2025-04-22T09:29:01Z",
+            "dateModified": "2026-03-19T15:56:30Z",
             "dct:conformsTo": "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE/",
             "keywords": [
                 "nf-core",
@@ -135,10 +152,10 @@
             },
             "url": [
                 "https://github.com/nf-cmgg/report",
-                "https://nf-co.re/nf-cmgg/report/dev/"
+                "https://nf-co.re/nf-cmgg/report/1.0.0/"
             ],
             "version": [
-                "1.0.0dev"
+                "1.0.0"
             ]
         },
         {
@@ -151,14 +168,14 @@
             "url": {
                 "@id": "https://www.nextflow.io/"
             },
-            "version": "!>=24.04.2"
+            "version": "!>=25.10.0"
         },
         {
-            "@id": "#456d9603-dc6f-4362-aec5-97c63a87cfe3",
+            "@id": "#54edac5c-0b6b-46f8-a9fb-fcc7d06aa863",
             "@type": "TestSuite",
             "instance": [
                 {
-                    "@id": "#52964942-6827-490e-b3d8-24775e8c2a51"
+                    "@id": "#635f589d-0b99-4264-9345-7eb390b0c5f5"
                 }
             ],
             "mainEntity": {
@@ -167,10 +184,10 @@
             "name": "Test suite for nf-cmgg/report"
         },
         {
-            "@id": "#52964942-6827-490e-b3d8-24775e8c2a51",
+            "@id": "#635f589d-0b99-4264-9345-7eb390b0c5f5",
             "@type": "TestInstance",
             "name": "GitHub Actions workflow for testing nf-cmgg/report",
-            "resource": "repos/nf-cmgg/report/actions/workflows/ci.yml",
+            "resource": "repos/nf-cmgg/report/actions/workflows/nf-test.yml",
             "runsOn": {
                 "@id": "https://w3id.org/ro/terms/test#GithubService"
             },
@@ -190,6 +207,11 @@
             "description": "Additional files"
         },
         {
+            "@id": "bin/",
+            "@type": "Dataset",
+            "description": "Scripts that must be callable from a pipeline process"
+        },
+        {
             "@id": "conf/",
             "@type": "Dataset",
             "description": "Configuration files"
@@ -198,6 +220,21 @@
             "@id": "docs/",
             "@type": "Dataset",
             "description": "Markdown files for documenting the pipeline"
+        },
+        {
+            "@id": "modules/",
+            "@type": "Dataset",
+            "description": "Modules used by the pipeline"
+        },
+        {
+            "@id": "modules/local/",
+            "@type": "Dataset",
+            "description": "Pipeline-specific modules"
+        },
+        {
+            "@id": "modules/nf-core/",
+            "@type": "Dataset",
+            "description": "nf-core modules"
         },
         {
             "@id": "workflows/",
@@ -274,6 +311,12 @@
             "@type": "Organization",
             "name": "nf-core",
             "url": "https://nf-co.re/"
+        },
+        {
+            "@id": "https://orcid.org/0009-0003-5619-1555",
+            "@type": "Person",
+            "email": "nicolas.vannieuwkerke@ugent.be",
+            "name": "Nicolas Vannieuwkerke"
         }
     ]
 }

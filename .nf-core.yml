@@ -36,7 +36,7 @@ template:
   name: report
   description: A post-processing reporting pipeline for internal use at CMGG
   author: Tuur-ds,nvnieuwk
-  version: 1.0.0dev
+  version: 1.0.0
   force: true
   outdir: ./report
   skip_features:
