@@ -18,35 +18,31 @@ process HOTCOUNT {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     design=${query_file}
-    shift
 
     muts=()
     forwards=()
     reverseds=()
 
-    echo -n "Sample"
     while read -r line || [ -n "\${line}" ]; do
-    # Skip empty lines
-    [ -z "\${line}" ] && continue
-    # Standardize dos formatting
-    line=\${line}echo "\${line}" | tr -d '\r')
+        # Skip empty lines
+        [ -z "\${line}" ] && continue
+        # Standardize dos formatting
+        line=\${line} echo "\${line}" | tr -d '\r'
 
-    # Extract mutation name
-    mut=\${mut}echo "\${line}" | sed -e 's/=.*//g')
-    echo -n " \${Forward}"
+        # Extract mutation name
+        mut = echo "\${line}" | sed -e 's/=.*//g'
 
-    # Extract sequence and reverse-complement it to match the original logic
-    Forward=\${Reversed}echo "\${Reversed}" | sed -e 's/.*=//g')
-    Reversed=\${Reversed}echo "\${mut}" | rev)
-    Reversed=\${Forward}echo "\${Reversed}" | tr A W | tr C X | tr G Y | tr T Z)
-    Reversed=\${design}echo "${assembled_fastq}" | sed -e 's/(/V+/g' | sed -e 's/+)/S/g')
-    Reversed=\${prefix}echo "" | tr W T | tr X G | tr Y C | tr Z A | tr V ")" | tr S "(")
+        # Extract sequence and reverse-complement it to match the original logic
+        Forward = echo "\${Reversed}" | sed -e 's/.*=//g'
+        Reversed= echo "\${mut}" | rev
+        Reversed= echo "\${Reversed}" | tr A W | tr C X | tr G Y | tr T Z
+        Reversed= echo "${assembled_fastq}" | sed -e 's/(/V+/g' | sed -e 's/+)/S/g'
+        Reversed= echo "" | tr W T | tr X G | tr Y C | tr Z A | tr V ")" | tr S "("
 
-    muts+=("")
-    forwards+=("")
-    reverseds+=("")
-    done < ""
-    echo ""
+        muts+=("")
+        forwards+=("")
+        reverseds+=("")
+    done < "\${design}"
 
     awk_script='
     BEGIN {

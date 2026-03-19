@@ -4,8 +4,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UNTAR     } from '../modules/nf-core/untar/main.nf'
-include { VARCOV    } from '../modules/local/varcov/main.nf'
+include { UNTAR  } from '../modules/nf-core/untar/main.nf'
+include { VARCOV } from '../modules/local/varcov/main.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,19 +33,7 @@ workflow RNAFUSION {
     def ch_varcov_input = ch_input_branch.dir
         .mix(UNTAR.out.untar)
         .map { meta, dir ->
-            [
-                meta,
-                getFilesAndCheck(dir, "vcf/*.vcf"),
-                getFilesAndCheck(dir, "stringtie/*.gene.abundance.txt"),
-                getFilesAndCheck(dir, "fusionreport/*/*.fusions.csv"),
-                getFilesAndCheck(dir, "ctatsplicing/*.cancer.introns"),
-                getFilesAndCheck(dir, "multiqc/multiqc_data/multiqc_general_stats.txt"),
-                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam"),
-                getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"),
-                getFilesAndCheck(dir, "arriba/*.fusions.tsv"),
-                meta.run,
-                meta.design
-            ]
+            [meta, getFilesAndCheck(dir, "vcf/*.vcf"), getFilesAndCheck(dir, "stringtie/*.gene.abundance.txt"), getFilesAndCheck(dir, "fusionreport/*/*.fusions.csv"), getFilesAndCheck(dir, "ctatsplicing/*.cancer.introns"), getFilesAndCheck(dir, "multiqc/multiqc_data/multiqc_general_stats.txt"), getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam"), getFilesAndCheck(dir, "star/*.Aligned.sortedByCoord.out.bam.bai"), getFilesAndCheck(dir, "arriba/*.fusions.tsv"), meta.run, meta.design]
         }
 
     VARCOV(
@@ -57,7 +45,7 @@ workflow RNAFUSION {
     )
 
     emit:
-    excels   = VARCOV.out.output // channel: [ val(meta), path(excel) ]
+    excels = VARCOV.out.output // channel: [ val(meta), path(excel) ]
 }
 
 /*

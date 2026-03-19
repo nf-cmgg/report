@@ -23,6 +23,7 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText  } from './subworkflows/local/utils_nfcore_report_pipeline'
+include { check_required_params   } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 // Modules
 include { MULTIQC                 } from './modules/nf-core/multiqc/main'
@@ -135,17 +136,6 @@ workflow {
     // Perform multiQC on all QC data
     //
 
-    def ch_multiqc_config = channel.fromPath(
-        "${projectDir}/assets/multiqc_config.yml",
-        checkIfExists: true
-    )
-    def ch_multiqc_custom_config = params.multiqc_config
-        ? channel.fromPath(params.multiqc_config, checkIfExists: true)
-        : channel.empty()
-    def ch_multiqc_logo = params.multiqc_logo
-        ? channel.fromPath(params.multiqc_logo, checkIfExists: true)
-        : channel.empty()
-
     def summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
     def ch_workflow_summary = channel.value(paramsSummaryMultiqc(summary_params))
     def ch_multiqc_custom_methods_description = params.multiqc_methods_description
@@ -166,12 +156,18 @@ workflow {
     )
 
     MULTIQC(
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        [],
+        ch_multiqc_files.flatten().collect().map { files ->
+            [
+                [id: 'nf-report'],
+                files,
+                params.multiqc_config
+                    ? file(params.multiqc_config, checkIfExists: true)
+                    : file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true),
+                params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
+                [],
+                [],
+            ]
+        }
     )
     //
     // SUBWORKFLOW: Run completion tasks
@@ -182,7 +178,6 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
     )
 
     publish:
@@ -224,28 +219,5 @@ output {
         path { data ->
             data >> "multiqc/multiqc_data"
         }
-    }
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-def check_required_params(scope_params: Map, scope_name: String, required_params: List<String>) -> void {
-    if (scope_params == null) {
-        error("Could not find a parameters scope called '${scope_name}'")
-    }
-
-    def missing_params = []
-    required_params.each { param ->
-        if (scope_params.get(param, null) == null) {
-            missing_params << param
-        }
-    }
-
-    if (missing_params) {
-        error("The following required parameters are missing from the '${scope_name}' parameters scope: ${missing_params.join(', ')}")
     }
 }
