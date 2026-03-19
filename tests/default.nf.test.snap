@@ -31,7 +31,7 @@
                     "samtools": "1.22.1"
                 },
                 "Workflow": {
-                    "nf-cmgg/report": "v1.0.0dev"
+                    "nf-cmgg/report": "v1.0.0"
                 }
             },
             [
@@ -63,7 +63,7 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+
             ]
         ],
         "meta": {
