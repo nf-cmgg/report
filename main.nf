@@ -56,20 +56,21 @@ workflow {
 
     def out_targeted_hotcount = channel.empty()
     if(params.targeted.input) {
-        def required_parameters = ['fasta', 'queries_dir', 'gene']
-        check_required_params(params.get('targeted'), 'targeted', required_parameters)
-        def targeted_params = params.targeted
+        log.error "The `targeted` reporting flow is disabled in this release."
+        // def required_parameters = ['fasta', 'queries_dir', 'gene']
+        // check_required_params(params.get('targeted'), 'targeted', required_parameters)
+        // def targeted_params = params.targeted
 
-        def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
-        def fasta = channel.value([[id:'reference'], file(targeted_params.fasta)])
+        // def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
+        // def fasta = channel.value([[id:'reference'], file(targeted_params.fasta)])
 
-        TARGETED(
-            ch_samplesheet,
-            fasta,
-            targeted_params.queries_dir,
-            targeted_params.gene
-        )
-        out_targeted_hotcount = TARGETED.out.hotcount
+        // TARGETED(
+        //     ch_samplesheet,
+        //     fasta,
+        //     targeted_params.queries_dir,
+        //     targeted_params.gene
+        // )
+        // out_targeted_hotcount = TARGETED.out.hotcount
     }
 
     def out_rnafusion_excels = channel.empty()
@@ -95,13 +96,14 @@ workflow {
 
     def out_pacvar_repeat_excels = channel.empty()
     if(params.pacvar_repeat.input) {
-        def required_parameters = ['input']
-        check_required_params(params.get('pacvar_repeat'), 'pacvar_repeat', required_parameters)
-        def pacvar_repeat_params = params.pacvar_repeat
-        def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
+        log.error "The `pacvar_repeat` reporting flow is disabled in this release."
+        // def required_parameters = ['input']
+        // check_required_params(params.get('pacvar_repeat'), 'pacvar_repeat', required_parameters)
+        // def pacvar_repeat_params = params.pacvar_repeat
+        // def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
 
-        PACVAR_REPEAT(ch_samplesheet)
-        out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
+        // PACVAR_REPEAT(ch_samplesheet)
+        // out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
     }
 
     //
