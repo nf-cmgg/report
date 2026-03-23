@@ -47,7 +47,11 @@ workflow TARGETED {
     )
 
     // For non-empty fastq: merge PEAR assembled with singleton from branched output
-    ch_pear_with_singleton = PEAR.out.assembled.join(ch_branched.non_empty.map { meta, _fastq, singleton -> tuple(meta, singleton) })
+    // CAT_FASTQ expects tuple(meta, reads) where reads is a path or list of paths.
+    ch_pear_with_singleton = PEAR.out.assembled
+        .join(ch_branched.non_empty.map { meta, _fastq, singleton -> tuple(meta, singleton) })
+        // PEAR assembled and singleton are single-end reads.
+        .map { meta, assembled, singleton -> tuple(meta + [single_end: true], [assembled, singleton]) }
 
     CAT_FASTQ(ch_pear_with_singleton)
 
@@ -56,6 +60,12 @@ workflow TARGETED {
 
     // Combine CAT_FASTQ output with singleton-only samples
     ch_final_fastq = CAT_FASTQ.out.reads.mix(ch_singleton_only)
+
+    // Normalize join keys: CAT_FASTQ branch may include extra meta fields (e.g. single_end)
+    // that are absent on query channel metadata.
+    ch_final_fastq_for_join = ch_final_fastq.map { meta, fastq ->
+        tuple([id: meta.id, design: meta.design], fastq)
+    }
 
     def query_list = file("${queries}/${gene}/*.txt")
 
@@ -66,7 +76,7 @@ workflow TARGETED {
         }
         tuple(meta, query)
     }
-    ch_hotcount_input = ch_final_fastq
+    ch_hotcount_input = ch_final_fastq_for_join
         .join(ch_queries, failOnDuplicate: true, failOnMismatch: true)
         .map { meta, fastq, query -> tuple(meta, query, fastq) }
 
