@@ -60,7 +60,13 @@ workflow {
         def targeted_params = params.targeted
 
         def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
-        def fasta = channel.value([[id: 'reference'], file(targeted_params.fasta)])
+        def fasta_file = file(targeted_params.fasta)
+        def fai_file = file("${targeted_params.fasta}.fai")
+        def fasta = channel.value([
+            [id: 'reference'],
+            fasta_file,
+            fai_file.exists() ? fai_file : null
+        ])
 
         TARGETED(
             ch_samplesheet,
@@ -211,13 +217,13 @@ output {
         }
     }
     multiqc_report {
-        path { report ->
-            report >> "multiqc/multiqc_report.html"
+        path { _meta, report ->
+            report >> "multiqc/"
         }
     }
     multiqc_data {
-        path { data ->
-            data >> "multiqc/multiqc_data"
+        path { _meta, data ->
+            data >> "multiqc/multiqc_data/"
         }
     }
 }

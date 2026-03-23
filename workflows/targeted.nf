@@ -16,14 +16,14 @@ workflow TARGETED {
 
     SAMTOOLS_VIEW(
         ch_samplesheet,
-        fasta.map { meta, fa -> tuple(meta, fa, []) },
+        fasta.map { meta, fa, fai -> tuple(meta, fa, []) },
         [],
         [],
     )
 
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
-        fasta,
+        fasta.map { meta, fa, fai -> tuple(meta, fa, fai) },
         "",
     )
 
