@@ -10,6 +10,20 @@
 
 ## Pipeline tools
 
+- [SAMtools](https://doi.org/10.1093/bioinformatics/btp352)
+
+  > Li H, et al. (2009) The Sequence Alignment/Map format and SAMtools. Bioinformatics, 25, 2078-9.
+
+- [PEAR](https://doi.org/10.1093/bioinformatics/btt593)
+
+  > Zhang J, Kobert K, Flouri T, Stamatakis A. (2014) PEAR: a fast and accurate Illumina Paired-End reAd mergeR Bioinformatics.
+
+- [HotCount] (https://github.com/mafouille/HotCount)
+
+- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+
+> Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+
 ## Software packaging/containerisation tools
 
 - [Anaconda](https://anaconda.com)

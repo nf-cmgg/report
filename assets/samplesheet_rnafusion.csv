@@ -1,0 +1,2 @@
+run,outdir
+NVQTEST_123,https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/illumina/rnafusion.tar.gz

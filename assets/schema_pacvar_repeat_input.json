@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-cmgg/report/master/assets/schema_input.json",
+    "title": "nf-cmgg/report pipeline - params.input schema",
+    "description": "Schema for the file provided with params.input",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name cannot contain spaces",
+                "meta": ["id"]
+            },
+            "vcf": {
+                "type": "string",
+                "format": "file-path",
+                "pattern": "^\\S+\\.vcf.gz$",
+                "errorMessage": "Path to vcf output files after nf-core/pacvar repeat analysis, must be provided and cannot contain spaces",
+                "exists": true
+            }
+        },
+        "required": ["sample", "vcf"]
+    }
+}

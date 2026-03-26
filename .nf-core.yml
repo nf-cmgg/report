@@ -1,6 +1,6 @@
 repository_type: pipeline
 
-nf_core_version: 3.2.0
+nf_core_version: 3.5.1
 
 lint:
   files_unchanged:
@@ -17,16 +17,11 @@ lint:
     - .github/PULL_REQUEST_TEMPLATE.md
     - assets/email_template.txt
     - docs/README.md
-  nextflow_config:
-    - manifest.name
-    - manifest.homePage
-    - validation.help.beforeText
-    - validation.help.afterText
-    - validation.summary.beforeText
-    - validation.summary.afterText
-  multiqc_config: false
+  nextflow_config: false
+  multiqc_config:
+    - report_comment
+  schema_params: false
   files_exist:
-    - assets/multiqc_config.yml
     - assets/multiqc_config.yml
     - CODE_OF_CONDUCT.md
     - assets/nf-core-report_logo_light.png
@@ -35,13 +30,13 @@ lint:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
-
+    - tests/default.nf.test
 template:
   org: nf-cmgg
   name: report
   description: A post-processing reporting pipeline for internal use at CMGG
   author: Tuur-ds,nvnieuwk
-  version: 1.0.0dev
+  version: 1.0.0
   force: true
   outdir: ./report
   skip_features:

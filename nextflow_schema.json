@@ -5,24 +5,13 @@
     "description": "A post-processing reporting pipeline for internal use at CMGG",
     "type": "object",
     "$defs": {
-        "input_output_options": {
-            "title": "Input/output options",
+        "output_options": {
+            "title": "Output options",
             "type": "object",
             "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "description": "Define where the pipeline should save output data.",
+            "required": ["outdir"],
             "properties": {
-                "input": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "schema": "assets/schema_input.json",
-                    "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.csv$",
-                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-                    "fa_icon": "fas fa-file-csv"
-                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -35,6 +24,127 @@
                     "fa_icon": "fas fa-envelope",
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
                     "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
+                    "fa_icon": "fas fa-file-signature"
+                }
+            }
+        },
+        "targeted_options": {
+            "title": "Options for the targeted flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the targeted reporting flow.",
+            "properties": {
+                "targeted": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_targeted_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "queries_dir": {
+                            "type": "string",
+                            "format": "directory-path",
+                            "exists": true,
+                            "hidden": true
+                        },
+                        "gene": {
+                            "type": "string",
+                            "enum": ["MSH2"],
+                            "description": "Gene name of targeted query"
+                        },
+                        "fasta": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                            "description": "Path to FASTA genome file.",
+                            "fa_icon": "far fa-file-code"
+                        }
+                    }
+                }
+            }
+        },
+        "rnafusion_options": {
+            "title": "Options for the RNAfusion flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the RNAfusion flow.",
+            "properties": {
+                "rnafusion": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_rnafusion_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "genes": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.txt$",
+                            "description": "Path to a text file containing genes to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        },
+                        "fusions": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.txt$",
+                            "description": "Path to a text file containing fusions to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        },
+                        "mane": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.csv$",
+                            "description": "Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report",
+                            "fa_icon": "far fa-file-code"
+                        }
+                    }
+                }
+            }
+        },
+        "pacvar_repeat_options": {
+            "title": "Options for the pacvar_repeat flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the pacvar_repeat reporting flow.",
+            "properties": {
+                "pacvar_repeat": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_pacvar_repeat_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file containing sample names and corresponding path to nf-core/pacvar repeat output directory, containing the input VCFs in the trgt subfolder",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                            "fa_icon": "fas fa-file-csv"
+                        }
+                    }
                 }
             }
         },
@@ -50,16 +160,6 @@
                     "fa_icon": "fas fa-book",
                     "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
                 },
-                "fasta": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
-                    "fa_icon": "far fa-file-code"
-                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
@@ -69,7 +169,6 @@
                 },
                 "igenomes_base": {
                     "type": "string",
-                    "format": "directory-path",
                     "description": "The base path to the igenomes reference files",
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
@@ -87,14 +186,14 @@
                 "custom_config_version": {
                     "type": "string",
                     "description": "Git commit id for Institutional configs.",
-                    "default": "master",
+                    "default": "main",
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
                 },
                 "custom_config_base": {
                     "type": "string",
                     "description": "Base directory for Institutional configs.",
-                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
+                    "default": "https://raw.githubusercontent.com/nf-cmgg/configs/main",
                     "hidden": true,
                     "help_text": "If you're running offline, Nextflow will not be able to fetch the institutional config files from the internet. If you don't need them, then this is not a problem. If you do need them, you should download the files from the repo and tell Nextflow where to find them with this parameter.",
                     "fa_icon": "fas fa-users-cog"
@@ -161,6 +260,14 @@
                     "fa_icon": "fas fa-remove-format",
                     "hidden": true
                 },
+                "max_multiqc_email_size": {
+                    "type": "string",
+                    "description": "File size limit when attaching MultiQC reports to summary emails.",
+                    "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
+                    "default": "25.MB",
+                    "fa_icon": "fas fa-file-upload",
+                    "hidden": true
+                },
                 "monochrome_logs": {
                     "type": "boolean",
                     "description": "Do not use coloured log outputs.",
@@ -173,6 +280,24 @@
                     "fa_icon": "fas fa-people-group",
                     "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
                     "hidden": true
+                },
+                "multiqc_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Custom config file to supply to MultiQC.",
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
+                },
+                "multiqc_logo": {
+                    "type": "string",
+                    "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
+                    "fa_icon": "fas fa-image",
+                    "hidden": true
+                },
+                "multiqc_methods_description": {
+                    "type": "string",
+                    "description": "Custom MultiQC yaml file containing HTML including a methods description.",
+                    "fa_icon": "fas fa-cog"
                 },
                 "validate_params": {
                     "type": "boolean",
@@ -193,13 +318,34 @@
                     "fa_icon": "far calendar",
                     "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
                     "hidden": true
+                },
+                "help": {
+                    "type": ["boolean", "string"],
+                    "description": "Display the help message."
+                },
+                "help_full": {
+                    "type": "boolean",
+                    "description": "Display the full detailed help message."
+                },
+                "show_hidden": {
+                    "type": "boolean",
+                    "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
         }
     },
     "allOf": [
         {
-            "$ref": "#/$defs/input_output_options"
+            "$ref": "#/$defs/output_options"
+        },
+        {
+            "$ref": "#/$defs/targeted_options"
+        },
+        {
+            "$ref": "#/$defs/rnafusion_options"
+        },
+        {
+            "$ref": "#/$defs/pacvar_repeat_options"
         },
         {
             "$ref": "#/$defs/reference_genome_options"
