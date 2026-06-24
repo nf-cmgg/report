@@ -25,41 +25,33 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
 
-## Pipeline summary
 
-1. Extract and filter reads from input CRAM files (SAMtools)
-2. Merge overlapping paired end reads (pear)
-3. Combine PEAR output and singletons (mergereads)
-4. Count the reads at location of mutation (hotcount)
+## Summary of reporting modules available
 
-## Summary of tools and version used in the pipeline
-
-| Tool     | Version |
+| Tool     | Modules |
 | -------- | ------- |
-| SAMtools | 1.21    |
-| PEAR     | 0.9.6   |
-| hotcount | 0.0.0   |
+| targeted | hotcount    |
+| rnafusion     | varcov  |
+| pacvar_repeat | pacvarrepeat   |
 
 ## Usage
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
 
-First, prepare a samplesheet with your input data that looks as follows:
+First, prepare a samplesheet with your input data. Samplesheet differs per tool.
 
-`samplesheet.csv`:
+e.g. *targeted* tool `samplesheet.csv`:
 
 ```csv
 sample,cram,crai,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
 ```
 
-Each row represents a sample name, the cram file associated with the sample, the crai file of the sample, the design used for the sample.
-
-Now, you can run the pipeline using:
+Now, you can run the pipeline using (e.g. *targeted* )
 
 ```bash
-nextflow run nf-cmgg/report -profile <docker/singularity> --input samplesheet.csv --outdir <OUTDIR>
+nextflow run nf-cmgg/report -profile <docker/singularity> --targeted.input samplesheet.csv --targeted.gene MSH2 --outdir <OUTDIR>
 ```
 
 > [!WARNING]

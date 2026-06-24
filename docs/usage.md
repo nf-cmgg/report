@@ -33,10 +33,10 @@ An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided w
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --outdir ./results --fasta <path-to-fasta> -profile docker,targeted_msh2
+nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --outdir ./results  -profile docker
 ```
 
-This will launch the pipeline with the `docker` and `targeted_msh2` configuration profile. See below for more information about profiles.
+This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -63,9 +63,9 @@ nextflow run nf-cmgg/report -profile docker -params-file params.yaml
 with:
 
 ```yaml title="params.yaml"
-input: './samplesheet.csv'
+toolname.input: './samplesheet.csv'
 outdir: './results/'
-genome: 'GRCh37'
+genome: 'GRCh38'
 <...>
 ```
 
