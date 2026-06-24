@@ -63,7 +63,7 @@ nextflow run nf-cmgg/report -profile docker -params-file params.yaml
 with:
 
 ```yaml title="params.yaml"
-toolname.input: './samplesheet.csv'
+<flowname>.input: './samplesheet.csv'
 outdir: './results/'
 genome: 'GRCh38'
 <...>
