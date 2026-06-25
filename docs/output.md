@@ -33,11 +33,11 @@ The output directory is specified using `--outdir`. All intermediate output of e
 
 ## Pipeline overview
 
-The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
+The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following tools:
 
-- **Targeted**: Targeted variant analysis with HOTCOUNT
-- **RnaFusion**: generating report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
-- **PacVar Repeat**: generating report for [nf-core pacvar - repeat flow](https://nf-co.re/pacvar)
+- **targeted**: targeted variant analysis with HOTCOUNT
+- **rnafusion**: generating report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
+- **pacvar_repeat**: generating report for [nf-core pacvar - repeat flow](https://nf-co.re/pacvar)
 
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 

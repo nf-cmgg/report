@@ -7,17 +7,10 @@
 You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can either be a CSV, TSV, JSON or YAML file.
 
 ```bash
---targeted.input '[path to samplesheet file of targeted workflow]'
+--toolname.input '[path to samplesheet file of specific workflow]'
 ```
 
-Example CSV-file:
-
-```bash
-sample,cram,crai,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
-```
-
-### Full samplesheet targeted flow
+### targeted flow
 
 | Column   | Description                                                                                |
 | -------- | ------------------------------------------------------------------------------------------ |
@@ -33,6 +26,7 @@ An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided w
 The typical command for running the pipeline is as follows:
 
 ```bash
+#targeted
 nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --outdir ./results  -profile docker
 ```
 

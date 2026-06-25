@@ -28,7 +28,7 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 
 ## Summary of reporting modules available
 
-| Tool     | Modules |
+| Toolname     | Modules |
 | -------- | ------- |
 | targeted | hotcount    |
 | rnafusion     | varcov  |
@@ -48,10 +48,10 @@ sample,cram,crai,design
 CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
 ```
 
-Now, you can run the pipeline using (e.g. *targeted* )
+Now, you can run the pipeline using
 
 ```bash
-nextflow run nf-cmgg/report -profile <docker/singularity> --targeted.input samplesheet.csv --targeted.gene MSH2 --outdir <OUTDIR>
+nextflow run nf-cmgg/report -profile <docker/singularity> --toolname.input samplesheet.csv --outdir <OUTDIR>
 ```
 
 > [!WARNING]
