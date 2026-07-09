@@ -33,6 +33,7 @@ lint:
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
     - tests/default.nf.test
+    - docs/CONTRIBUTING.md
 template:
   org: nf-cmgg
   name: report
