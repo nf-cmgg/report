@@ -25,14 +25,13 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
 
-
 ## Summary of reporting modules available
 
-| Toolname     | Modules |
-| -------- | ------- |
-| targeted | hotcount    |
-| rnafusion     | varcov  |
-| pacvar_repeat | pacvarrepeat   |
+| Toolname      | Modules      |
+| ------------- | ------------ |
+| targeted      | hotcount     |
+| rnafusion     | varcov       |
+| pacvar_repeat | pacvarrepeat |
 
 ## Usage
 
@@ -41,7 +40,7 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 
 First, prepare a samplesheet with your input data. Samplesheet differs per tool.
 
-e.g. *targeted* tool `samplesheet.csv`:
+e.g. _targeted_ tool `samplesheet.csv`:
 
 ```csv
 sample,cram,crai,design
