@@ -45,7 +45,7 @@ workflow RNAFUSION {
                 getFilesAndCheck(dir, "arriba/*.fusions.tsv"),
                 meta.run,
                 meta.design
-            ] 
+            ]
         }
 
     VARCOV(
