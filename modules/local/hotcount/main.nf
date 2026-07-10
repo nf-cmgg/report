@@ -17,7 +17,41 @@ process HOTCOUNT {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    do_it_gz.sh ${query_file} ${assembled_fastq} > ${prefix}.counts.txt
+    design="${query_file}"
+    assembled_file="${assembled_fastq}"
+    sample_name=\$(basename "\${assembled_file}")
+    run_date=\$(date)
+
+    {
+        echo "## script do_it.sh running in version 0.0"
+        echo "## date is \${run_date}"
+        echo -n "Sample"
+        while IFS= read -r line || [ -n "\${line}" ]; do
+            line="\${line%\$'\r'}"
+            [ -z "\${line}" ] && continue
+            mut="\${line%%=*}"
+            echo -n " \${mut}"
+        done < "\${design}"
+        echo ""
+
+        echo -n "\${sample_name}"
+        while IFS= read -r line || [ -n "\${line}" ]; do
+            line="\${line%\$'\r'}"
+            [ -z "\${line}" ] && continue
+            forward="\${line#*=}"
+            [ -z "\${forward}" ] && continue
+            reversed=\$(printf '%s' "\${forward}" | rev | tr 'ACGT' 'TGCA')
+
+            if [[ "\${assembled_file}" == *.gz ]]; then
+                nb=\$(zgrep -c -E "\${forward}|\${reversed}" "\${assembled_file}" || true)
+            else
+                nb=\$(grep -c -E "\${forward}|\${reversed}" "\${assembled_file}" || true)
+            fi
+            nb="\${nb:-0}"
+            echo -n " \${nb}"
+        done < "\${design}"
+        echo ""
+    } > "${prefix}.counts.txt"
     """
 
     stub:

@@ -4,8 +4,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UNTAR     } from '../modules/nf-core/untar/main.nf'
-include { VARCOV    } from '../modules/local/varcov/main.nf'
+include { UNTAR  } from '../modules/nf-core/untar/main.nf'
+include { VARCOV } from '../modules/local/varcov/main.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +57,7 @@ workflow RNAFUSION {
     )
 
     emit:
-    excels   = VARCOV.out.output // channel: [ val(meta), path(excel) ]
+    excels = VARCOV.out.output // channel: [ val(meta), path(excel) ]
 }
 
 /*
