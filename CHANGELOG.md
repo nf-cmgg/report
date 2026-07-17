@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed`
 - Module **hotcount**: Optimized process for counting
 - Module **samtools**: Update version from 1.22.1 to 1.23.1
+- Bumped multiqc CMGG version to 0.0.7
 - Added pixi environment for reproducible Python setup
 - Updated documentation
 

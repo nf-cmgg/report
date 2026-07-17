@@ -31,7 +31,7 @@
                     "samtools": "1.22.1"
                 },
                 "Workflow": {
-                    "nf-cmgg/report": "v1.0.0"
+                    "nf-cmgg/report": "v1.1.0"
                 }
             },
             [
@@ -65,7 +65,7 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+
             ]
         ],
         "timestamp": "2026-07-09T10:10:22.321789361",
