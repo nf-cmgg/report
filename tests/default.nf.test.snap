@@ -34,7 +34,6 @@
                 }
             },
             [
-                "DONE",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data",
@@ -67,7 +66,7 @@
                 
             ]
         ],
-        "timestamp": "2026-07-17T15:08:54.593749923",
+        "timestamp": "2026-07-17T16:21:32.002417286",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.4"
