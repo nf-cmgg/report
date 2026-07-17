@@ -70,6 +70,15 @@
                             "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                             "description": "Path to FASTA genome file.",
                             "fa_icon": "far fa-file-code"
+                        },
+                        "fai": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "text/plain",
+                            "pattern": "^\\S+\\.fai$",
+                            "description": "Path to the index of the FASTA genome file.",
+                            "fa_icon": "far fa-file-code"
                         }
                     }
                 }

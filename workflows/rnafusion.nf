@@ -57,7 +57,7 @@ workflow RNAFUSION {
     )
 
     emit:
-    excels = VARCOV.out.output // channel: [ val(meta), path(excel) ]
+    VARCOV.out.output // channel: [ val(meta), path(excel) ]
 }
 
 /*

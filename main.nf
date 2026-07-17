@@ -58,26 +58,35 @@ workflow {
 
     def out_targeted_hotcount = channel.empty()
     if (params.targeted.input) {
-        def required_parameters = ['fasta', 'queries_dir', 'gene']
+        def required_parameters = ['fasta', 'queries_dir', 'gene', 'fai']
         check_required_params(params.get('targeted'), 'targeted', required_parameters)
         def targeted_params = params.targeted
 
-        def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
-        def fasta_file = file(targeted_params.fasta)
-        def fai_file = file("${targeted_params.fasta}.fai")
+        def samplesheet_list = samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json")
+        def query_list = files("${targeted_params.queries_dir}/${targeted_params.gene}/*.txt")
+        def queries = samplesheet_list
+            .collect { meta, _cram, _crai -> meta.design }
+            .unique()
+            .collectEntries { design ->
+                def query = query_list.find { file -> file.name.startsWith(design) }
+                if (!query) {
+                    error("Could not find a query file for design ${design} in the query directory (${targeted_params.queries_dir})")
+                }
+                [design, query]
+            }
+        def ch_samplesheet = channel.fromList(samplesheet_list)
         def fasta = channel.value([
             [id: 'reference'],
-            fasta_file,
-            fai_file.exists() ? fai_file : null
+            file(targeted_params.fasta),
+            file(targeted_params.fai)
         ])
 
         TARGETED(
             ch_samplesheet,
             fasta,
-            targeted_params.queries_dir,
-            targeted_params.gene,
+            queries
         )
-        out_targeted_hotcount = TARGETED.out.hotcount
+        out_targeted_hotcount = TARGETED.out
     }
 
     def out_rnafusion_excels = channel.empty()
@@ -98,19 +107,20 @@ workflow {
             mane,
             workflow.manifest.version,
         )
-        out_rnafusion_excels = RNAFUSION.out.excels
+        out_rnafusion_excels = RNAFUSION.out
     }
 
-    def out_pacvar_repeat_excels = channel.empty()
-    if (params.pacvar_repeat.input) {
-        def required_parameters = ['input']
-        check_required_params(params.get('pacvar_repeat'), 'pacvar_repeat', required_parameters)
-        def pacvar_repeat_params = params.pacvar_repeat
-        def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
+    // TODO: out of scope of the current release, reimplement this later
+    // def out_pacvar_repeat_excels = channel.empty()
+    // if (params.pacvar_repeat.input) {
+    //     def required_parameters = ['input']
+    //     check_required_params(params.get('pacvar_repeat'), 'pacvar_repeat', required_parameters)
+    //     def pacvar_repeat_params = params.pacvar_repeat
+    //     def ch_samplesheet = channel.fromList(samplesheetToList(file(pacvar_repeat_params.input), "${projectDir}/assets/schema_pacvar_repeat_input.json"))
 
-        PACVAR_REPEAT(ch_samplesheet)
-        out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
-    }
+    //     PACVAR_REPEAT(ch_samplesheet)
+    //     out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
+    // }
 
     //
     // Collate and save software versions
@@ -192,7 +202,7 @@ workflow {
     publish:
     targeted_hotcount    = out_targeted_hotcount
     rnafusion_excels     = out_rnafusion_excels
-    pacvar_repeat_excels = out_pacvar_repeat_excels
+    // pacvar_repeat_excels = out_pacvar_repeat_excels
     multiqc_report       = MULTIQC.out.report
     multiqc_data         = MULTIQC.out.data
 }
@@ -214,11 +224,11 @@ output {
             excel >> "rnafusion/varcov/${meta.run}/"
         }
     }
-    pacvar_repeat_excels {
-        path { _meta, excel ->
-            excel >> "pacvar_repeat/reports/"
-        }
-    }
+    // pacvar_repeat_excels {
+    //     path { _meta, excel ->
+    //         excel >> "pacvar_repeat/reports/"
+    //     }
+    // }
     multiqc_report {
         path { _meta, report ->
             report >> "multiqc/"
