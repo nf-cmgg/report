@@ -7,23 +7,23 @@ include { HOTCOUNT       } from '../modules/local/hotcount/main.nf'
 
 workflow TARGETED {
     take:
-    ch_samplesheet
-    fasta
-    queries
-    gene
+    ch_samplesheet // channel: sampleinfo => meta, cram, crai
+    fasta_fai      // value: meta, fasta, fai
+    queries        // string: path to the directory containing the query files
+    gene           // string: gene name (used to select the query file)
 
     main:
 
     SAMTOOLS_VIEW(
         ch_samplesheet,
-        fasta.map { meta, fa, fai -> tuple(meta, fa, []) },
+        fasta_fai,
         [],
         [],
     )
 
     SAMTOOLS_SORT(
         SAMTOOLS_VIEW.out.bam,
-        fasta.map { meta, fa, fai -> tuple(meta, fa, fai) },
+        fasta_fai,
         "",
     )
 
@@ -37,7 +37,7 @@ workflow TARGETED {
 
     // Branch based on fastq content (keeping both fastq and singleton together)
     ch_branched = ch_fastq_and_singleton.branch { _meta, fastq, _singleton ->
-        non_empty: fastq.any { f -> f.countLines() > 0 }
+        non_empty: fastq.any { f -> f.size() > 31 } // empty gzipped files are 31 bytes
         empty: true
     }
 
@@ -67,7 +67,7 @@ workflow TARGETED {
         tuple([id: meta.id, design: meta.design], fastq)
     }
 
-    def query_list = file("${queries}/${gene}/*.txt")
+    def query_list = files("${queries}/${gene}/*.txt")
 
     ch_queries = ch_samplesheet.map { meta, _cram, _crai ->
         def query = query_list.find { file -> file.name.startsWith(meta.design) }
@@ -85,5 +85,5 @@ workflow TARGETED {
     )
 
     emit:
-    hotcount = HOTCOUNT.out.counts
+    HOTCOUNT.out.counts
 }

@@ -75,7 +75,7 @@ workflow {
             targeted_params.queries_dir,
             targeted_params.gene,
         )
-        out_targeted_hotcount = TARGETED.out.hotcount
+        out_targeted_hotcount = TARGETED.out
     }
 
     def out_rnafusion_excels = channel.empty()
@@ -96,7 +96,7 @@ workflow {
             mane,
             workflow.manifest.version,
         )
-        out_rnafusion_excels = RNAFUSION.out.excels
+        out_rnafusion_excels = RNAFUSION.out
     }
 
     // TODO: out of scope of the current release, reimplement this later
