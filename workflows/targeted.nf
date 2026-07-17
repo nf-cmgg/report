@@ -9,8 +9,7 @@ workflow TARGETED {
     take:
     ch_samplesheet // channel: sampleinfo => meta, cram, crai
     fasta_fai      // value: meta, fasta, fai
-    queries        // string: path to the directory containing the query files
-    gene           // string: gene name (used to select the query file)
+    queries        // map: paths to the query files => [design: query]
 
     main:
 
@@ -61,14 +60,8 @@ workflow TARGETED {
     // Combine CAT_FASTQ output with singleton-only samples
     def ch_final_fastq = CAT_FASTQ.out.reads.mix(ch_singleton_only)
 
-    def query_list = files("${queries}/${gene}/*.txt")
-
     def ch_hotcount_input = ch_final_fastq.map { meta, fastq ->
-        def query = query_list.find { file -> file.name.startsWith(meta.design) }
-        if (!query) {
-            error("Could not find a query file for design ${meta.design} in the query directory (${queries})")
-        }
-        tuple(meta, query, fastq)
+        tuple(meta, queries.get(meta.design), fastq)
     }
 
     HOTCOUNT(

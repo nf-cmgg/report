@@ -62,7 +62,19 @@ workflow {
         check_required_params(params.get('targeted'), 'targeted', required_parameters)
         def targeted_params = params.targeted
 
-        def ch_samplesheet = channel.fromList(samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json"))
+        def samplesheet_list = samplesheetToList(targeted_params.input, "${projectDir}/assets/schema_targeted_input.json")
+        def query_list = files("${targeted_params.queries_dir}/${targeted_params.gene}/*.txt")
+        def queries = samplesheet_list
+            .collect { meta, _cram, _crai -> meta.design }
+            .unique()
+            .collectEntries { design ->
+                def query = query_list.find { file -> file.name.startsWith(design) }
+                if (!query) {
+                    error("Could not find a query file for design ${design} in the query directory (${targeted_params.queries_dir})")
+                }
+                [design, query]
+            }
+        def ch_samplesheet = channel.fromList(samplesheet_list)
         def fasta = channel.value([
             [id: 'reference'],
             file(targeted_params.fasta),
@@ -72,8 +84,7 @@ workflow {
         TARGETED(
             ch_samplesheet,
             fasta,
-            targeted_params.queries_dir,
-            targeted_params.gene,
+            queries
         )
         out_targeted_hotcount = TARGETED.out
     }
