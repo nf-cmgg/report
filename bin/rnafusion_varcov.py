@@ -705,4 +705,3 @@ for filename in os.listdir(input_path):
 
         # save file
         workbook.save(excel_path)
-
