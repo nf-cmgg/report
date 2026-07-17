@@ -6,14 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v1.1.0 - [../07/2026]
 
 ### `Added`
+
 #### New Workflows
+
 - **Targeted** (`workflows/targeted.nf`): Targeted variant analysis workflow with gene-specific configurations
 - **Pacvar reporting**: enabled (but no `workflows/pacvar.nf` yet)
 
 #### New Modules
+
 - **cat/fastq**: Fastq concatenation module (replaced merge_reads)
 
 ### `Changed`
+
 - Module **hotcount**: Optimized process for counting
 - Module **samtools**: Update version from 1.22.1 to 1.23.1
 - Bumped multiqc CMGG version to 0.0.7
@@ -21,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated documentation
 
 ### `Removed`
+
 - Deprecated scripts and legacy code paths
 - Replaced `merge_reads` with `cat_fastq` for better compatibility
 
