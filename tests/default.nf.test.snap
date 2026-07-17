@@ -5,11 +5,6 @@
                 "HOTCOUNT": {
                     "hotcount": 0.0
                 },
-                "PACVAR_REPEAT": {
-                    "openpyxl": "3.1.5",
-                    "pandas": "2.3.3",
-                    "python": "3.14.2"
-                },
                 "SAMTOOLS_FASTQ": {
                     "samtools": "1.23.1"
                 },
@@ -47,10 +42,6 @@
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_targeted_MSH2.txt",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/targeted_MSH2.txt",
                 "multiqc/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report.html",
-                "pacvar_repeat",
-                "pacvar_repeat/reports",
-                "pacvar_repeat/reports/sample1A.pacvar_repeat_report.xlsx",
-                "pacvar_repeat/reports/sample2A.pacvar_repeat_report.xlsx",
                 "pipeline_info",
                 "pipeline_info/report_mqc_versions.yml",
                 "rnafusion",
@@ -66,7 +57,7 @@
                 
             ]
         ],
-        "timestamp": "2026-07-17T16:21:32.002417286",
+        "timestamp": "2026-07-17T17:05:04.899149873",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.4"
