@@ -1,8 +1,15 @@
-repository_type: pipeline
-
-nf_core_version: 3.5.1
-
 lint:
+  files_exist:
+    - assets/multiqc_config.yml
+    - CODE_OF_CONDUCT.md
+    - assets/nf-core-report_logo_light.png
+    - docs/images/nf-core-report_logo_light.png
+    - docs/images/nf-core-report_logo_dark.png
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
+    - tests/default.nf.test
+    - docs/CONTRIBUTING.md
   files_unchanged:
     - .github/CONTRIBUTING.md
     - assets/sendmail_template.txt
@@ -19,30 +26,21 @@ lint:
     - docs/README.md
     - .gitignore
     - .gitattributes
-  nextflow_config: false
   multiqc_config:
     - report_comment
+  nextflow_config: false
   schema_params: false
-  files_exist:
-    - assets/multiqc_config.yml
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-report_logo_light.png
-    - docs/images/nf-core-report_logo_light.png
-    - docs/images/nf-core-report_logo_dark.png
-    - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
-    - .github/workflows/awsfulltest.yml
-    - tests/default.nf.test
-    - docs/CONTRIBUTING.md
+nf_core_version: 4.0.2
+repository_type: pipeline
 template:
-  org: nf-cmgg
-  name: report
-  description: A post-processing reporting pipeline for internal use at CMGG
   author: Tuur-ds,nvnieuwk
-  version: 1.1.0
-  force: true
+  description: A post-processing reporting pipeline for internal use at CMGG
+  force: false
+  is_nfcore: false
+  name: report
+  org: nf-cmgg
   outdir: .
   skip_features:
     - multiqc
     - fastqc
-  is_nfcore: false
+  version: 1.1.0
