@@ -26,7 +26,10 @@ workflow PIPELINE_INITIALISATION {
     version // boolean: Display version and exit
     validate_params // boolean: Boolean whether to validate parameters against the schema at runtime
     nextflow_cli_args //   array: List of positional nextflow CLI args
-    outdir //  string: The output directory where the results will be saved
+    outdir            //  string: The output directory where the results will be saved
+    help              // boolean: Display help message and exit
+    help_full         // boolean: Show the full help message
+    show_hidden       // boolean: Show hidden parameters in the help message
 
     main:
 
@@ -43,7 +46,7 @@ workflow PIPELINE_INITIALISATION {
     //
     // Validate parameters and generate parameter summary to stdout
     //
-
+    def after_text = ""
     def before_text = """
 -\033[2m----------------------------------------------------\033[0m-
                                         \033[0;34m    ///\033[0;32m/// \033[0m
@@ -59,12 +62,12 @@ workflow PIPELINE_INITIALISATION {
         workflow,
         validate_params,
         null,
-        params.help,
-        params.help_full,
-        params.show_hidden,
+        help,
+        help_full,
+        show_hidden,
         before_text,
-        "",
-        command,
+        after_text,
+        command
     )
 
     //
@@ -114,10 +117,11 @@ workflow PIPELINE_COMPLETION {
         }
 
         completionSummary(monochrome_logs)
+
     }
 
     workflow.onError {
-        log.error("Pipeline failed. Please refer to troubleshooting docs: https://nf-co.re/docs/usage/troubleshooting")
+        log.error "Pipeline failed. Please refer to troubleshooting docs for common issues: https://nf-co.re/docs/running/troubleshooting"
     }
 }
 

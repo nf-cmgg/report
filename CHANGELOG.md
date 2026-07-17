@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped multiqc CMGG version to 0.0.7
 - Added pixi environment for reproducible Python setup
 - Updated documentation
+- Bumped nf-core version to 4.0.2
 
 ### `Removed`
 

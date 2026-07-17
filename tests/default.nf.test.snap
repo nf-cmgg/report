@@ -1,7 +1,6 @@
 {
     "-profile test": {
         "content": [
-            13,
             {
                 "HOTCOUNT": {
                     "hotcount": 0.0
@@ -35,7 +34,6 @@
                 }
             },
             [
-                "DONE",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data",
@@ -65,10 +63,10 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-
+                
             ]
         ],
-        "timestamp": "2026-07-09T10:10:22.321789361",
+        "timestamp": "2026-07-17T16:21:32.002417286",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.4"
