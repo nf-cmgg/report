@@ -32,11 +32,21 @@ The output directory is specified using `--outdir`. All intermediate output of e
 
 ### rnafusion
 
-<to add>
+The `rnafusion` flow writes per-sample excel files.
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `rnafusion/`
+  - `varcov`:
+    - `<run>: subdirectory of the specific run
+      - `*.xlsx`: excel files for each sample present in the output directory of the specified run.
+
+</details>
 
 ### targeted
 
-The `targeted` module writes per-sample count tables for each gene-design combination, and groups outputs by gene name.
+The `targeted` flow writes per-sample count tables for each gene-design combination, and groups outputs by gene name.
 
 <details markdown="1">
 <summary>Output files</summary>

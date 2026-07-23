@@ -19,9 +19,10 @@ You will need to create a samplesheet with information about the samples you wou
 
 Following table shows the fields that are used by the samplesheet:
 
-| Column | Description |
-| ------ | ----------- |
-| `...`  | ...         |
+| Column   | Description                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------------- |
+| `run`    | MANDATORY - The identifier of the rnafusion run                                                                 |
+| `outdir` | MANDATORY - The full path to the output directory of the rnafusion run. Can be a directory or a tarzipped file. |
 
 An [example samplesheet](../assets/samplesheet_rnafusion.csv) has been provided with the pipeline.
 
