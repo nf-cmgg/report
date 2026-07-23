@@ -3,14 +3,13 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.1.0 - [../07/2026]
+## v1.1.0 - On Target [../07/2026]
 
 ### `Added`
 
 #### New Workflows
 
 - **Targeted** (`workflows/targeted.nf`): Targeted variant analysis workflow with gene-specific configurations
-- **Pacvar reporting**: enabled (but no `workflows/pacvar.nf` yet)
 
 #### New Modules
 
