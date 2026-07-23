@@ -14,13 +14,14 @@ You will need to create a samplesheet with information about the samples you wou
 ```bash
 --toolname.input '[path to samplesheet file of specific workflow]'
 ```
+
 ### rnafusion
 
 Following table shows the fields that are used by the samplesheet:
 
-| Column   | Description                                                                                |
-| -------- | ------------------------------------------------------------------------------------------ |
-| `...` | ...                                                          |
+| Column | Description |
+| ------ | ----------- |
+| `...`  | ...         |
 
 An [example samplesheet](../assets/samplesheet_rnafusion.csv) has been provided with the pipeline.
 
@@ -28,11 +29,11 @@ An [example samplesheet](../assets/samplesheet_rnafusion.csv) has been provided 
 
 Following table shows the fields that are used by the samplesheet:
 
-| Column   | Description                                                                                |
-| -------- | ------------------------------------------------------------------------------------------ |
-| `sample` | MANDATORY - Custom sample name.                                                            |
-| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`. |
-| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
+| Column   | Description                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `sample` | MANDATORY - Custom sample name.                                                                               |
+| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`.                    |
+| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.                             |
 | `design` | MANDATORY - Specifies the sequencing panel or assay for each sample. Valid names are listed in `queries_dir`. |
 
 An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
