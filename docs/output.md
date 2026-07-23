@@ -17,7 +17,6 @@ results/
 │        ├── test1.counts.txt
 │        └── test2.counts.txt
 ├── rnafusion
-├── pacvar_repeat
 └── pipeline_info
     ├── execution_report_2025-05-14_10-34-56.html
     ├── execution_timeline_2025-05-14_10-34-56.html
@@ -29,17 +28,35 @@ results/
 
 The output directory is specified using `--outdir`. All intermediate output of each tools is saved in it's respective subfolder.
 
-<!-- TODO nf-core: Write this documentation describing your workflow's output -->
-
 ## Pipeline overview
 
-The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following tools:
+### rnafusion
 
-- **targeted**: targeted variant analysis with HOTCOUNT
-- **rnafusion**: generating report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
-- **pacvar_repeat**: generating report for [nf-core pacvar - repeat flow](https://nf-co.re/pacvar)
+<to add>
 
-- [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
+### targeted
+
+The `targeted` module writes per-sample count tables for each gene-design combination, and groups outputs by gene name.
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `targeted/`
+  - `<gene>/`: subdirectory for gene (for example `MSH2/`).
+    - `*.counts.txt`: tabular count output for design generated for each processed sample.
+
+</details>
+
+### MultiQC
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `multiqc/`
+  - `*multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
+  - `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
+
+</details>
 
 ### Pipeline information
 

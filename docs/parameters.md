@@ -12,14 +12,31 @@ Define where the pipeline should find input data and save output data.
 | `outdir`           | The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.                                                                                                                                                                                                                                                     | `string` |         | True     |        |
 | `email`            | Email address for completion summary. <details><summary>Help</summary><small>Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.</small></details>                  | `string` |         |          |        |
 
+## tool options
+
+### rnafusion
+
+<to add>
+
+### targeted
+
+The targeted workflow uses the `gene` value to locate query files in `queries_dir/<gene>/`. It then matches those files to the sample `design` values found in the samplesheet.
+
+| Parameter     | Description                        | Type     | Default              | Required | Hidden |
+| ------------- | ---------------------------------- | -------- | -------------------- | -------- | ------ |
+| `queries_dir` | Directory containing variant query files grouped by gene name and design. | `string` | `../assets/targeted` | yes      |        |
+| `gene`        | Gene name used to select the query file set, for example `MSH2`. | `string` | `MSH2`               | yes      |        |
+| `fasta`       | Path to the reference FASTA file. | `string` |                      | yes      |        |
+| `fai`         | Path to the FASTA index file corresponding to `fasta`. | `string` |                      | yes      |        |
+
+
 ## Reference genome options
 
 Reference genome related files and options required for the workflow.
 
 | Parameter         | Description                                                                                                                                                                                                                                                                                                                                                                                                                   | Type      | Default                     | Required | Hidden |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------- | -------- | ------ |
-| `genome`          | Name of iGenomes reference. <details><summary>Help</summary><small>If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. <br><br>See the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details.</small></details> | `string`  |                             |          |        |
-| `fasta`           | Path to FASTA genome file. <details><summary>Help</summary><small>This parameter is _mandatory_ if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.</small></details>                                                                                                                    | `string`  |                             |          |        |
+| `genome`          | Name of iGenomes reference. <details><summary>Help</summary><small>If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. <br><br>See the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details.</small></details> | `string`  |                             |          |               |
 | `igenomes_ignore` | Do not load the iGenomes reference config. <details><summary>Help</summary><small>Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.</small></details>                                                                                                                                             | `boolean` |                             |          | True   |
 | `igenomes_base`   | The base path to the igenomes reference files                                                                                                                                                                                                                                                                                                                                                                                 | `string`  | s3://ngi-igenomes/igenomes/ |          | True   |
 
@@ -51,10 +68,3 @@ Less common options for the pipeline, typically set in a config file.
 | `validate_params`              | Boolean whether to validate parameters against the schema at runtime                                                                                                                                                                                                                                                                                                                                         | `boolean` | True                                                     |          | True   |
 | `pipelines_testdata_base_path` | Base URL or local path to location of pipeline test dataset files                                                                                                                                                                                                                                                                                                                                            | `string`  | https://raw.githubusercontent.com/nf-core/test-datasets/ |          | True   |
 | `trace_report_suffix`          | Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.                                                                                                                                                                                                                                                                                                  | `string`  |                                                          |          | True   |
-
-## Targeted parameters
-
-| Parameter     | Description                        | Type     | Default              | Required | Hidden |
-| ------------- | ---------------------------------- | -------- | -------------------- | -------- | ------ |
-| `queries_dir` | Directory with variant query files | `string` | `../assets/targeted` | yes      |        |
-| `gene`        | Genename (e.g. MSH2)               | `string` |                      | yes      |        |
