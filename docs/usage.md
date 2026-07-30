@@ -1,6 +1,11 @@
 # nf-cmgg/report: Usage
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+## Introduction
+
+The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following tools:
+
+- **rnafusion**: generating custom report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
+- **targeted**: targeted variant analysis with HOTCOUNT
 
 ## Samplesheet input
 
@@ -10,14 +15,27 @@ You will need to create a samplesheet with information about the samples you wou
 --toolname.input '[path to samplesheet file of specific workflow]'
 ```
 
-### targeted flow
+### rnafusion
 
-| Column   | Description                                                                                |
-| -------- | ------------------------------------------------------------------------------------------ |
-| `sample` | MANDATORY - Custom sample name.                                                            |
-| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`. |
-| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
-| `design` | MANDATORY - Indicates the sequencing panel or assay used for each sample.                  |
+Following table shows the fields that are used by the samplesheet:
+
+| Column   | Description                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------------- |
+| `run`    | MANDATORY - The identifier of the rnafusion run                                                                 |
+| `outdir` | MANDATORY - The full path to the output directory of the rnafusion run. Can be a directory or a tarzipped file. |
+
+An [example samplesheet](../assets/samplesheet_rnafusion.csv) has been provided with the pipeline.
+
+### targeted
+
+Following table shows the fields that are used by the samplesheet:
+
+| Column   | Description                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `sample` | MANDATORY - Custom sample name.                                                                               |
+| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`.                    |
+| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.                             |
+| `design` | MANDATORY - Specifies the sequencing panel or assay for each sample. Valid names are listed in `queries_dir`. |
 
 An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
 
