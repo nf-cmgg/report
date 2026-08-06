@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added pixi environment for reproducible Python setup
 - Updated documentation
 - Bumped nf-core version to 4.0.2
+- Revert the default configs base to the nf-core configs in preparation of converting nf-cmgg/configs to a private repo
 
 ### `Removed`
 
