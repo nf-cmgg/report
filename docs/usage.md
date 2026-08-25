@@ -1,30 +1,41 @@
 # nf-cmgg/report: Usage
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+## Introduction
+
+The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following tools:
+
+- **rnafusion**: generating custom report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
+- **targeted**: targeted variant analysis with HOTCOUNT
 
 ## Samplesheet input
 
 You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It can either be a CSV, TSV, JSON or YAML file.
 
 ```bash
---targeted.input '[path to samplesheet file of targeted workflow]'
+--toolname.input '[path to samplesheet file of specific workflow]'
 ```
 
-Example CSV-file:
+### rnafusion
 
-```bash
-sample,cram,crai,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
-```
+Following table shows the fields that are used by the samplesheet:
 
-### Full samplesheet targeted flow
+| Column   | Description                                                                                                     |
+| -------- | --------------------------------------------------------------------------------------------------------------- |
+| `run`    | MANDATORY - The identifier of the rnafusion run                                                                 |
+| `outdir` | MANDATORY - The full path to the output directory of the rnafusion run. Can be a directory or a tarzipped file. |
 
-| Column   | Description                                                                                |
-| -------- | ------------------------------------------------------------------------------------------ |
-| `sample` | MANDATORY - Custom sample name.                                                            |
-| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`. |
-| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.          |
-| `design` | MANDATORY - Indicates the sequencing panel or assay used for each sample.                  |
+An [example samplesheet](../assets/samplesheet_rnafusion.csv) has been provided with the pipeline.
+
+### targeted
+
+Following table shows the fields that are used by the samplesheet:
+
+| Column   | Description                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `sample` | MANDATORY - Custom sample name.                                                                               |
+| `cram`   | MANDATORY - Full path to CRAM file for the sample. File has to have the extension `.cram`.                    |
+| `crai`   | MANDATORY - Full path to CRAM index file. File has to have the extension `.crai`.                             |
+| `design` | MANDATORY - Specifies the sequencing panel or assay for each sample. Valid names are listed in `queries_dir`. |
 
 An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
 
@@ -33,10 +44,11 @@ An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided w
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --outdir ./results --fasta <path-to-fasta> -profile docker,targeted_msh2
+#targeted
+nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --outdir ./results  -profile docker
 ```
 
-This will launch the pipeline with the `docker` and `targeted_msh2` configuration profile. See below for more information about profiles.
+This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -52,7 +64,7 @@ If you wish to repeatedly use the same parameters for multiple runs, rather than
 Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
 
 > [!WARNING]
-> Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources), other infrastructural tweaks (such as output directories), or module arguments (args).
+> Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/running/run-pipelines#configuring-pipelines), other infrastructural tweaks (such as output directories), or module arguments (args).
 
 The above pipeline run specified with a params file in yaml format:
 
@@ -63,9 +75,9 @@ nextflow run nf-cmgg/report -profile docker -params-file params.yaml
 with:
 
 ```yaml title="params.yaml"
-input: './samplesheet.csv'
+<flowname>.input: './samplesheet.csv'
 outdir: './results/'
-genome: 'GRCh37'
+genome: 'GRCh38'
 <...>
 ```
 
@@ -125,7 +137,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 - `shifter`
   - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
 - `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  - A generic configuration profile to be used with [Charliecloud](https://charliecloud.io/)
 - `apptainer`
   - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `wave`
@@ -149,19 +161,19 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 
 Whilst the default requirements set within the pipeline will hopefully work for most people and with most input data, you may find that you want to customise the compute resources that the pipeline requests. Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the pipeline steps, if the job exits with any of the error codes specified [here](https://github.com/nf-core/rnaseq/blob/4c27ef5610c87db00c3c5a3eed10b1d161abf575/conf/base.config#L18) it will automatically be resubmitted with higher resources request (2 x original, then 3 x original). If it still fails after the third attempt then the pipeline execution is stopped.
 
-To change the resource requests, please see the [max resources](https://nf-co.re/docs/usage/configuration#max-resources) and [tuning workflow resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) section of the nf-core website.
+To change the resource requests, please see the [max resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#set-max-resources) and [customise process resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#customize-process-resources) section of the nf-core website.
 
 ### Custom Containers
 
 In some cases, you may wish to change the container or conda environment used by a pipeline steps for a particular tool. By default, nf-core pipelines use containers and software from the [biocontainers](https://biocontainers.pro/) or [bioconda](https://bioconda.github.io/) projects. However, in some cases the pipeline specified version maybe out of date.
 
-To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/usage/configuration#updating-tool-versions) section of the nf-core website.
+To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#update-tool-versions) section of the nf-core website.
 
 ### Custom Tool Arguments
 
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
 
-To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
+To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#modifying-tool-arguments) section of the nf-core website.
 
 ### nf-core/configs
 

@@ -1,8 +1,19 @@
 {
     "-profile test": {
         "content": [
-            3,
             {
+                "HOTCOUNT": {
+                    "hotcount": 0.0
+                },
+                "SAMTOOLS_FASTQ": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_VIEW": {
+                    "samtools": "1.23.1"
+                },
                 "UNTAR": {
                     "untar": 1.34
                 },
@@ -14,35 +25,42 @@
                     "samtools": "1.22.1"
                 },
                 "Workflow": {
-                    "nf-cmgg/report": "v1.0.0"
+                    "nf-cmgg/report": "v1.1.0"
                 }
             },
             [
                 "multiqc",
                 "multiqc/multiqc_data",
-                "multiqc/multiqc_data/llms-full.txt",
-                "multiqc/multiqc_data/multiqc.log",
-                "multiqc/multiqc_data/multiqc.parquet",
-                "multiqc/multiqc_data/multiqc_citations.txt",
-                "multiqc/multiqc_data/multiqc_data.json",
-                "multiqc/multiqc_data/multiqc_software_versions.txt",
-                "multiqc/multiqc_data/multiqc_sources.txt",
-                "multiqc/multiqc_report.html",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/llms-full.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.log",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.parquet",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_citations.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_data.json",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_software_versions.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_sources.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_targeted_MSH2.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/targeted_MSH2.txt",
+                "multiqc/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/report_mqc_versions.yml",
                 "rnafusion",
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
-                "rnafusion/varcov/NVQTEST_123/test.xlsx"
+                "rnafusion/varcov/NVQTEST_123/test.xlsx",
+                "targeted",
+                "targeted/MSH2",
+                "targeted/MSH2/test1.counts.txt",
+                "targeted/MSH2/test2.counts.txt"
             ],
             [
                 
             ]
         ],
-        "timestamp": "2026-03-23T10:41:48.361067334",
+        "timestamp": "2026-07-17T17:05:04.899149873",
         "meta": {
-            "nf-test": "0.9.4",
-            "nextflow": "25.10.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.4"
         }
     }
 }

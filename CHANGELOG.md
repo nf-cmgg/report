@@ -3,14 +3,33 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.0.0 - [19/03/2026]
-
-Initial release of nf-cmgg/report, created with the [nf-core](https://nf-co.re/) template.
+## v1.1.0 - On Target [23/07/2026]
 
 ### `Added`
 
-### `Fixed`
+#### New Workflows
 
-### `Dependencies`
+- **Targeted** (`workflows/targeted.nf`): Targeted variant analysis workflow with gene-specific configurations
 
-### `Deprecated`
+#### New Modules
+
+- **cat/fastq**: Fastq concatenation module (replaced merge_reads)
+
+### `Changed`
+
+- Module **hotcount**: Optimized process for counting
+- Module **samtools**: Update version from 1.22.1 to 1.23.1
+- Bumped multiqc CMGG version to 0.0.7
+- Added pixi environment for reproducible Python setup
+- Updated documentation
+- Bumped nf-core version to 4.0.2
+- Revert the default configs base to the nf-core configs in preparation of converting nf-cmgg/configs to a private repo
+
+### `Removed`
+
+- Deprecated scripts and legacy code paths
+- Replaced `merge_reads` with `cat_fastq` for better compatibility
+
+## v1.0.0 - [19/03/2026]
+
+Initial release of nf-cmgg/report, created with the [nf-core](https://nf-co.re/) template.

@@ -1,10 +1,12 @@
 # nf-cmgg/report
 
-[![GitHub Actions CI Status](https://github.com/nf-cmgg/report/actions/workflows/ci.yml/badge.svg)](https://github.com/nf-cmgg/report/actions/workflows/ci.yml)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-cmgg/report)
+[![GitHub Actions CI Status](https://github.com/nf-cmgg/report/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-cmgg/report/actions/workflows/nf-test.yml)
 [![GitHub Actions Linting Status](https://github.com/nf-cmgg/report/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-cmgg/report/actions/workflows/linting.yml)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
 [![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A525.10.0-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.10.4-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
+[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.0.2-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.0.2)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
@@ -25,45 +27,36 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
 
-## Pipeline summary
+## Summary of reporting modules available
 
-1. Extract and filter reads from input CRAM files (SAMtools)
-2. Merge overlapping paired end reads (pear)
-3. Combine PEAR output and singletons (mergereads)
-4. Count the reads at location of mutation (hotcount)
-
-## Summary of tools and version used in the pipeline
-
-| Tool     | Version |
-| -------- | ------- |
-| SAMtools | 1.21    |
-| PEAR     | 0.9.6   |
-| hotcount | 0.0.0   |
+| Toolname      | Modules      |
+| ------------- | ------------ |
+| targeted      | hotcount     |
+| rnafusion     | varcov       |
+| pacvar_repeat | pacvarrepeat |
 
 ## Usage
 
 > [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
+> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
 
-First, prepare a samplesheet with your input data that looks as follows:
+First, prepare a samplesheet with your input data. Samplesheet differs per tool.
 
-`samplesheet.csv`:
+e.g. _targeted_ tool `samplesheet.csv`:
 
 ```csv
 sample,cram,crai,design
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.cram,AEG588A1_S1_L002_R2_001.crai,FamCanc_v3
 ```
 
-Each row represents a sample name, the cram file associated with the sample, the crai file of the sample, the design used for the sample.
-
-Now, you can run the pipeline using:
+Now, you can run the pipeline using
 
 ```bash
-nextflow run nf-cmgg/report -profile <docker/singularity> --input samplesheet.csv --outdir <OUTDIR>
+nextflow run nf-cmgg/report -profile <docker/singularity> --toolname.input samplesheet.csv --outdir <OUTDIR>
 ```
 
 > [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
+> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
 ## Credits
 
@@ -75,7 +68,7 @@ We thank the following people for their extensive assistance in the development 
 
 ## Contributions and Support
 
-If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
+If you would like to contribute to this pipeline, please see the [contributing guidelines](docs/CONTRIBUTING.md).
 
 ## Citations
 
