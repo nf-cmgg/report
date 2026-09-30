@@ -15,6 +15,7 @@
 
 include { TARGETED                } from './workflows/targeted'
 include { RNAFUSION               } from './workflows/rnafusion'
+include { SEQCAP_SMALLVARIANTS    } from './workflows/seqcap_smallvariants'
 include { PACVAR_REPEAT           } from './modules/local/pacvarrepeat'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
@@ -110,6 +111,32 @@ workflow {
         out_rnafusion_excels = RNAFUSION.out
     }
 
+    def out_seqcap_smallvariants_excels = channel.empty()
+    def out_seqcap_smallvariants_reports = channel.empty()
+    if (params.seqcap_smallvariants.input) {
+        def required_parameters = ['input', 'api_data']
+        check_required_params(params.get('seqcap_smallvariants'), 'seqcap_smallvariants', required_parameters)
+        def seqcap_smallvariants_params = params.seqcap_smallvariants
+
+        def samplesheet = file(seqcap_smallvariants_params.input)
+        def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_smallvariants_input.json"))
+        def api_data = channel.value(file(seqcap_smallvariants_params.api_data))
+        def run_name = samplesheet.baseName.replaceAll(/\.(runinfo|samplesheet)$/, '')
+
+        SEQCAP_SMALLVARIANTS(
+            samplesheet,
+            ch_rows,
+            api_data,
+            run_name,
+            channel.value(seqcap_smallvariants_params.threshold_coverage),
+            channel.value(seqcap_smallvariants_params.build),
+            channel.value(seqcap_smallvariants_params.variant_caller),
+            channel.value(seqcap_smallvariants_params.runtype),
+        )
+        out_seqcap_smallvariants_excels = SEQCAP_SMALLVARIANTS.out.excels
+        out_seqcap_smallvariants_reports = SEQCAP_SMALLVARIANTS.out.reports
+    }
+
     // TODO: out of scope of the current release, reimplement this later
     // def out_pacvar_repeat_excels = channel.empty()
     // if (params.pacvar_repeat.input) {
@@ -200,11 +227,13 @@ workflow {
     )
 
     publish:
-    targeted_hotcount    = out_targeted_hotcount
-    rnafusion_excels     = out_rnafusion_excels
+    targeted_hotcount             = out_targeted_hotcount
+    rnafusion_excels              = out_rnafusion_excels
     // pacvar_repeat_excels = out_pacvar_repeat_excels
-    multiqc_report       = MULTIQC.out.report
-    multiqc_data         = MULTIQC.out.data
+    seqcap_smallvariants_excels   = out_seqcap_smallvariants_excels
+    seqcap_smallvariants_reports  = out_seqcap_smallvariants_reports
+    multiqc_report                = MULTIQC.out.report
+    multiqc_data                  = MULTIQC.out.data
 }
 
 /*
@@ -229,6 +258,16 @@ output {
     //         excel >> "pacvar_repeat/reports/"
     //     }
     // }
+    seqcap_smallvariants_excels {
+        path { meta, excel ->
+            excel >> "seqcap_smallvariants/${meta.id}/"
+        }
+    }
+    seqcap_smallvariants_reports {
+        path { meta, report ->
+            report >> "seqcap_smallvariants/${meta.id}/"
+        }
+    }
     multiqc_report {
         path { _meta, report ->
             report >> "multiqc/"

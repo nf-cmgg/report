@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "smallvariantstoexcel"
+description: Generates per-patient text reports and Excel workbooks from SeqCap smallvariants VCFs and Mosdepth coverage data for a full run.
+keywords:
+  - report
+  - excel
+  - xlsx
+  - seqcap
+  - smallvariants
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing run information
+          e.g. `[ id:'run1' ]`
+    - samplesheet:
+        type: file
+        description: Comma-separated samplesheet describing sample/panel/design and their BED, genelist, transcripts_file, VCF and coverage files.
+        pattern: "*.csv"
+  - - api_data:
+        type: file
+        description: Combined API data JSON bundle (ford_approved_assays, mdg_approved_assays, cmgg_variants, cmgg_variants_mdg).
+        pattern: "*.json"
+  - - input_files:
+        type: file
+        description: All files referenced by the samplesheet (BED, genelist, transcript mapping, VCF, coverage), staged so they are available to the script.
+  - - threshold_coverage:
+        type: integer
+        description: Coverage threshold below which a region is flagged as low coverage.
+  - - build:
+        type: string
+        description: Genome build label displayed in the generated reports.
+  - - variant_caller:
+        type: string
+        description: Variant caller name used to match the VCF filename during file discovery.
+  - - runtype:
+        type: string
+        description: Runtype label used for Excel title styling.
+
+output:
+  - excels:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing run information
+            e.g. `[ id:'run1' ]`
+      - "results/**.xlsx":
+          type: file
+          description: Per-patient/panel and consolidated raw-data Excel workbooks.
+          pattern: "*.xlsx"
+  - reports:
+      - meta:
+          type: map
+      - "results/**.txt":
+          type: file
+          description: Per-patient/panel variant and coverage text reports.
+          pattern: "*.txt"
+  - versions:
+      - "versions.yml":
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+
+authors:
+  - "@ToonRosseel"
+maintainers:
+  - "@ToonRosseel"
