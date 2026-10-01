@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.2.0dev - SeqCap [../../2026]
+
+### `Added`
+
+#### New Workflows
+
+- **seqcap_smallvariants** (`workflows/seqcap_smallvariants.nf`): Generates Excel workbooks and text reports from a SeqCap nf-cmgg/smallvariants output, with configurable variant caller, genome build, coverage threshold, and run type.
+
 ## v1.1.0 - On Target [23/07/2026]
 
 ### `Added`
