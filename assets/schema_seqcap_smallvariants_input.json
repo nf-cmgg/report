@@ -1,0 +1,88 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-cmgg/report/master/assets/schema_seqcap_smallvariants_input.json",
+    "title": "nf-cmgg/report pipeline - params.seqcap_smallvariants.input schema",
+    "description": "Schema for the file provided with params.seqcap_smallvariants.input",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name must be provided and cannot contain spaces",
+                "meta": ["id"]
+            },
+            "panel": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Panel name must be provided and cannot contain spaces",
+                "meta": ["panel"]
+            },
+            "design": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Design name must be provided and cannot contain spaces",
+                "meta": ["design"]
+            },
+            "panel_bed": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bed(\\.gz)?$",
+                "description": "BED file with the regions of the screening panel."
+            },
+            "design_bed": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.bed(\\.gz)?$",
+                "description": "BED file with the regions of the full SeqCap design."
+            },
+            "panel_genelist": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Text file with one gene symbol per line for the screening panel."
+            },
+            "design_genelist": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Text file with one gene symbol per line for the full SeqCap design."
+            },
+            "transcript_file": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Tab-separated transcript mapping file (gene, gene_id, ENST, NM) for the full SeqCap design."
+            },
+            "vcf": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.vcf\\.gz$",
+                "description": "Variant calls (VCF) for the sample."
+            },
+            "coverage": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.per-base\\.bed\\.gz$",
+                "description": "Mosdepth per-base coverage BED file for the sample."
+            }
+        },
+        "required": [
+            "sample",
+            "panel",
+            "design",
+            "panel_bed",
+            "design_bed",
+            "panel_genelist",
+            "design_genelist",
+            "transcript_file",
+            "vcf",
+            "coverage"
+        ]
+    }
+}
