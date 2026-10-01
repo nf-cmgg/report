@@ -15,8 +15,8 @@ process SMALLVARIANTS_TO_EXCEL {
     val runtype
 
     output:
-    tuple val(meta), path("results/**.xlsx"), emit: excels
-    tuple val(meta), path("results/**.txt"), emit: reports
+    tuple val(meta), path("results_${variant_caller}/**.xlsx"), emit: excels
+    tuple val(meta), path("results_${variant_caller}/**.txt"), emit: reports
     tuple val("${task.process}"), val('python'), eval("python --version 2>&1 | sed 's/^Python //'"), topic: versions, emit: versions_python
 
     script:
@@ -24,7 +24,7 @@ process SMALLVARIANTS_TO_EXCEL {
     smallvariants_to_excel.py \\
         --api-data ${api_data} \\
         --samplesheet ${samplesheet} \\
-        --output-dir results \\
+        --output-dir "results_${variant_caller}" \\
         --run-name ${meta.id} \\
         --threshold-coverage ${threshold_coverage} \\
         --build "${build}" \\
@@ -34,8 +34,8 @@ process SMALLVARIANTS_TO_EXCEL {
 
     stub:
     """
-    mkdir -p results/_RAWdata
-    touch results/_RAWdata_${meta.id}.xlsx
-    touch results/_RAWdata/${meta.id}_variants.txt
+    mkdir -p results_${variant_caller}/_RAWdata
+    touch results_${variant_caller}/_RAWdata_${meta.id}.xlsx
+    touch results_${variant_caller}/_RAWdata/${meta.id}_variants.txt
     """
 }

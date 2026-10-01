@@ -45,14 +45,14 @@ output:
           description: |
             Groovy Map containing run information
             e.g. `[ id:'run1' ]`
-      - "results/**.xlsx":
+      - "results_*/**.xlsx":
           type: file
           description: Per-patient/panel and consolidated raw-data Excel workbooks.
           pattern: "*.xlsx"
   - reports:
       - meta:
           type: map
-      - "results/**.txt":
+      - "results_*/**.txt":
           type: file
           description: Per-patient/panel variant and coverage text reports.
           pattern: "*.txt"

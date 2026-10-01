@@ -149,7 +149,6 @@ workflow {
     //     out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
     // }
 
-    //
     // Collate and save software versions
     //
     def topic_versions = channel.topic("versions")
@@ -260,12 +259,12 @@ output {
     // }
     seqcap_smallvariants_excels {
         path { meta, excel ->
-            excel >> "seqcap_smallvariants/${meta.id}/"
+            excel >> "seqcap_smallvariants/"
         }
     }
     seqcap_smallvariants_reports {
         path { meta, report ->
-            report >> "seqcap_smallvariants/${meta.id}/"
+            report >> "seqcap_smallvariants/"
         }
     }
     multiqc_report {
