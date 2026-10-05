@@ -197,16 +197,19 @@
                         "build": {
                             "type": "string",
                             "default": "GRCh38/hg38",
+                            "enum": ["GRCh38/hg38"],
                             "description": "Genome build label displayed in the generated reports."
                         },
                         "variant_caller": {
                             "type": "string",
                             "default": "vardict",
+                            "enum": ["vardict"],
                             "description": "Variant caller name used to match the VCF filename during file discovery."
                         },
                         "runtype": {
                             "type": "string",
                             "default": "SeqCap",
+                            "enum": ["SeqCap"],
                             "description": "Runtype label used for Excel title styling."
                         }
                     }
