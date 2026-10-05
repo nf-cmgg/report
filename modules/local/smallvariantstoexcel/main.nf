@@ -3,7 +3,7 @@ process SMALLVARIANTS_TO_EXCEL {
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
-    container "docker.io/library/python:3.14-bookworm"
+    container "community.wave.seqera.io/library/python:3.14.2--0562a0df3245213a"
 
     input:
     tuple val(meta), path(samplesheet)
