@@ -36,6 +36,22 @@ All options to run the pacvar_repeat reporting flow.
 | --------------- | ----------- | -------- | ------- | -------- | ------ |
 | `pacvar_repeat` |             | `object` |         |          |        |
 
+## Options for the seqcap_smallvariants flow
+
+All options to run the SeqCap smallvariants reporting flow.
+
+| Parameter | Description | Type | Default | Required | Hidden |
+| --------- | ----------- | ---- | ------- | -------- | ------ |
+| `seqcap_smallvariants.input` | Samplesheet describing the samples, panels, designs and their BED, gene list, VCF and coverage files. | `string` |  | Yes |  |
+| `seqcap_smallvariants.api_data` | Path to a combined API data JSON bundle (`ford_approved_assays`, `mdg_approved_assays`, `cmgg_variants`, `cmgg_variants_mdg`). | `string` |  | Yes |  |
+| `seqcap_smallvariants.run_name` | Run name used in the generated SeqCap reports and output filenames. | `string` |  | Yes |  |
+| `seqcap_smallvariants.threshold_coverage` | Coverage threshold below which a region is flagged as low coverage. | `integer` | `31` |  |  |
+| `seqcap_smallvariants.build` | Genome build label displayed in the generated reports. | `string` | `GRCh38/hg38` |  |  |
+| `seqcap_smallvariants.variant_caller` | Variant caller name used to match the VCF filename during file discovery. | `string` | `vardict` |  |  |
+| `seqcap_smallvariants.runtype` | Runtype label used for Excel title styling. | `string` | `SeqCap` |  |  |
+
+
+
 ## Reference genome options
 
 Reference genome related files and options required for the workflow.

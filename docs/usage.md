@@ -6,6 +6,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 
 - **rnafusion**: generating custom report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
 - **targeted**: targeted variant analysis with HOTCOUNT
+- **seqcap_smallvariants**: generate custom Excel reports from a SeqCap [nf-cmgg/smallvariants](https://github.com/nf-cmgg/smallvariants) analysis
 
 ## Samplesheet input
 
@@ -38,6 +39,24 @@ Following table shows the fields that are used by the samplesheet:
 | `design` | MANDATORY - Specifies the sequencing panel or assay for each sample. Valid names are listed in `queries_dir`. |
 
 An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
+
+### seqcap_smallvariants
+
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination and must include the following columns:
+
+| Column | Description |
+| ------ | ----------- |
+| `sample` | MANDATORY - Sample identifier. |
+| `panel` | MANDATORY - Screening genepanel name. |
+| `design` | MANDATORY - Full SeqCap design name. |
+| `panel_bed` | MANDATORY - Path to the BED file for the screening panel. |
+| `design_bed` | MANDATORY - Path to the BED file for the full design. |
+| `panel_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the screening panel. |
+| `design_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the full design. |
+| `transcript_file` | MANDATORY - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design. |
+| `vcf` | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`). |
+| `coverage` | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`). |
+
 
 ## Running the pipeline
 
