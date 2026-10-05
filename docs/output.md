@@ -64,7 +64,7 @@ The `seqcap_smallvariants` flow writes per-sample and per-panel Excel reports an
 <details markdown="1">
 <summary>Output files</summary>
 
-- `seqcap_smallvariants/`
+- `seqcap_smallvariants/results_<variant_caller>/`
   - `<sample>/`: per-sample variant and coverage text files; includes a design workbook when the sample's panel matches its design.
     - `<sample>_<design>_variants.txt`: variant table for the full design.
     - `<sample>_<design>_coverage.txt`: coverage table for the full design.
