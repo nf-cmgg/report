@@ -114,14 +114,14 @@ workflow {
     def out_seqcap_smallvariants_excels = channel.empty()
     def out_seqcap_smallvariants_reports = channel.empty()
     if (params.seqcap_smallvariants.input) {
-        def required_parameters = ['input', 'api_data']
+        def required_parameters = ['input', 'api_data', 'run_name']
         check_required_params(params.get('seqcap_smallvariants'), 'seqcap_smallvariants', required_parameters)
         def seqcap_smallvariants_params = params.seqcap_smallvariants
 
         def samplesheet = file(seqcap_smallvariants_params.input)
         def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_smallvariants_input.json"))
         def api_data = channel.value(file(seqcap_smallvariants_params.api_data))
-        def run_name = samplesheet.baseName.replaceAll(/\.(runinfo|samplesheet)$/, '')
+        def run_name = seqcap_smallvariants_params.run_name
 
         SEQCAP_SMALLVARIANTS(
             samplesheet,

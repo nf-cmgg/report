@@ -25,7 +25,7 @@ process SMALLVARIANTS_TO_EXCEL {
         --api-data ${api_data} \\
         --samplesheet ${samplesheet} \\
         --output-dir "results_${variant_caller}" \\
-        --run-name ${meta.id} \\
+        --run-name "${meta.id}" \\
         --threshold-coverage ${threshold_coverage} \\
         --build "${build}" \\
         --variant-caller ${variant_caller} \\
