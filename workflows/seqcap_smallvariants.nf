@@ -32,7 +32,7 @@ workflow SEQCAP_SMALLVARIANTS {
         .flatMap { meta, panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage ->
             [panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage].findAll { file -> file }
         }
-        .unique { it.toString() }
+        .unique { file -> file.name }
         .collect()
 
     SMALLVARIANTS_TO_EXCEL(
