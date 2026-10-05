@@ -1,23 +1,11 @@
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
 include { SMALLVARIANTS_TO_EXCEL } from '../modules/local/smallvariantstoexcel/main.nf'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
 
 workflow SEQCAP_SMALLVARIANTS {
     take:
     samplesheet        // value: path to the run samplesheet (validated with schema_seqcap_smallvariants_input.json)
     ch_rows            // channel: [meta, panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage]
     api_data           // value: path to the combined api_data.json bundle
-    run_name           // value: string used as the run id and passed to --run-name
+    run_name           // value: string used as the run id
     threshold_coverage // value: integer coverage threshold for low coverage flagging
     build              // value: string genome build label
     variant_caller     // value: string variant caller name
@@ -49,4 +37,3 @@ workflow SEQCAP_SMALLVARIANTS {
     excels  = SMALLVARIANTS_TO_EXCEL.out.excels
     reports = SMALLVARIANTS_TO_EXCEL.out.reports
 }
-
