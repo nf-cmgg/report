@@ -65,12 +65,12 @@ The `seqcap_smallvariants` flow writes per-sample and per-panel Excel reports an
 <summary>Output files</summary>
 
 - `seqcap_smallvariants/results_<variant_caller>/`
-  - `<sample>/`: per-sample variant and coverage text files; includes a design workbook when the sample's panel matches its design.
+  - `<sample>/`: per-sample variant and coverage text files, plus a full-design workbook for every sample.
     - `<sample>_<design>_variants.txt`: variant table for the full design.
     - `<sample>_<design>_coverage.txt`: coverage table for the full design.
     - `<sample>_<panel>_variants.txt`: variant table for each panel.
     - `<sample>_<panel>_coverage.txt`: coverage table for each panel.
-    - `_<sample>_<design>.xlsx`: design workbook when the panel matches the design.
+    - `_<sample>_<design>.xlsx`: full-design workbook.
   - `<sample>_<panel>.xlsx`: Excel report for each sample and panel.
   - `_RAWdata_<run_name>.xlsx`: consolidated workbook with run-level variants and coverage sheets.
   - `_RAWdata/`

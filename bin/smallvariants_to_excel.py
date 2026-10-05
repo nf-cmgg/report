@@ -20,7 +20,7 @@ Outputs:
   - Consolidated raw data files in <output_dir>/_RAWdata/
   - Excel files in <output_dir>/ with exact styling, colors, and freeze panes:
     - <patient>_<panel>.xlsx
-    - <patient>/_<patient>_<design>.xlsx and <patient>_<design>.xlsx when the design is a samplesheet panel
+        - <patient>/_<patient>_<design>.xlsx for every patient
     - _RAWdata_<runName>.xlsx
 """
 
@@ -1987,40 +1987,44 @@ def main() -> None:
         design_genes = get_panel_genes(s_obj.design_genelist)
         design_gene_count = len(design_genes)
 
+        write_patient_excel(
+            workbook_path=os.path.join(patient_out_dir, f"_{sample}_{design}.xlsx"),
+            patient=sample,
+            panel=design,
+            design=design,
+            run_name=run_name,
+            design_gene_count=design_gene_count,
+            panel_gene_count=design_gene_count,
+            coverage_rows=s_data["design_cov_rows"],
+            variant_records=s_data["design_variant_recs"],
+            threshold_coverage=args.threshold_coverage,
+            api_data=api_data,
+            build=args.build,
+            runtype=args.runtype,
+        )
+
         for panel in s_obj.panel:
             p_covs = s_data["panels_cov_rows"][panel]
             p_vars = s_data["panels_variant_recs"][panel]
 
-            panel_bed_path = s_obj.panel_bed[panel]
             panel_genes = get_panel_genes(s_obj.panel_genelist[panel])
             panel_gene_count = len(panel_genes)
 
-            # Keep the design workbook in the patient folder and also in the
-            # results folder, matching smallvariantsToExcel_no_job.pl.
-            excel_paths = [
-                os.path.join(patient_out_dir, f"_{sample}_{panel}.xlsx")
-                if panel == design
-                else os.path.join(args.output_dir, f"{sample}_{panel}.xlsx")
-            ]
-            if panel == design:
-                excel_paths.append(os.path.join(args.output_dir, f"{sample}_{panel}.xlsx"))
-
-            for excel_path in excel_paths:
-                write_patient_excel(
-                    workbook_path=excel_path,
-                    patient=sample,
-                    panel=panel,
-                    design=design,
-                    run_name=run_name,
-                    design_gene_count=design_gene_count,
-                    panel_gene_count=panel_gene_count,
-                    coverage_rows=p_covs,
-                    variant_records=p_vars,
-                    threshold_coverage=args.threshold_coverage,
-                    api_data=api_data,
-                    build=args.build,
-                    runtype=args.runtype,
-                )
+            write_patient_excel(
+                workbook_path=os.path.join(args.output_dir, f"{sample}_{panel}.xlsx"),
+                patient=sample,
+                panel=panel,
+                design=design,
+                run_name=run_name,
+                design_gene_count=design_gene_count,
+                panel_gene_count=panel_gene_count,
+                coverage_rows=p_covs,
+                variant_records=p_vars,
+                threshold_coverage=args.threshold_coverage,
+                api_data=api_data,
+                build=args.build,
+                runtype=args.runtype,
+            )
 
     # 8. Generate Consolidated RAWdata Excel
     rawdata_excel_path = os.path.join(args.output_dir, f"_RAWdata_{run_name}.xlsx")
