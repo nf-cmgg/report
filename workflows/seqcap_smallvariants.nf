@@ -30,7 +30,7 @@ workflow SEQCAP_SMALLVARIANTS {
     // unmodified (it already contains valid, schema-checked absolute paths).
     def ch_input_files = ch_rows
         .flatMap { meta, panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage ->
-            [panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage].findAll { it }
+            [panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage].findAll { file -> file }
         }
         .unique { it.toString() }
         .collect()
