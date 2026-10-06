@@ -35,7 +35,6 @@ workflow SEQCAP_SMALLVARIANTS {
                 .join(',')
         }
         .map { samplesheet -> [[id: run_name], samplesheet] }
-        .first()
 
     SMALLVARIANTS_TO_EXCEL(
         ch_samplesheet,
