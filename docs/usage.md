@@ -57,6 +57,7 @@ This flow processes all samples in one samplesheet as a single run. Each row des
 | `vcf` | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`). |
 | `coverage` | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`). |
 
+An [example samplesheet](../assets/samplesheet_seqcap_smallvariants.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 

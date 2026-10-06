@@ -124,7 +124,6 @@ workflow {
         def run_name = seqcap_smallvariants_params.run_name
 
         SEQCAP_SMALLVARIANTS(
-            samplesheet,
             ch_rows,
             api_data,
             run_name,
