@@ -44,18 +44,18 @@ An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided w
 
 This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination and must include the following columns:
 
-| Column | Description |
-| ------ | ----------- |
-| `sample` | MANDATORY - Sample identifier. |
-| `panel` | MANDATORY - Screening genepanel name. |
-| `design` | MANDATORY - Full SeqCap design name. |
-| `panel_bed` | MANDATORY - Path to the BED file for the screening panel. |
-| `design_bed` | MANDATORY - Path to the BED file for the full design. |
-| `panel_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the screening panel. |
-| `design_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the full design. |
-| `transcript_file` | MANDATORY - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design. |
-| `vcf` | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`). |
-| `coverage` | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`). |
+| Column            | Description                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `sample`          | MANDATORY - Sample identifier.                                                                                                       |
+| `panel`           | MANDATORY - Screening genepanel name.                                                                                                |
+| `design`          | MANDATORY - Full SeqCap design name.                                                                                                 |
+| `panel_bed`       | MANDATORY - Path to the BED file for the screening panel.                                                                            |
+| `design_bed`      | MANDATORY - Path to the BED file for the full design.                                                                                |
+| `panel_genelist`  | MANDATORY - Path to a text file with one gene symbol per line for the screening panel.                                               |
+| `design_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the full design.                                                   |
+| `transcript_file` | MANDATORY - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design.                   |
+| `vcf`             | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`).                            |
+| `coverage`        | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`). |
 
 An [example samplesheet](../assets/samplesheet_seqcap_smallvariants.csv) has been provided with the pipeline.
 
