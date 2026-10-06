@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **seqcap_smallvariants** (`workflows/seqcap_smallvariants.nf`): Generates Excel workbooks and text reports from a SeqCap nf-cmgg/smallvariants output, with configurable variant caller, genome build, coverage threshold, and run type.
 
+### `Changed`
+
+- Updated documentation
+
 ## v1.1.0 - On Target [23/07/2026]
 
 ### `Added`
