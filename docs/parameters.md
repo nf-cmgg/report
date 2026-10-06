@@ -28,9 +28,12 @@ All options to run the targeted reporting flow.
 
 All options to run the RNAfusion flow.
 
-| Parameter   | Description | Type     | Default | Required | Hidden |
-| ----------- | ----------- | -------- | ------- | -------- | ------ |
-| `rnafusion` |             | `object` |         |          |        |
+| Parameter           | Description                                                                              | Type     | Default | Required | Hidden |
+| ------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `rnafusion.input`   | Path to comma-separated file containing information about the samples in the experiment. | `string` |         | Yes      |        |
+| `rnafusion.genes`   | Path to a text file containing genes to analyze in the Rnafusion report.                 | `string` |         | Yes      |        |
+| `rnafusion.fusions` | Path to a text file containing fusions to analyze in the Rnafusion report.               | `string` |         | Yes      |        |
+| `rnafusion.mane`    | Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report.       | `string` |         | Yes      |        |
 
 ## Options for the pacvar_repeat flow
 

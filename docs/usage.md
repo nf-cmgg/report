@@ -65,7 +65,7 @@ The typical command for running the pipeline is as follows:
 
 ```bash
 #targeted
-nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --outdir ./results  -profile docker
+nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --targeted.fai <path-to-fasta-index> --outdir ./results  -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
