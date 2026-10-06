@@ -29,11 +29,12 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 
 ## Summary of reporting modules available
 
-| Toolname      | Modules      |
-| ------------- | ------------ |
-| targeted      | hotcount     |
-| rnafusion     | varcov       |
-| pacvar_repeat | pacvarrepeat |
+| Toolname             | Modules              |
+| -------------------- | -------------------- |
+| targeted             | hotcount             |
+| rnafusion            | varcov               |
+| pacvar_repeat        | pacvarrepeat         |
+| seqcap_smallvariants | smallvariantstoexcel |
 
 ## Usage
 

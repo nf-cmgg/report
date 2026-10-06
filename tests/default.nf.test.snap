@@ -14,6 +14,9 @@
                 "SAMTOOLS_VIEW": {
                     "samtools": "1.23.1"
                 },
+                "SMALLVARIANTS_TO_EXCEL": {
+                    "python": "3.14.2"
+                },
                 "UNTAR": {
                     "untar": 1.34
                 },
@@ -25,7 +28,7 @@
                     "samtools": "1.22.1"
                 },
                 "Workflow": {
-                    "nf-cmgg/report": "v1.1.0"
+                    "nf-cmgg/report": "v1.2.0dev"
                 }
             },
             [
@@ -48,19 +51,37 @@
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
                 "rnafusion/varcov/NVQTEST_123/test.xlsx",
+                "seqcap_smallvariants",
+                "seqcap_smallvariants/results_vardict",
+                "seqcap_smallvariants/results_vardict/_RAWdata",
+                "seqcap_smallvariants/results_vardict/_RAWdata/test_run_coverage.txt",
+                "seqcap_smallvariants/results_vardict/_RAWdata/test_run_variants.txt",
+                "seqcap_smallvariants/results_vardict/_RAWdata_test_run.xlsx",
+                "seqcap_smallvariants/results_vardict/sample1",
+                "seqcap_smallvariants/results_vardict/sample1/_sample1_Design_v1.xlsx",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Design_v1_coverage.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Design_v1_variants.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Panel_v1_coverage.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Panel_v1_variants.txt",
+                "seqcap_smallvariants/results_vardict/sample1_Panel_v1.xlsx",
                 "targeted",
                 "targeted/MSH2",
                 "targeted/MSH2/test1.counts.txt",
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+                "test_run_coverage.txt:md5,fe4dfacf891ec289abc5733e17c06995",
+                "test_run_variants.txt:md5,00670c56fa6415a3bd7c9d31727eb093",
+                "sample1_Design_v1_coverage.txt:md5,a98058c6dcf7c0f82729cd359936d127",
+                "sample1_Design_v1_variants.txt:md5,d7274ba1fcc2e90ee0795e3a03c14907",
+                "sample1_Panel_v1_coverage.txt:md5,071a97ae10e42afb9e736e83d3e0984c",
+                "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-07-17T17:05:04.899149873",
+        "timestamp": "2026-10-06T14:57:59.528295009",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.4"
+            "nextflow": "26.04.0"
         }
     }
 }

@@ -1,0 +1,2 @@
+sample,panel,design,panel_bed,design_bed,panel_genelist,design_genelist,transcript_file,vcf,coverage
+sample1,Panel_v1,Design_v1,Panel_v1.bed,Design_v1.bed,Panel_v1,Design_v1,Design_v1_all_genes_vs_transcripts,sample1.vardict.vcf.gz,sample1.per-base.bed.gz

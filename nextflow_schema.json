@@ -157,6 +157,65 @@
                 }
             }
         },
+        "seqcap_smallvariants_options": {
+            "title": "Options for the seqcap_smallvariants flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the SeqCap smallvariants reporting flow.",
+            "properties": {
+                "seqcap_smallvariants": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_seqcap_smallvariants_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file describing samples, panels, designs and their BED/genelist/VCF/coverage files for a SeqCap run.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "run_name": {
+                            "type": "string",
+                            "description": "Run name used in the generated SeqCap reports and output filenames."
+                        },
+                        "api_data": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "mimetype": "application/json",
+                            "pattern": "^\\S+\\.json$",
+                            "description": "Path to a combined API data JSON bundle (ford_approved_assays, mdg_approved_assays, cmgg_variants, cmgg_variants_mdg).",
+                            "fa_icon": "far fa-file-code"
+                        },
+                        "threshold_coverage": {
+                            "type": "integer",
+                            "default": 31,
+                            "description": "Coverage threshold below which a region is flagged as low coverage."
+                        },
+                        "build": {
+                            "type": "string",
+                            "default": "GRCh38/hg38",
+                            "enum": ["GRCh38/hg38"],
+                            "description": "Genome build label displayed in the generated reports."
+                        },
+                        "variant_caller": {
+                            "type": "string",
+                            "default": "vardict",
+                            "enum": ["vardict"],
+                            "description": "Variant caller name used to match the VCF filename during file discovery."
+                        },
+                        "runtype": {
+                            "type": "string",
+                            "default": "SeqCap",
+                            "enum": ["SeqCap"],
+                            "description": "Runtype label used for Excel title styling."
+                        }
+                    }
+                }
+            }
+        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
@@ -355,6 +414,9 @@
         },
         {
             "$ref": "#/$defs/pacvar_repeat_options"
+        },
+        {
+            "$ref": "#/$defs/seqcap_smallvariants_options"
         },
         {
             "$ref": "#/$defs/reference_genome_options"

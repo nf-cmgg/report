@@ -16,17 +16,24 @@ Define where the pipeline should save output data.
 
 All options to run the targeted reporting flow.
 
-| Parameter  | Description | Type     | Default | Required | Hidden |
-| ---------- | ----------- | -------- | ------- | -------- | ------ |
-| `targeted` |             | `object` |         |          |        |
+| Parameter              | Description                                                                              | Type     | Default | Required | Hidden |
+| ---------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `targeted.input`       | Path to comma-separated file containing information about the samples in the experiment. | `string` |         | Yes      |        |
+| `targeted.queries_dir` | Directory containing the query files per gene (defaults to `assets/targeted/`).          | `string` |         |          | Yes    |
+| `targeted.gene`        | Gene name of targeted query.                                                             | `string` | `MSH2`  | Yes      |        |
+| `targeted.fasta`       | Path to FASTA genome file.                                                               | `string` |         | Yes      |        |
+| `targeted.fai`         | Path to the index of the FASTA genome file.                                              | `string` |         | Yes      |        |
 
 ## Options for the RNAfusion flow
 
 All options to run the RNAfusion flow.
 
-| Parameter   | Description | Type     | Default | Required | Hidden |
-| ----------- | ----------- | -------- | ------- | -------- | ------ |
-| `rnafusion` |             | `object` |         |          |        |
+| Parameter           | Description                                                                              | Type     | Default | Required | Hidden |
+| ------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `rnafusion.input`   | Path to comma-separated file containing information about the samples in the experiment. | `string` |         | Yes      |        |
+| `rnafusion.genes`   | Path to a text file containing genes to analyze in the Rnafusion report.                 | `string` |         | Yes      |        |
+| `rnafusion.fusions` | Path to a text file containing fusions to analyze in the Rnafusion report.               | `string` |         | Yes      |        |
+| `rnafusion.mane`    | Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report.       | `string` |         | Yes      |        |
 
 ## Options for the pacvar_repeat flow
 
@@ -35,6 +42,20 @@ All options to run the pacvar_repeat reporting flow.
 | Parameter       | Description | Type     | Default | Required | Hidden |
 | --------------- | ----------- | -------- | ------- | -------- | ------ |
 | `pacvar_repeat` |             | `object` |         |          |        |
+
+## Options for the seqcap_smallvariants flow
+
+All options to run the SeqCap smallvariants reporting flow.
+
+| Parameter                                 | Description                                                                                                                    | Type      | Default       | Required | Hidden |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------- | -------- | ------ |
+| `seqcap_smallvariants.input`              | Samplesheet describing the samples, panels, designs and their BED, gene list, VCF and coverage files.                          | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.api_data`           | Path to a combined API data JSON bundle (`ford_approved_assays`, `mdg_approved_assays`, `cmgg_variants`, `cmgg_variants_mdg`). | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.run_name`           | Run name used in the generated SeqCap reports and output filenames.                                                            | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.threshold_coverage` | Coverage threshold below which a region is flagged as low coverage.                                                            | `integer` | `31`          |          |        |
+| `seqcap_smallvariants.build`              | Genome build label displayed in the generated reports.                                                                         | `string`  | `GRCh38/hg38` |          |        |
+| `seqcap_smallvariants.variant_caller`     | Variant caller name used to match the VCF filename during file discovery.                                                      | `string`  | `vardict`     |          |        |
+| `seqcap_smallvariants.runtype`            | Runtype label used for Excel title styling.                                                                                    | `string`  | `SeqCap`      |          |        |
 
 ## Reference genome options
 
