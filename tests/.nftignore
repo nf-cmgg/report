@@ -1,6 +1,7 @@
 rnafusion/varcov/**.xlsx
 targeted/**.counts.txt
 pacvar_repeat/reports/*.xlsx
+seqcap_smallvariants/results_vardict/**.xlsx
 multiqc/multiqc_report.html
 multiqc/multiqc_data/*/multiqc.parquet
 multiqc/multiqc_data/*/multiqc.log
