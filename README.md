@@ -35,6 +35,7 @@ The pipeline is built using Nextflow, a workflow tool to run tasks across multip
 | rnafusion            | varcov               |
 | pacvar_repeat        | pacvarrepeat         |
 | seqcap_smallvariants | smallvariantstoexcel |
+| seqcap_exomecnv      | exomecnvtocsv        |
 
 ## Usage
 

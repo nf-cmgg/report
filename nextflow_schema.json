@@ -216,6 +216,33 @@
                 }
             }
         },
+        "seqcap_exomecnv_options": {
+            "title": "Options for the seqcap_exomecnv flow",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "All options to run the SeqCap exomecnv reporting flow.",
+            "properties": {
+                "seqcap_exomecnv": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "string",
+                            "format": "file-path",
+                            "exists": true,
+                            "schema": "assets/schema_seqcap_exomecnv_input.json",
+                            "pattern": "^\\S+\\.(csv|yml|yaml|tsv|json)$",
+                            "description": "Path to comma-separated file describing samples, designs, panels and their gene list/VCF/CNV database files for a SeqCap run.",
+                            "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location.",
+                            "fa_icon": "fas fa-file-csv"
+                        },
+                        "run_name": {
+                            "type": "string",
+                            "description": "Run name used for the analysis."
+                        }
+                    }
+                }
+            }
+        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
@@ -417,6 +444,9 @@
         },
         {
             "$ref": "#/$defs/seqcap_smallvariants_options"
+        },
+        {
+            "$ref": "#/$defs/seqcap_exomecnv_options"
         },
         {
             "$ref": "#/$defs/reference_genome_options"

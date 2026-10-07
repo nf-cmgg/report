@@ -1,0 +1,56 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-cmgg/report/master/assets/schema_seqcap_exomecnv_input.json",
+    "title": "nf-cmgg/report pipeline - params.seqcap_exomecnv.input schema",
+    "description": "Schema for the file provided with params.seqcap_exomecnv.input",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name must be provided and cannot contain spaces",
+                "meta": ["id"]
+            },
+            "design": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "SeqCap design name must be provided and cannot contain spaces",
+                "meta": ["design"]
+            },
+            "panel": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Screening panel name must be provided and cannot contain spaces",
+                "meta": ["panel"]
+            },
+            "design_genelist": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Text file with one gene symbol per line for the full SeqCap design."
+            },
+            "panel_genelist": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Text file with one gene symbol per line for the screening panel."
+            },
+            "vcf": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.vcf\\.gz$",
+                "description": "VEP-annotated ExomeDepth CNV calls (VCF) for the sample."
+            },
+            "cnv_database": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "description": "Tab-separated historical CMGG CNV database file for the full SeqCap design."
+            }
+        },
+        "required": ["sample", "design", "panel", "design_genelist", "panel_genelist", "vcf", "cnv_database"]
+    }
+}

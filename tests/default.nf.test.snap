@@ -2,6 +2,9 @@
     "-profile test": {
         "content": [
             {
+                "EXOMECNV_TO_CSV": {
+                    "python": "3.14.2"
+                },
                 "HOTCOUNT": {
                     "hotcount": 0.0
                 },
@@ -35,6 +38,8 @@
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/cnvs_exomedepth_designs.txt",
+                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/cnvs_exomedepth_panels.txt",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/llms-full.txt",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.log",
                 "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.parquet",
@@ -51,6 +56,10 @@
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
                 "rnafusion/varcov/NVQTEST_123/test.xlsx",
+                "seqcap_exomecnv",
+                "seqcap_exomecnv/results_exomedepth",
+                "seqcap_exomecnv/results_exomedepth/cnvs_exomedepth_designs_summary.tsv",
+                "seqcap_exomecnv/results_exomedepth/cnvs_exomedepth_panels_summary.tsv",
                 "seqcap_smallvariants",
                 "seqcap_smallvariants/results_vardict",
                 "seqcap_smallvariants/results_vardict/_RAWdata",
@@ -70,6 +79,10 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
+                "cnvs_exomedepth_designs.txt:md5,c510f2c2b0709cdb6c603af0c6c015bd",
+                "cnvs_exomedepth_panels.txt:md5,16fde3bc1b7124a5492cef2bb741a1c9",
+                "cnvs_exomedepth_designs_summary.tsv:md5,0d3eb50daa5fa88ed270e7b6e084409d",
+                "cnvs_exomedepth_panels_summary.tsv:md5,dc22d20c98455ae26cb980ebde99d031",
                 "test_run_coverage.txt:md5,fe4dfacf891ec289abc5733e17c06995",
                 "test_run_variants.txt:md5,00670c56fa6415a3bd7c9d31727eb093",
                 "sample1_Design_v1_coverage.txt:md5,a98058c6dcf7c0f82729cd359936d127",
@@ -78,7 +91,7 @@
                 "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-10-06T14:57:59.528295009",
+        "timestamp": "2026-10-07T19:21:29.823571723",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"

@@ -1,0 +1,73 @@
+{
+    "stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test_run"
+                        },
+                        [
+                            "cnvs_exomedepth_designs_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "cnvs_exomedepth_panels_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "EXOMECNV_TO_CSV",
+                        "python",
+                        "3.14.2"
+                    ]
+                ],
+                "summaries": [
+                    [
+                        {
+                            "id": "test_run"
+                        },
+                        [
+                            "cnvs_exomedepth_designs_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "cnvs_exomedepth_panels_summary.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "versions_python": [
+                    [
+                        "EXOMECNV_TO_CSV",
+                        "python",
+                        "3.14.2"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-07T19:02:54.169469265",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    },
+    "ExomeDepth CNVs output reporting [meta, samplesheet, input_files]": {
+        "content": [
+            {
+                "meta": {
+                    "id": "test_run"
+                },
+                "summaries": [
+                    {
+                        "name": "cnvs_exomedepth_designs_summary.tsv",
+                        "content": "Patient\tDesign\tType\tRegion\tRecurrency_run\tRecurrency_HC-CNV\tExon count\tBF\tReads.expected\tReads.observed\tReads.ratio\tExons\tHC-CNV.reads_ratio.[0-0.2[\tHC-CNV.reads_ratio.[0.2-1[\tHC-CNV.reads_ratio.[1-1.83[\tHC-CNV.reads_ratio.>=1.83\tHC-CNV.patient_included\tHC-CNV.patients_subsample\r\nsample2\tFamCanc_v3\tduplication\tchr7:5977588-5982991\t1/2\t1/3541\t3\t10.1\t4666\t5756\t1.23\tPMS2_14,PMS2_13,PMS2_12\t0\t1\t0\t0\tFalse\tsample3\r\nsample2\tFamCanc_v3\tdeletion\tchr16:23641110-23641157\t1/2\t0/3541\t1\t39.2\t897\t490\t0.546\tPALB2_1\tNA\tNA\tNA\tNA\tNA\tNA\r\nsample1\tFamCanc_v3\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\r\n"
+                    },
+                    {
+                        "name": "cnvs_exomedepth_panels_summary.tsv",
+                        "content": "Patient\tPanel\tDesign\tType\tRegion\tRecurrency_run\tRecurrency_HC-CNV\tExon count\tBF\tReads.expected\tReads.observed\tReads.ratio\tExons\tHC-CNV.reads_ratio.[0-0.2[\tHC-CNV.reads_ratio.[0.2-1[\tHC-CNV.reads_ratio.[1-1.83[\tHC-CNV.reads_ratio.>=1.83\tHC-CNV.patient_included\tHC-CNV.patients_subsample\r\nsample2\tColon_cancer_v3\tFamCanc_v3\tduplication\tchr7:5977588-5982991\t1/2\t1/3541\t3\t10.1\t4666\t5756\t1.23\tPMS2_14,PMS2_13,PMS2_12\t0\t1\t0\t0\tFalse\tsample3\r\nsample1\tPancreas_cancer_v4\tFamCanc_v3\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\r\n"
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2026-10-07T19:11:31.273003262",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.6"
+        }
+    }
+}

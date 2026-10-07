@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### New Workflows
 
 - **seqcap_smallvariants** (`workflows/seqcap_smallvariants.nf`): Generates Excel workbooks and text reports from a SeqCap nf-cmgg/smallvariants output, with configurable variant caller, genome build, coverage threshold, and run type.
+- **seqcap_exomecnv** (`workflows/seqcap_exomecnv.nf`): Summarizes ExomeDepth CNV calls from VEP-annotated VCFs into per-design and per-panel TSV reports, annotated with run-level recurrency and a historical CMGG high-confidence CNV database. Besides the TSV reports, the results are also shown in the MultiQC report (via the MULTIQC_CMGG plugin).
 
 ### `Changed`
 

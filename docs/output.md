@@ -79,6 +79,19 @@ The `seqcap_smallvariants` flow writes per-sample and per-panel Excel reports an
 
 </details>
 
+### seqcap_exomecnv
+
+The `seqcap_exomecnv` flow summarizes ExomeDepth CNV calls for a full run into per-design and per-panel TSV reports, annotated with run-level recurrency and a historical CMGG high-confidence CNV database. All outputs are published under `seqcap_exomecnv/`. Besides the TSV reports, the results are also shown in the MultiQC report (via the MULTIQC_CMGG plugin).
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `seqcap_exomecnv/results_exomedepth/`
+  - `cnvs_exomedepth_designs_summary.tsv`: one row per patient/design/CNV.
+  - `cnvs_exomedepth_panels_summary.tsv`: one row per patient/panel/design/CNV.
+
+</details>
+
 ### MultiQC
 
 <details markdown="1">

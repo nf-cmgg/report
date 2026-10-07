@@ -57,6 +57,15 @@ All options to run the SeqCap smallvariants reporting flow.
 | `seqcap_smallvariants.variant_caller`     | Variant caller name used to match the VCF filename during file discovery.                                                      | `string`  | `vardict`     |          |        |
 | `seqcap_smallvariants.runtype`            | Runtype label used for Excel title styling.                                                                                    | `string`  | `SeqCap`      |          |        |
 
+## Options for the seqcap_exomecnv flow
+
+All options to run the SeqCap exomecnv (ExomeDepth) reporting flow.
+
+| Parameter                  | Description                                                                                          | Type     | Default | Required | Hidden |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `seqcap_exomecnv.input`    | Samplesheet describing the samples, designs, panels and their gene list, VCF and CNV database files. | `string` |         | Yes      |        |
+| `seqcap_exomecnv.run_name` | Run name used in the analysis.                                                                       | `string` |         | Yes      |        |
+
 ## Reference genome options
 
 Reference genome related files and options required for the workflow.

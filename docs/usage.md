@@ -7,6 +7,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - **rnafusion**: generating custom report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
 - **targeted**: targeted variant analysis with HOTCOUNT
 - **seqcap_smallvariants**: generate custom Excel reports from a SeqCap [nf-cmgg/smallvariants](https://github.com/nf-cmgg/smallvariants) analysis
+- **seqcap_exomecnv**: generate custom Multiqc report from a SeqCap [nf-cmgg/exomecnv](https://github.com/nf-cmgg/exomecnv) analysis
 
 ## Samplesheet input
 
@@ -58,6 +59,20 @@ This flow processes all samples in one samplesheet as a single run. Each row des
 | `coverage`        | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`). |
 
 An [example samplesheet](../assets/samplesheet_seqcap_smallvariants.csv) has been provided with the pipeline.
+
+### seqcap_exomecnv
+
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination and must include the following columns:
+
+| Column            | Description                                                                             |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| `sample`          | MANDATORY - Sample identifier.                                                          |
+| `design`          | MANDATORY - Full SeqCap design name.                                                    |
+| `panel`           | MANDATORY - Screening genepanel name.                                                   |
+| `design_genelist` | MANDATORY - Path to a text file with one gene symbol per line for the full design.      |
+| `panel_genelist`  | MANDATORY - Path to a text file with one gene symbol per line for the screening panel.  |
+| `vcf`             | MANDATORY - Path to the sample's VEP-annotated ExomeDepth CNV calls (`.vcf.gz`).        |
+| `cnv_database`    | MANDATORY - Path to the tab-separated historical CMGG CNV database file for the design. |
 
 ## Running the pipeline
 
