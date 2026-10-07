@@ -7,9 +7,6 @@ nextflow_process {
     tag "modules"
     tag "exomecnvtocsv"
 
-    // NOTE: this test uses local SeqCap test data available at data/seqcap_exomecnv
-    // (gitignored). It is not available in CI and is meant for local/manual validation only.
-
     test("ExomeDepth CNVs output reporting [meta, samplesheet, input_files]") {
 
         when {
@@ -61,12 +58,12 @@ nextflow_process {
                     file("${moduleTestDir}/samplesheet_exomecnv_to_csv.csv", checkIfExists: true)
                 ]
                 input[1] = [
-                    file("${projectDir}/data/seqcap_exomecnv/FamCanc_v3", checkIfExists: true),
-                    file("${projectDir}/data/seqcap_exomecnv/Pancreas_cancer_v4", checkIfExists: true),
-                    file("${projectDir}/data/seqcap_exomecnv/Colon_cancer_v3", checkIfExists: true),
-                    file("${projectDir}/data/seqcap_exomecnv/sample1.cnvs.vep.vcf.gz", checkIfExists: true),
-                    file("${projectDir}/data/seqcap_exomecnv/sample2.cnvs.vep.vcf.gz", checkIfExists: true),
-                    file("${projectDir}/data/seqcap_exomecnv/_CMGG_HyperCap_cnvs.FamCanc_v3", checkIfExists: true)
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/FamCanc_v3", checkIfExists: true),
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/Pancreas_cancer_v4", checkIfExists: true),
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/Colon_cancer_v3", checkIfExists: true),
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/sample1.cnvs.vep.vcf.gz", checkIfExists: true),
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/sample2.cnvs.vep.vcf.gz", checkIfExists: true),
+                    file("https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/exomecnvtocsv/_CMGG_HyperCap_cnvs.FamCanc_v3", checkIfExists: true)
                 ]
                 """
             }
