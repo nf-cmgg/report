@@ -29,15 +29,11 @@ output:
           description: |
             Groovy Map containing run information
             e.g. `[ id:'run1' ]`
-      - "results_exomedepth/*.tsv":
+      - "*.tsv":
           type: file
           description: Per-design and per-panel ExomeDepth CNV summary TSV reports.
           pattern: "*.tsv"
   - versions:
-      - "versions.yml":
-          type: file
-          description: File containing software versions
-          pattern: "versions.yml"
 
 authors:
   - "@ToonRosseel"

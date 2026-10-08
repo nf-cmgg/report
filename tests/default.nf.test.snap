@@ -61,9 +61,8 @@
                 "rnafusion/varcov/NVQTEST_123",
                 "rnafusion/varcov/NVQTEST_123/test.xlsx",
                 "seqcap_exomecnv",
-                "seqcap_exomecnv/results_exomedepth",
-                "seqcap_exomecnv/results_exomedepth/cnvs_exomedepth_designs_summary.tsv",
-                "seqcap_exomecnv/results_exomedepth/cnvs_exomedepth_panels_summary.tsv",
+                "seqcap_exomecnv/cnvs_exomedepth_designs_summary.tsv",
+                "seqcap_exomecnv/cnvs_exomedepth_panels_summary.tsv",
                 "seqcap_smallvariants",
                 "seqcap_smallvariants/results_vardict",
                 "seqcap_smallvariants/results_vardict/_RAWdata",
@@ -99,7 +98,7 @@
                 "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-10-08T13:14:47.559403247",
+        "timestamp": "2026-10-08T16:09:29.882700062",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"

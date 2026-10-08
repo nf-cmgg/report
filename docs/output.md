@@ -20,9 +20,8 @@ results/
 │       └── NVQTEST_123
 │           └── test.xlsx
 ├── seqcap_exomecnv
-│   └── results_exomedepth
-│       ├── cnvs_exomedepth_designs_summary.tsv
-│       └── cnvs_exomedepth_panels_summary.tsv
+│   └── cnvs_exomedepth_designs_summary.tsv
+│   └── cnvs_exomedepth_panels_summary.tsv
 ├── seqcap_smallvariants
 │   └── results_vardict
 │       ├── sample1
@@ -109,7 +108,7 @@ The `seqcap_exomecnv` flow summarizes ExomeDepth CNV calls for a full run into p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `seqcap_exomecnv/results_exomedepth/`
+- `seqcap_exomecnv/`
   - `cnvs_exomedepth_designs_summary.tsv`: one row per patient/design/CNV.
   - `cnvs_exomedepth_panels_summary.tsv`: one row per patient/panel/design/CNV.
 

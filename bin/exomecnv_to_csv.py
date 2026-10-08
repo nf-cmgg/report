@@ -520,9 +520,12 @@ def write_output(rows, output_path, include_panel=False):
 
 def prepare_output_dir(path):
     output_dir = os.path.abspath(path)
-    protected_paths = {os.path.abspath(os.sep), os.path.abspath(os.getcwd())}
-    if output_dir in protected_paths:
+    if output_dir == os.path.abspath(os.sep):
         raise ValueError(f"Refusing to remove protected output directory: {output_dir}")
+
+    # Writing into the current directory (e.g. a Nextflow work dir): keep it, outputs are overwritten
+    if output_dir == os.path.abspath(os.getcwd()):
+        return output_dir
 
     if os.path.lexists(output_dir):
         print(f"WARNING: Output directory '{output_dir}' exists; removing it before writing outputs.")
