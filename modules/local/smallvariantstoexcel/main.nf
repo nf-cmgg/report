@@ -1,6 +1,6 @@
 process SMALLVARIANTS_TO_EXCEL {
     tag "${meta.id}"
-    label 'process_low'
+    label 'process_single'
 
     conda "${moduleDir}/environment.yml"
     container "community.wave.seqera.io/library/python:3.14.2--0562a0df3245213a"

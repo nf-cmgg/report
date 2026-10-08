@@ -16,6 +16,7 @@
 include { TARGETED                } from './workflows/targeted'
 include { RNAFUSION               } from './workflows/rnafusion'
 include { SEQCAP_SMALLVARIANTS    } from './workflows/seqcap_smallvariants'
+include { SEQCAP_EXOMECNV         } from './workflows/seqcap_exomecnv'
 include { PACVAR_REPEAT           } from './modules/local/pacvarrepeat'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
@@ -52,6 +53,16 @@ workflow {
         params.help_full,
         params.show_hidden
     )
+
+    // Copy of the original input samplesheets
+    [
+        targeted           : params.targeted.input,
+        rnafusion          : params.rnafusion.input,
+        seqcap_smallvariants: params.seqcap_smallvariants.input,
+        seqcap_exomecnv    : params.seqcap_exomecnv.input,
+    ].findAll { _name, input -> input }.each { name, input ->
+        file(input).copyTo("${params.outdir}/pipeline_info/samplesheet_${name}.${file(input).extension}")
+    }
 
     //
     // Run reporting flows
@@ -134,6 +145,23 @@ workflow {
         )
         out_seqcap_smallvariants_excels = SEQCAP_SMALLVARIANTS.out.excels
         out_seqcap_smallvariants_reports = SEQCAP_SMALLVARIANTS.out.reports
+    }
+
+    def out_seqcap_exomecnv_summaries = channel.empty()
+    if (params.seqcap_exomecnv.input) {
+        def required_parameters = ['input', 'run_name']
+        check_required_params(params.get('seqcap_exomecnv'), 'seqcap_exomecnv', required_parameters)
+        def seqcap_exomecnv_params = params.seqcap_exomecnv
+
+        def samplesheet = file(seqcap_exomecnv_params.input)
+        def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_exomecnv_input.json"))
+        def run_name = seqcap_exomecnv_params.run_name
+
+        SEQCAP_EXOMECNV(
+            ch_rows,
+            run_name,
+        )
+        out_seqcap_exomecnv_summaries = SEQCAP_EXOMECNV.out.summaries
     }
 
     // TODO: out of scope of the current release, reimplement this later
@@ -230,6 +258,7 @@ workflow {
     // pacvar_repeat_excels = out_pacvar_repeat_excels
     seqcap_smallvariants_excels   = out_seqcap_smallvariants_excels
     seqcap_smallvariants_reports  = out_seqcap_smallvariants_reports
+    seqcap_exomecnv_summaries     = out_seqcap_exomecnv_summaries
     multiqc_report                = MULTIQC.out.report
     multiqc_data                  = MULTIQC.out.data
 }
@@ -264,6 +293,11 @@ output {
     seqcap_smallvariants_reports {
         path { meta, report ->
             report >> "seqcap_smallvariants/"
+        }
+    }
+    seqcap_exomecnv_summaries {
+        path { meta, summary ->
+            summary >> "seqcap_exomecnv/"
         }
     }
     multiqc_report {
