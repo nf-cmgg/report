@@ -54,6 +54,16 @@ workflow {
         params.show_hidden
     )
 
+    // Copy of the original input samplesheets
+    [
+        targeted           : params.targeted.input,
+        rnafusion          : params.rnafusion.input,
+        seqcap_smallvariants: params.seqcap_smallvariants.input,
+        seqcap_exomecnv    : params.seqcap_exomecnv.input,
+    ].findAll { _name, input -> input }.each { name, input ->
+        file(input).copyTo("${params.outdir}/pipeline_info/samplesheet_${name}.${file(input).extension}")
+    }
+
     //
     // Run reporting flows
     //

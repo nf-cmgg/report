@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed`
 
 - Updated documentation
+- Copy input samplesheet to `pipeline_info` output dir
 
 ## v1.1.0 - On Target [23/07/2026]
 

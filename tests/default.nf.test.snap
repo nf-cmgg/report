@@ -52,6 +52,10 @@
                 "multiqc/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/report_mqc_versions.yml",
+                "pipeline_info/samplesheet_rnafusion.csv",
+                "pipeline_info/samplesheet_seqcap_exomecnv.csv",
+                "pipeline_info/samplesheet_seqcap_smallvariants.csv",
+                "pipeline_info/samplesheet_targeted.csv",
                 "rnafusion",
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
@@ -81,6 +85,10 @@
             [
                 "cnvs_exomedepth_designs.txt:md5,c510f2c2b0709cdb6c603af0c6c015bd",
                 "cnvs_exomedepth_panels.txt:md5,16fde3bc1b7124a5492cef2bb741a1c9",
+                "samplesheet_rnafusion.csv:md5,65c556eae0dc4d6c09217a2fe01eeea8",
+                "samplesheet_seqcap_exomecnv.csv:md5,8a590f9d640e984d66e169acd0626176",
+                "samplesheet_seqcap_smallvariants.csv:md5,65fe4a607d4f28abd2fdb76122a09c3b",
+                "samplesheet_targeted.csv:md5,2b2446582412baa95a89fe8eb0792fdc",
                 "cnvs_exomedepth_designs_summary.tsv:md5,0d3eb50daa5fa88ed270e7b6e084409d",
                 "cnvs_exomedepth_panels_summary.tsv:md5,dc22d20c98455ae26cb980ebde99d031",
                 "test_run_coverage.txt:md5,fe4dfacf891ec289abc5733e17c06995",
@@ -91,7 +99,7 @@
                 "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-10-07T19:21:29.823571723",
+        "timestamp": "2026-10-08T11:50:38.46602247",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
