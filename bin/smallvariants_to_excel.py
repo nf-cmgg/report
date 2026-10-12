@@ -995,6 +995,10 @@ def parse_vcf_variants(
             nm_id = "."
             pubmed = ""
             existing_var = ""
+            splice_region = ""
+            maxentscan_alt = ""
+            maxentscan_diff = ""
+            maxentscan_ref = ""
             splice_ai = {}
 
             # Only transcripts present in the design's transcripts_file are valid;
@@ -1036,6 +1040,10 @@ def parse_vcf_variants(
                     ensp = c_dict.get("ENSP", "")
                     pubmed = c_dict.get("PUBMED", "").replace("&", ",")
                     existing_var = c_dict.get("Existing_variation", "").replace("&", ",")
+                    splice_region = c_dict.get("SpliceRegion", "")
+                    maxentscan_alt = c_dict.get("MaxEntScan_alt", "")
+                    maxentscan_diff = c_dict.get("MaxEntScan_diff", "")
+                    maxentscan_ref = c_dict.get("MaxEntScan_ref", "")
 
                     for k in ["DS_AG", "DS_AL", "DS_DG", "DS_DL", "DP_AG", "DP_AL", "DP_DG", "DP_DL"]:
                         splice_ai[k] = c_dict.get(f"SpliceAI_pred_{k}", "") or "."
@@ -1103,7 +1111,7 @@ def parse_vcf_variants(
             d["Build"] = build
             d["Patient"] = patient
             d["VCF_g_nomenclature"] = g_nomenclature
-            d["HGVS_g_nomenclature"] = hgvsg
+            d["HGVS_g_nomenclature"] = hgvsg or "."
             d["HGVS_Coding_region_change"] = hgvsc or "."
             d["HGVS_Amino_acid_change"] = hgvsp or "."
             d["Recurrency"] = ""  # Populated later
@@ -1146,10 +1154,10 @@ def parse_vcf_variants(
             d["SpliceAI_position_AL (max distance 50bp)"] = splice_ai.get("DP_AL", ".")
             d["SpliceAI_position_DG (max distance 50bp)"] = splice_ai.get("DP_DG", ".")
             d["SpliceAI_position_DL (max distance 50bp)"] = splice_ai.get("DP_DL", ".")
-            d["SpliceRegion"] = info_dict.get("SpliceRegion", ".")
-            d["MaxEntScan_alt"] = info_dict.get("MaxEntScan_alt", ".")
-            d["MaxEntScan_diff"] = info_dict.get("MaxEntScan_diff", ".")
-            d["MaxEntScan_ref"] = info_dict.get("MaxEntScan_ref", ".")
+            d["SpliceRegion"] = splice_region or "."
+            d["MaxEntScan_alt"] = maxentscan_alt or "."
+            d["MaxEntScan_diff"] = maxentscan_diff or "."
+            d["MaxEntScan_ref"] = maxentscan_ref or "."
             d["rf_score"] = info_dict.get("rf_score", ".")
             d["ada_score"] = info_dict.get("ada_score", ".")
             d["Protein_id"] = ensp or "."
