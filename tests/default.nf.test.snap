@@ -93,12 +93,12 @@
                 "test_run_coverage.txt:md5,fe4dfacf891ec289abc5733e17c06995",
                 "test_run_variants.txt:md5,00670c56fa6415a3bd7c9d31727eb093",
                 "sample1_Design_v1_coverage.txt:md5,a98058c6dcf7c0f82729cd359936d127",
-                "sample1_Design_v1_variants.txt:md5,d7274ba1fcc2e90ee0795e3a03c14907",
+                "sample1_Design_v1_variants.txt:md5,13522a94db8c8c38ea144c4820af8082",
                 "sample1_Panel_v1_coverage.txt:md5,071a97ae10e42afb9e736e83d3e0984c",
                 "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-10-08T16:09:29.882700062",
+        "timestamp": "2026-10-12T10:44:10.321009561",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
