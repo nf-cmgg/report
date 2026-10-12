@@ -76,7 +76,7 @@
                     },
                     {
                         "path": "sample1/_sample1_Design_v1.xlsx",
-                        "size": 6594
+                        "size": 6597
                     }
                 ],
                 "reports": [
@@ -94,7 +94,7 @@
                     },
                     {
                         "path": "sample1/sample1_Design_v1_variants.txt",
-                        "size": 1809
+                        "size": 1843
                     },
                     {
                         "path": "sample1/sample1_Panel_v1_coverage.txt",
@@ -107,7 +107,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-10-06T10:32:31.528718894",
+        "timestamp": "2026-10-12T10:42:00.375980901",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
