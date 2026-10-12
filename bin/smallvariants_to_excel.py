@@ -1072,7 +1072,9 @@ def parse_vcf_variants(
 
             if ensg_id and hgvsg:
                 cmgg_info = api_data.get("cmgg_variants", {}).get(ensg_id, {}).get(hgvsg, {})
-                cmgg_class = cmgg_info.get("class", "").rstrip(" - ")
+                cmgg_class = re.sub(
+                                    r"\s*[\r\n]+\s*", " ", cmgg_info.get("class", "")
+                                ).rstrip(" - ")
                 dna_tags = cmgg_info.get("tags", "")
 
                 mdg_class = api_data.get("cmgg_variants_mdg", {}).get(ensg_id, {}).get(hgvsg, "").rstrip(" - ")
