@@ -76,11 +76,6 @@
             "sample",
             "panel",
             "design",
-            "panel_bed",
-            "design_bed",
-            "panel_genelist",
-            "design_genelist",
-            "transcript_file",
             "vcf",
             "coverage"
         ]

@@ -51,6 +51,11 @@
                 "description": "Tab-separated historical CMGG CNV database file for the full SeqCap design."
             }
         },
-        "required": ["sample", "design", "panel", "design_genelist", "panel_genelist", "vcf", "cnv_database"]
+        "required": [
+            "sample",
+            "design",
+            "panel",
+            "vcf"
+        ]
     }
 }
