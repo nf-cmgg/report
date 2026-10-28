@@ -72,17 +72,6 @@
                 "description": "Mosdepth per-base coverage BED file for the sample."
             }
         },
-        "required": [
-            "sample",
-            "panel",
-            "design",
-            "panel_bed",
-            "design_bed",
-            "panel_genelist",
-            "design_genelist",
-            "transcript_file",
-            "vcf",
-            "coverage"
-        ]
+        "required": ["sample", "panel", "design", "vcf", "coverage"]
     }
 }

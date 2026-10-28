@@ -25,7 +25,8 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText  } from './subworkflows/local/utils_nfcore_report_pipeline'
-include { check_required_params   } from './subworkflows/local/utils_nfcore_report_pipeline'
+include { check_required_params       } from './subworkflows/local/utils_nfcore_report_pipeline'
+include { getSeqcapAttribute          } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 // Modules
 include { MULTIQC                 } from './modules/nf-core/multiqc/main'
@@ -131,6 +132,30 @@ workflow {
 
         def samplesheet = file(seqcap_smallvariants_params.input)
         def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_smallvariants_input.json"))
+            .map { meta, panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage ->
+                def final_panel_bed        = panel_bed        ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_bed')
+                def final_design_bed       = design_bed       ?: getSeqcapAttribute(meta.design, meta.panel, 'design_bed')
+                def final_panel_genelist   = panel_genelist   ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_genelist')
+                def final_design_genelist  = design_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'design_genelist')
+                def final_transcript_file  = transcript_file  ?: getSeqcapAttribute(meta.design, meta.panel, 'transcript_file')
+
+                if (!final_panel_bed)       error "Could not find 'panel_bed' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_bed' in the samplesheet."
+                if (!final_design_bed)      error "Could not find 'design_bed' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_bed' in the samplesheet."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_genelist' in the samplesheet."
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_genelist' in the samplesheet."
+                if (!final_transcript_file) error "Could not find 'transcript_file' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'transcript_file' in the samplesheet."
+
+                [
+                    meta,
+                    file(final_panel_bed, checkIfExists: true),
+                    file(final_design_bed, checkIfExists: true),
+                    file(final_panel_genelist, checkIfExists: true),
+                    file(final_design_genelist, checkIfExists: true),
+                    file(final_transcript_file, checkIfExists: true),
+                    vcf,
+                    coverage
+                ]
+            }
         def api_data = channel.value(file(seqcap_smallvariants_params.api_data))
         def run_name = seqcap_smallvariants_params.run_name
 
@@ -155,6 +180,23 @@ workflow {
 
         def samplesheet = file(seqcap_exomecnv_params.input)
         def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_exomecnv_input.json"))
+            .map { meta, design_genelist, panel_genelist, vcf, cnv_database ->
+                def final_design_genelist = design_genelist ?: getSeqcapAttribute(meta.design, meta.panel, 'design_genelist')
+                def final_panel_genelist  = panel_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_genelist')
+                def final_cnv_database    = cnv_database    ?: getSeqcapAttribute(meta.design, meta.panel, 'cnv_database')
+
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_genelist' in the samplesheet."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_genelist' in the samplesheet."
+                if (!final_cnv_database)    error "Could not find 'cnv_database' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'cnv_database' in the samplesheet."
+
+                [
+                    meta,
+                    file(final_design_genelist, checkIfExists: true),
+                    file(final_panel_genelist, checkIfExists: true),
+                    vcf,
+                    file(final_cnv_database, checkIfExists: true)
+                ]
+            }
         def run_name = seqcap_exomecnv_params.run_name
 
         SEQCAP_EXOMECNV(

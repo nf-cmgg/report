@@ -163,6 +163,71 @@ def getGenomeAttribute(attribute) {
 }
 
 //
+// Cache for parsed seqcap panels
+//
+def getSeqcapPanelsMap() {
+    if (params.seqcap_panels instanceof Map && !params.seqcap_panels.isEmpty()) {
+        return params.seqcap_panels
+    }
+
+    if (params.seqcap_panels_config) {
+        def configFile = file(params.seqcap_panels_config)
+        if (!configFile.exists()) {
+            error "Config file specified with --seqcap_panels_config does not exist: ${params.seqcap_panels_config}"
+        }
+
+        def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/regions/SeqCap"
+        def cnv_base    = params.cnv_database_base  ?: seqcap_base
+        def content     = configFile.text
+
+        def slurper = new ConfigSlurper()
+        slurper.setBinding([
+            params: [
+                seqcap_panels_base: seqcap_base,
+                cnv_database_base : cnv_base,
+                igenomes_base     : params.igenomes_base,
+                genome            : params.genome
+            ]
+        ])
+        def parsed = slurper.parse(content)
+        return (parsed.params?.seqcap_panels ?: parsed.seqcap_panels ?: [:])
+    }
+
+    return [:]
+}
+
+//
+// Get attribute from seqcap_panels config file
+//
+def getSeqcapAttribute(design, panel, attribute) {
+    def panelsMap = getSeqcapPanelsMap()
+    if (panelsMap && design && panelsMap.containsKey(design)) {
+        def d = panelsMap[design]
+        if (panel && d.panels && d.panels.containsKey(panel) && d.panels[panel].containsKey(attribute)) {
+            return d.panels[panel][attribute]
+        }
+        if (d.containsKey(attribute)) {
+            return d[attribute]
+        }
+    }
+
+    // Default conventions if not explicitly present in config
+    def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/regions/SeqCap"
+    def cnv_base    = params.cnv_database_base  ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/variation/EOG_CNV"
+
+    if (attribute == 'design_genelist') {
+        return seqcap_base && design ? "${seqcap_base}/${design}/${design}" : null
+    } else if (attribute == 'transcript_file') {
+        return seqcap_base && design ? "${seqcap_base}/${design}_all_genes_vs_transcripts" : null
+    } else if (attribute == 'panel_genelist') {
+        return seqcap_base && design && panel ? "${seqcap_base}/${design}/${panel}" : null
+    } else if (attribute == 'cnv_database') {
+        return cnv_base && design ? "${cnv_base}/_CMGG_HyperCap_cnvs.${design}" : null
+    }
+    return null
+}
+
+//
 // Generate methods description for MultiQC
 //
 def toolCitationText() {

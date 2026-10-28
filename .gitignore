@@ -13,3 +13,4 @@ null/
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+conf/seqcap_panels.config
