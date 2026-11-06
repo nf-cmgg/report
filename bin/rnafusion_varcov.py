@@ -4,13 +4,11 @@
 # It has been modified by Nicolas Vannieuwkerke to make Nextflow implementation easier
 
 ############################
-### new in version 0.2.8 ###
+### new in version 0.3.0 ###
 ############################
 
-# deal with empty columns for arriba and starfusion
-
-# TO DO: make script compatible with .gz .vcf files
-# always check first if file exists and if not, display error message in the worksheet instead of crashing the script
+# The merging of the .vcf and fusion report .csv files was changed to a new approach
+# removed MANE transcript worksheet
 
 
 
@@ -18,11 +16,14 @@
 
 # importing modules
 import argparse
+import csv
+import json
 import re
 import os
+from pathlib import Path
+from typing import Any
 import pandas as pd
 import openpyxl
-import cyvcf2
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.utils import get_column_letter
@@ -31,48 +32,291 @@ from openpyxl.utils import get_column_letter
 ## constants ##
 ###############
 
-VCF_INFO_COLUMNS = [
-    'CHRA',
-    'CHRB',
-    'GENEA',
-    'GENEB',
-    'POSA',
-    'POSB',
-    'SCORE',
-    'TOOL_HITS',
-    'SCORE',
-    'FRAME_STATUS',
-    'TRANSCRIPT_ID_A',
-    'TRANSCRIPT_ID_B',
-    'EXON_NUMBER_A',
-    'EXON_NUMBER_B',
-    'TRANSCRIPT_VERSION_A',
-    'TRANSCRIPT_VERSION_B',
-    'HGNC_ID_A',
-    'HGNC_ID_B',
-    'ANNOTATIONS',
-    'ORIENTATION',
-    'FOUND_DB',
-    'FOUND_IN',
-]
-
-VCF_COLUMNS = [
-    "CHROM",
-    "POS",
-    "ID",
-    "REF",
-    "ALT",
-    "QUAL",
-    "FILTER",
-    "FORMAT"
-]
-
 SCORE_THRESHOLD: float = 0.18
 TOOL_HITS_THRESHOLD: int = 1
+
+CSV_POSITION_COLUMNS = ("arriba", "fusioncatcher", "starfusion")
+CSV_CALLER_PREFIXES = {
+    "arriba": "ar_",
+    "fusioncatcher": "fc_",
+    "starfusion": "sf_",
+}
+KEY_COLUMNS = ("GENEA", "GENEB", "CHRA", "POSA", "CHRB", "POSB")
+POSITION_PATTERN = re.compile(r"position:\s*([^,\s]+)#([^,\s]+)")
+BREAKPOINT_PATTERN = re.compile(r"([^:]+):(\d+)(?::[+-])?")
 
 ########################
 ## defining functions ##
 ########################
+
+def normalize_chromosome(chromosome: str) -> str:
+    chromosome = chromosome.strip()
+    if chromosome.lower().startswith("chr"):
+        chromosome = chromosome[3:]
+    return chromosome
+
+
+def parse_breakpoint(value: str) -> tuple[str, str] | None:
+    match = BREAKPOINT_PATTERN.fullmatch(value.strip())
+    if match is None:
+        return None
+    return normalize_chromosome(match.group(1)), str(int(match.group(2)))
+
+
+def parse_csv_positions(value: Any) -> tuple[str, str, str, str] | None:
+    if not isinstance(value, str):
+        return None
+    match = POSITION_PATTERN.search(value)
+    if match is None:
+        return None
+    first = parse_breakpoint(match.group(1))
+    second = parse_breakpoint(match.group(2))
+    if first is None or second is None:
+        return None
+    return first[0], first[1], second[0], second[1]
+
+
+def parse_caller_info(value: Any, prefix: str) -> dict[str, str]:
+    if not isinstance(value, str) or not value:
+        return {}
+
+    parsed: dict[str, str] = {}
+    for item in value.split(","):
+        key, separator, item_value = item.partition(":")
+        if separator and key.strip():
+            parsed[f"{prefix}{key.strip()}"] = item_value.strip()
+    return parsed
+
+
+def read_fusion_csv(csv_path: Path) -> tuple[pd.DataFrame, list[str]]:
+    df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
+    if "Fusion" not in df.columns:
+        raise ValueError(f"{csv_path} must contain a 'Fusion' column.")
+
+    expanded_rows = []
+    for _, row in df.iterrows():
+        expanded_row: dict[str, str] = {}
+        for column, prefix in CSV_CALLER_PREFIXES.items():
+            if column in df.columns:
+                expanded_row.update(parse_caller_info(row[column], prefix))
+        expanded_rows.append(expanded_row)
+    expanded_df = pd.DataFrame(expanded_rows, index=df.index)
+    duplicates = set(df.columns).intersection(expanded_df.columns)
+    if duplicates:
+        raise ValueError(
+            "Expanded caller fields would overwrite CSV columns: "
+            + ", ".join(sorted(duplicates))
+        )
+    df = pd.concat([df, expanded_df], axis=1)
+
+    position_columns = [
+        column for column in CSV_POSITION_COLUMNS if column in df.columns
+    ]
+    keys: list[dict[str, Any]] = []
+    for row_number, row in df.iterrows():
+        genes = row["Fusion"].split("--", maxsplit=1)
+        if len(genes) != 2 or not all(genes):
+            raise ValueError(
+                f"Invalid fusion value on CSV row {row_number + 2}: "
+                f"{row['Fusion']!r}"
+            )
+
+        positions = {
+            parsed
+            for column in position_columns
+            if (parsed := parse_csv_positions(row[column])) is not None
+        }
+        if not positions:
+            positions.add((None, None, None, None))
+
+        for chra, posa, chrb, posb in sorted(
+            positions,
+            key=lambda item: tuple("" if part is None else str(part) for part in item),
+        ):
+            keys.append(
+                {
+                    "_CSV_ROW": row_number,
+                    "GENEA": genes[0],
+                    "GENEB": genes[1],
+                    "CHRA": chra,
+                    "POSA": posa,
+                    "CHRB": chrb,
+                    "POSB": posb,
+                }
+            )
+
+    key_df = pd.DataFrame(keys)
+    csv_df = df.reset_index(drop=True).copy()
+    csv_df["_CSV_ROW"] = csv_df.index
+    return key_df.merge(csv_df, on="_CSV_ROW", how="left"), position_columns
+
+
+def read_fusion_vcf(vcf_path: Path) -> pd.DataFrame:
+    header: list[str] | None = None
+    records: list[dict[str, Any]] = []
+    info_columns: list[str] = []
+
+    with vcf_path.open(newline="") as vcf_file:
+        for fields in csv.reader(vcf_file, delimiter="\t"):
+            if not fields:
+                continue
+            if fields[0] == "#CHROM":
+                header = [field.lstrip("#") for field in fields]
+                continue
+            if fields[0].startswith("#"):
+                continue
+            if header is None:
+                raise ValueError(f"{vcf_path} has data before its #CHROM header.")
+            if len(fields) != len(header):
+                raise ValueError(
+                    f"Malformed VCF row {len(records) + 1} in {vcf_path}: "
+                    f"expected {len(header)} fields, found {len(fields)}."
+                )
+
+            record = dict(zip(header, fields))
+            info = {
+                item.split("=", maxsplit=1)[0]: item.split("=", maxsplit=1)[1]
+                for item in record.get("INFO", "").split(";")
+                if "=" in item
+            }
+            for name in info:
+                if name not in info_columns:
+                    info_columns.append(name)
+            key: dict[str, Any] = {
+                "GENEA": info.get("GENEA"),
+                "GENEB": info.get("GENEB"),
+                "CHRA": info.get("CHRA"),
+                "POSA": info.get("POSA"),
+                "CHRB": info.get("CHRB"),
+                "POSB": info.get("POSB"),
+            }
+            for chromosome_column in ("CHRA", "CHRB"):
+                if key[chromosome_column] not in (None, "", "nan"):
+                    key[chromosome_column] = normalize_chromosome(
+                        key[chromosome_column]
+                    )
+            for position_column in ("POSA", "POSB"):
+                value = key[position_column]
+                key[position_column] = (
+                    str(int(value)) if value not in (None, "", "nan") else None
+                )
+            records.append(
+                {
+                    **info,
+                    **key,
+                    **{f"VCF_{name}": value for name, value in record.items()},
+                }
+            )
+
+    if header is None:
+        raise ValueError(f"{vcf_path} is missing its #CHROM header.")
+    required_info = {"GENEA", "GENEB", "CHRA", "CHRB", "POSA", "POSB"}
+    for index, record in enumerate(records, start=1):
+        if any(record[column] is None for column in required_info):
+            raise ValueError(
+                f"VCF record {index} in {vcf_path} is missing a fusion gene "
+                "or breakpoint INFO field."
+            )
+    return pd.DataFrame(
+        records,
+        columns=[
+            *KEY_COLUMNS,
+            *(name for name in info_columns if name not in KEY_COLUMNS),
+            *(f"VCF_{name}" for name in header),
+        ],
+    )
+
+
+def collapse_duplicate_keys(df: pd.DataFrame) -> pd.DataFrame:
+    if not df.duplicated(list(KEY_COLUMNS), keep=False).any():
+        return df
+
+    def combine(values: pd.Series) -> Any:
+        unique_values: list[str] = []
+        for value in values:
+            if pd.isna(value):
+                continue
+            text = str(value)
+            if text not in unique_values:
+                unique_values.append(text)
+        if not unique_values:
+            return pd.NA
+        if len(unique_values) == 1:
+            return unique_values[0]
+        return json.dumps(unique_values, ensure_ascii=False)
+
+    value_columns = [column for column in df.columns if column not in KEY_COLUMNS]
+    return (
+        df.groupby(list(KEY_COLUMNS), dropna=False, sort=False, as_index=False)
+        .agg({column: combine for column in value_columns})
+    )
+
+
+def remove_redundant_source_columns(df: pd.DataFrame) -> pd.DataFrame:
+    raw_columns = [
+        *CSV_CALLER_PREFIXES,
+        "VCF_INFO",
+    ]
+    df = df.drop(columns=raw_columns, errors="ignore")
+
+    score_columns = [
+        column for column in df.columns if column.casefold() == "score"
+    ]
+    if len(score_columns) > 1:
+        def non_empty_count(column: str) -> int:
+            values = df[column]
+            return int(
+                (
+                    values.notna()
+                    & values.astype("string").str.strip().ne("")
+                    & values.astype("string").str.casefold().ne("nan")
+                ).sum()
+            )
+
+        keep_column = max(
+            score_columns,
+            key=lambda column: (
+                non_empty_count(column),
+                column == "Score",
+            ),
+        )
+        df = df.drop(
+            columns=[column for column in score_columns if column != keep_column]
+        )
+    return df
+
+
+def combine_fusion_data(
+    csv_path: Path, vcf_path: Path
+) -> tuple[pd.DataFrame, list[str]]:
+    csv_df, position_columns = read_fusion_csv(csv_path)
+    vcf_df = read_fusion_vcf(vcf_path)
+
+    csv_df = collapse_duplicate_keys(csv_df)
+    vcf_df = collapse_duplicate_keys(vcf_df)
+    combined = csv_df.merge(
+        vcf_df,
+        on=list(KEY_COLUMNS),
+        how="outer",
+        indicator=True,
+        sort=False,
+    )
+    combined["Match_status"] = combined.pop("_merge").map(
+        {"both": "matched", "left_only": "csv_only", "right_only": "vcf_only"}
+    )
+    combined = combined.drop(columns=["_CSV_ROW"], errors="ignore")
+    combined = remove_redundant_source_columns(combined)
+    ordered_columns = [
+        *KEY_COLUMNS,
+        "Match_status",
+        *[
+            column
+            for column in combined.columns
+            if column not in KEY_COLUMNS + ("Match_status",)
+        ],
+    ]
+    return combined[ordered_columns], position_columns
+
 
 # function to create dir if it does not exist yet
 def create_directory(directory_path):
@@ -82,68 +326,13 @@ def create_directory(directory_path):
     else:
         print(f"Directory '{directory_path}' already exists.")
 
-# Function to fetch needed VCF fields and convert them to a DataFrame
-def vcf_to_df(vcf):
-    processed_variants: list[dict[str,any]] = []
-    for variant in vcf:
-        var_dict: dict[str,any] = {}
-        var_dict["CHROM"] = update_chroms(variant.CHROM)
-        var_dict["POS"] = variant.POS
-        var_dict["ID"] = variant.ID
-        var_dict["REF"] = variant.REF
-        var_dict["ALT"] = update_alt_chroms(variant.ALT)
-        var_dict["QUAL"] = variant.QUAL
-        var_dict["FILTER"] = variant.FILTER
-        var_dict["FORMAT"] = str(variant.FORMAT)
-        for column in VCF_INFO_COLUMNS:
-            var_dict[column] = variant.INFO.get(column, None)
-        var_dict['CHRA'] = update_chroms(var_dict['CHRA'])
-        var_dict['CHRB'] = update_chroms(var_dict['CHRB'])
-        processed_variants.append(var_dict)
-    df = pd.DataFrame(processed_variants)
-    if len(df.index) == 0:
-        # Create an empty DataFrame with the appropriate headers if the VCF file is empty
-        return pd.DataFrame(columns=VCF_INFO_COLUMNS)
-    return df
-
 # Adds chr to chromosomes missing it
 def update_chroms(chrom:any) -> str:
     if pd.isna(chrom): return chrom
     str_chrom = str(chrom)
     return str_chrom if str_chrom.startswith("chr") else f"chr{str_chrom}"
 
-# Adds chr to alt allele chromosomes missing it
-def update_alt_chroms(alts: list[str]) -> (list[str]|str):
-    outputs = []
-    for alt in alts:
-        if "chr" not in alt:
-            chr_match = re.match(r"^.*[\[\]]([\dXY]{1,2}):.*$", alt)
-            if chr_match:
-                chrom:str = chr_match.group(1)
-                alt = alt.replace(f"{chrom}:", f"chr{chrom}:")
-        outputs.append(alt)
-    return outputs[0] if len(outputs) == 1 else outputs
-
-# Function to remove brackets and single quotes
-def remove_brackets(df, cols):
-    for col in cols:
-        df[col] = df[col].apply(lambda x: x[0] if isinstance(x, list) and len(x) == 1 else x)
-    return df
-
-
-def split_string(row, column_name, prefix):
-    # check if the cell is a string
-    if isinstance(row[column_name], str):
-        # split the string into a dictionary
-        data = dict(item.split(': ') for item in row[column_name].split(','))
-        # add the prefix to the keys
-        data = {prefix + key: value for key, value in data.items()}
-    else:
-        # the cell is not a string, return an empty dictionary (empty values are seen as float by pd)
-        data = {}
-    # convert the dictionary to a Series and add it to the row
-    return pd.concat([row, pd.Series(data, dtype = 'object')])
-
+# create a button in the summary sheet to link to the relevant worksheet
 def create_cell_button(ws, cell_ref, text, link=None,
                         fill='00E8F4F8', font_color='000000',
                         border_color='00B3E5FC', border_style='medium', bold=True):
@@ -166,6 +355,7 @@ def create_cell_button(ws, cell_ref, text, link=None,
     col_letter = get_column_letter(c.column)
     ws.column_dimensions[col_letter].width = max(len(text) + 6, 18)
 
+# read in the arriba output file to correct if necessary
 def read_arriba_file(arriba_file:str) -> pd.DataFrame:
     df = pd.read_csv(arriba_file, sep='\t')
     df['Fusion'] = df['#gene1'] + "--" + df['gene2']
@@ -198,7 +388,7 @@ parser.add_argument('--output', metavar='DIR', type=str, help="Path to the outpu
 parser.add_argument('--bams', metavar='DIR', type=str, help="Path to a directory containing BAM files produced by STAR", required=True)
 parser.add_argument('--genes', metavar='FILE', type=str, help="Path to a file containing the targeted genes list for the analysis.", required=True)
 parser.add_argument('--fusion_whitelist', metavar='FILE', type=str, help="Path to a file containing a fusion whitelist for specific filtering.", required=True)
-parser.add_argument('--mane', metavar='FILE', type=str, help="Path to a file containing the MANE transcripts for filtering.", required=True)
+# parser.add_argument('--mane', metavar='FILE', type=str, help="Path to a file containing the MANE transcripts for filtering.", required=True)
 parser.add_argument('--run', metavar='STR', type=str, help="Name of the run analysed", required=True)
 parser.add_argument('--pipeline_version', metavar='STR', type=str, help="Version of the reporting pipeline used", required=True)
 parser.add_argument('--arriba', metavar='STR', type=str, help="Path to arriba output directory", required=True)
@@ -214,7 +404,7 @@ output_dir:str = args.output
 bam_path:str = args.bams + "/"
 genes:str = pd.read_csv(args.genes, sep='\t')
 fusions:str = pd.read_csv(args.fusion_whitelist, sep='\t')
-mane:str = pd.read_csv(args.mane)
+# mane:str = pd.read_csv(args.mane)
 run_nr:str = args.run
 pipeline_version:str = args.pipeline_version
 arriba_path:str = args.arriba + "/"
@@ -224,50 +414,34 @@ design:str = args.design
 ### Loop over .vcf files, extract info and export to report ###
 ###############################################################
 
-# extract zipped vcf files or read in zipped format
-'''
-import gzip
-
-with gzip.open('file.gz', 'rb') as f:
-    file_content = f.read()
-
-OR if you want to extract all files:
-
-import os
-import gzip
-import shutil
-
-for filename in os.listdir(input_path):
-    if filename.endswith(".gz"):
-        with gzip.open(filename, 'rb') as f_in:
-            with open(filename[:-3], 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-
-'''
-
 # Loop over all files in the folder
 for filename in os.listdir(input_path):
     # Check if the file is a VCF file
     if filename.endswith(".vcf"):
         # Full path to the VCF file
         vcf_path = os.path.join(input_path, filename)
-        vcf = cyvcf2.VCF(vcf_path)
-
-        # Convert VCF to DataFrame
-        df = vcf_to_df(vcf)
+        basename = filename.split('_')[0]
+        reads_file = os.path.join(reads_path + basename + ".fusions.csv")
+        df, _ = combine_fusion_data(Path(reads_file), Path(vcf_path))
 
         # Get sample names
-        samples: list[str] = vcf.samples
+        columns = df.columns.tolist()
+        format_column_index = columns.index("VCF_FORMAT")
+        samples: list[str] = [
+            column.removeprefix("VCF_")
+            for column in columns[format_column_index + 1:]
+            if column.startswith("VCF_")
+        ]
         if len(samples) != 1:
             raise ValueError(f"Expected exactly one sample in VCF file {filename}, but found {len(samples)} samples.")
         sample_name: str = samples[0]
 
         print(f"Creating report for sample: {sample_name}")
 
-        # clean up data extracted from info
-        # Specify the columns to apply the function to
-        # Apply the function to your DataFrame
-        df_clean = remove_brackets(df, VCF_INFO_COLUMNS)
+        df_clean = df
+        df_clean["CHRA"] = df_clean["CHRA"].apply(update_chroms)
+        df_clean["CHRB"] = df_clean["CHRB"].apply(update_chroms)
+        df_clean["Fusion"] = df_clean["GENEA"] + "--" + df_clean["GENEB"]
 
         # change annotation of reference sequence to one column
         # output is seen as float, not string (is sometimes empty so pandas consideres it as float)
@@ -279,56 +453,17 @@ for filename in os.listdir(input_path):
         df_clean = df_clean.drop('TRANSCRIPT_VERSION_B', axis = 1)
         df_clean = df_clean.drop('TRANSCRIPT_ID_B', axis = 1)
 
-        # Extract the basename and use it as the output Excel file name and worksheet name
-        basename = filename.split('_')[0]
-
-        # read info about reads into a new df
-        reads_file = os.path.join(reads_path + basename + ".fusions.csv")
-        df_reads = pd.read_csv(reads_file)
-
-        # split into different df, depending on algorithm
-        df_reads_fc = df_reads.apply(split_string, args=('fusioncatcher', 'fc_'), axis=1)
-        df_reads_ar = df_reads.apply(split_string, args=('arriba', 'ar_'), axis=1)
-        df_reads_sf = df_reads.apply(split_string, args=('starfusion', 'sf_'), axis=1)
-
-        def define_position(df: pd.DataFrame, column_to_split: str, split_prefix:str, fetch_function: function) -> pd.DataFrame:
-            df = df.apply(split_string, args=(column_to_split, split_prefix + '_'), axis=1)
-            if f"{split_prefix}_position" in df.columns:
-                df[['CHRA', 'POSA', 'CHRB', 'POSB']] = df[f'{split_prefix}_position'][df[f'{split_prefix}_position'].notna()].apply(fetch_function)
-                df.drop(columns=[f'{split_prefix}_position', column_to_split], inplace=True)
-                df["CHRA"] = df["CHRA"].apply(update_chroms)
-                df["CHRB"] = df["CHRB"].apply(update_chroms)
-                return df
-            else:
-                return pd.DataFrame()
-
-        # combine fusion df with reads df on 'Fusion' column
-        df_clean['Fusion'] = df_clean['GENEA'] + "--" + df_clean['GENEB']
-
         merged_df = df_clean
-        df_reads_fc = define_position(df_reads, 'fusioncatcher', 'fc', lambda x: pd.Series(re.split(r':\+?-?#?', x)[:-1]))
-        if not df_reads_fc.empty:
-            merged_df = pd.merge(merged_df, df_reads_fc, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
-
-        df_reads_ar = define_position(df_reads, 'arriba', 'ar', lambda x: pd.Series(re.split(r'[:#]', x)))
-        if not df_reads_ar.empty:
-            merged_df = pd.merge(merged_df, df_reads_ar, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
-
-        df_reads_sf = define_position(df_reads, 'starfusion', 'sf', lambda x: pd.Series(re.split(r':-?#?', x)[:-1]))
-        if not df_reads_sf.empty:
-            merged_df = pd.merge(merged_df, df_reads_sf, on = ['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'], how = 'left')
-
-        # drop original fusioncatcher, arriba and starfusion columns
-        merged_df = merged_df.drop(merged_df.filter(regex='^(fusioncatcher|arriba|starfusion).*$').columns, axis = 1)
-
-        # drop duplicate columns
-        merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+        merged_df = merged_df.drop(
+            columns=["ar_position", "fc_position", "sf_position"],
+            errors="ignore",
+        )
 
         # set certain columns to numerical
         present_columns_numerical: list[str] = list(merged_df.columns.intersection(["POSA", "POSB", 'fc_longest_anchor',
             'fc_common_mapping_reads', 'fc_spanning_pairs','fc_spanning_unique_reads', 'ar_coverage1',
             'ar_coverage2', 'ar_discordant_mates', 'ar_split_reads1', 'ar_split_reads2', 'sf_ffmp',
-            'sf_junction_reads', 'sf_spanning_reads']))
+            'sf_junction_reads', 'sf_spanning_reads', 'SCORE', 'TOOL_HITS']))
         for column in present_columns_numerical:
             merged_df[column] = pd.to_numeric(merged_df[column])
 
@@ -393,14 +528,10 @@ for filename in os.listdir(input_path):
         # filter base on score and number of callers, both conditions have to be true
         df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
 
-        # ALTERNATIVE: either one of the two conditions is true: gives too many hits
-        # df_final = df_filt[(df_filt['SCORE'] > 0.2) | (df_filt['TOOL_HITS'] > 2)]
-
         # limit filtered to versioned MANE transcript only
-        df_MANE = mane['Transcript stable ID version'].astype(str)
-        df_final_MANE = df_final[df_final['TRANSCRIPT_A'].apply(lambda x: any(i in x for i in df_MANE)) & df_final['TRANSCRIPT_B'].apply(lambda x: any(i in x for i in df_MANE))]
+        # df_MANE = mane['Transcript stable ID version'].astype(str)
+        # df_final_MANE = df_final[df_final['TRANSCRIPT_A'].apply(lambda x: any(i in x for i in df_MANE)) & df_final['TRANSCRIPT_B'].apply(lambda x: any(i in x for i in df_MANE))]
 
-        #df_final_MANE = df_final[df_final['TRANSCRIPT_A'].isin(df_MANE) | df_final['TRANSCRIPT_B'].isin(df_MANE)]
 
         #########################
         ### Coverage analysis ###
@@ -431,7 +562,6 @@ for filename in os.listdir(input_path):
         df_fusions = df_filt[df_filt['GENEA'].isin(fusions_in_df) | df_filt['GENEB'].isin(fusions_in_df)]
 
         # calculate coverage for DUX4 (mapping quality 0)
-        # finaal path nog eens controleren van bashCommand!
         bashCommand = "samtools coverage -r chr4:190173000-190175500 " + bam_path + basename + "*.bam" + " -q 0 -A -H > " + basename + "_DUX4.txt"
         os.system(bashCommand)
 
@@ -487,7 +617,7 @@ for filename in os.listdir(input_path):
 
         # Sheet names
         fusions_filt_sheet = "fusions_filt"
-        fusions_filt_MANE_sheet = "fusions_filt_MANE"
+        #fusions_filt_MANE_sheet = "fusions_filt_MANE"
         fusions_specific_sheet = "fusions_specific"
         fusions_all_sheet = "fusions_all"
         splicing_sheet = "CTAT_splicing"
@@ -498,7 +628,7 @@ for filename in os.listdir(input_path):
 
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
             df_final.to_excel(writer, index=False, sheet_name=fusions_filt_sheet)
-            df_final_MANE.to_excel(writer, index = False, sheet_name = fusions_filt_MANE_sheet)
+            #df_final_MANE.to_excel(writer, index = False, sheet_name = fusions_filt_MANE_sheet)
             df_fusions.to_excel(writer, index= False, sheet_name=fusions_specific_sheet)
             merged_df.to_excel(writer, index=False, sheet_name=fusions_all_sheet)
             splicing.to_excel(writer, index=False, sheet_name = splicing_sheet)
@@ -525,42 +655,42 @@ for filename in os.listdir(input_path):
         ws['B3'] = df_final.shape[0]
         create_cell_button(ws, 'C3', 'Go to data', link=f"#{fusions_filt_sheet}!A1")
 
-        ws['A4'] = "Filtered fusion present in MANE transcripts:"
-        ws['B4'] = df_final_MANE.shape[0]
-        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}!A1")
+        # ws['A4'] = "Filtered fusion present in MANE transcripts:"
+        # ws['B4'] = df_final_MANE.shape[0]
+        # create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_filt_MANE_sheet}!A1")
 
-        ws['A5'] = "Fusions in whitelist found:"
-        ws['B5'] = df_fusions.shape[0]
-        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_specific_sheet}!A1")
+        ws['A4'] = "Fusions in whitelist found:"
+        ws['B4'] = df_fusions.shape[0]
+        create_cell_button(ws, 'C4', 'Go to data', link=f"#{fusions_specific_sheet}!A1")
 
-        ws['A6'] = "Total fusions found:"
-        ws['B6'] = merged_df.shape[0]
-        create_cell_button(ws, 'C6', 'Go to data', link=f"#{fusions_all_sheet}!A1")
+        ws['A5'] = "Total fusions found:"
+        ws['B5'] = merged_df.shape[0]
+        create_cell_button(ws, 'C5', 'Go to data', link=f"#{fusions_all_sheet}!A1")
 
-        ws['A7'] = 'Splice sites found:'
-        ws['B7'] = splicing.shape[0]
+        ws['A6'] = 'Splice sites found:'
+        ws['B6'] = splicing.shape[0]
         create_cell_button(ws, 'C7', 'Go to data', link=f"#{splicing_sheet}!A1")
-        ws['D7'] = f' {ctat_variants_found} CTAT variant{"s" if ctat_variants_found != 1 else ""} found'
+        ws['D6'] = f' {ctat_variants_found} CTAT variant{"s" if ctat_variants_found != 1 else ""} found'
         if ctat_variants_found > 0:
-            ws['D7'].font = Font(color='00FF0000', bold=True)
+            ws['D6'].font = Font(color='00FF0000', bold=True)
 
-        ws['A9'] = "Coverage analysis of control genes:"
-        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_ref_sheet}!A1")
+        ws['A8'] = "Coverage analysis of control genes:"
+        create_cell_button(ws, 'B8', 'Go to data', link=f"#{coverage_ref_sheet}!A1")
 
-        ws['A10'] = "Coverage analysis of all targeted genes:"
-        create_cell_button(ws, 'B10', 'Go to data', link=f"#{coverage_all_sheet}!A1")
+        ws['A9'] = "Coverage analysis of all targeted genes:"
+        create_cell_button(ws, 'B9', 'Go to data', link=f"#{coverage_all_sheet}!A1")
 
-        ws['A11'] = "QC metrics:"
-        create_cell_button(ws, 'B11', 'Go to data', link=f"#{qc_sheet}!A1")
+        ws['A10'] = "QC metrics:"
+        create_cell_button(ws, 'B10', 'Go to data', link=f"#{qc_sheet}!A1")
 
-        ws['A13'] = "Patient:"
-        ws['A14'] = "RNA-nr:"
-        ws['B14'] = basename
-        ws['A15'] = "Date of birth:"
-        ws['A16'] = "TWIST design:"
-        ws['B16'] = design if design != None else "?"
-        ws['A17'] = "Sequencing run:"
-        ws['B17'] = run_nr
+        ws['A12'] = "Patient:"
+        ws['A13'] = "RNA-nr:"
+        ws['B13'] = basename
+        ws['A14'] = "Date of birth:"
+        ws['A15'] = "TWIST design:"
+        ws['B15'] = design if design != None else "?"
+        ws['A16'] = "Sequencing run:"
+        ws['B16'] = run_nr
 
         ws.column_dimensions["A"].width = 40
         ws.column_dimensions["B"].width = len(design) + 5 if design != None and len(design) > 20 else 20
@@ -579,7 +709,7 @@ for filename in os.listdir(input_path):
             cell.alignment = Alignment(horizontal='left', vertical='center')
 
         # modify fusion worksheets
-        for worksheet in [fusions_all_sheet, fusions_filt_sheet, fusions_filt_MANE_sheet, fusions_specific_sheet]:
+        for worksheet in [fusions_all_sheet, fusions_filt_sheet, fusions_specific_sheet]:
             ws = workbook[worksheet]
 
             # insert sample name in new empty row and add hyperlink to visualisation files
@@ -610,6 +740,7 @@ for filename in os.listdir(input_path):
 
             ws.row_dimensions[2].height = 50
 
+            '''
             # add ensembl link to transcript columns
             def link_transcript(column:str) -> None:
                 column_letter: str = openpyxl.utils.cell.get_column_letter(column)
@@ -623,7 +754,7 @@ for filename in os.listdir(input_path):
                     link_transcript(cell.column)
                 if cell.value == 'TRANSCRIPT_B':
                     link_transcript(cell.column)
-
+            '''
 
         #loop over coverage worksheets to change layout
         for worksheet in [coverage_ref_sheet, coverage_all_sheet]:
@@ -678,7 +809,7 @@ for filename in os.listdir(input_path):
             ws.insert_rows(1)
             ws['A1']= "QC " + basename
 
-            # add script version for logging, to be replaced in the future
+            # add script version for logging
             ws['E1'] = "nf-cmgg/report version: " + pipeline_version
 
             # change layout

@@ -18,7 +18,6 @@ workflow RNAFUSION {
     ch_samplesheet // channel: [ meta, path(directory) ]
     ch_genes
     ch_fusions
-    ch_mane
     workflow_version
 
     main:
@@ -52,7 +51,6 @@ workflow RNAFUSION {
         ch_varcov_input,
         ch_genes,
         ch_fusions,
-        ch_mane,
         workflow_version,
     )
 

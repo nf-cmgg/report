@@ -103,20 +103,18 @@ workflow {
 
     def out_rnafusion_excels = channel.empty()
     if (params.rnafusion.input) {
-        def required_parameters = ['genes', 'fusions', 'mane']
+        def required_parameters = ['genes', 'fusions']
         check_required_params(params.get('rnafusion'), 'rnafusion', required_parameters)
         def rnafusion_params = params.rnafusion
 
         def ch_samplesheet = channel.fromList(samplesheetToList(rnafusion_params.input, "${projectDir}/assets/schema_rnafusion_input.json"))
         def genes = channel.value(file(rnafusion_params.genes))
         def fusions = channel.value(file(rnafusion_params.fusions))
-        def mane = channel.value(file(rnafusion_params.mane))
 
         RNAFUSION(
             ch_samplesheet,
             genes,
             fusions,
-            mane,
             workflow.manifest.version,
         )
         out_rnafusion_excels = RNAFUSION.out

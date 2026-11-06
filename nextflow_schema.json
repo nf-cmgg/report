@@ -120,15 +120,6 @@
                             "pattern": "^\\S+\\.txt$",
                             "description": "Path to a text file containing fusions to analyze in the Rnafusion report",
                             "fa_icon": "far fa-file-code"
-                        },
-                        "mane": {
-                            "type": "string",
-                            "format": "file-path",
-                            "exists": true,
-                            "mimetype": "text/plain",
-                            "pattern": "^\\S+\\.csv$",
-                            "description": "Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report",
-                            "fa_icon": "far fa-file-code"
                         }
                     }
                 }
