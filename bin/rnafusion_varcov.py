@@ -481,9 +481,6 @@ for filename in os.listdir(input_path):
             merged_indexed = merged_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
             merged_df = arriba_indexed.combine_first(merged_indexed).reset_index()
 
-        # sort on score
-        merged_df = merged_df.sort_values('SCORE', ascending = False)
-
         # subset the dataframe to only contain relevant columns
         relevant_columns: list[str] = [
             "Fusion",
@@ -512,6 +509,9 @@ for filename in os.listdir(input_path):
         relevant_columns.extend(tool_specific_columns)
 
         df_filt = merged_df[relevant_columns]
+
+        # sort on score
+        df_filt = df_filt.sort_values('SCORE', ascending = False)
 
         # move some columns
         column_to_move = df_filt.pop('EXON_NUMBER_A')
