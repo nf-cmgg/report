@@ -176,7 +176,7 @@ def getSeqcapPanelsMap() {
             error "Config file specified with --seqcap_panels_config does not exist: ${params.seqcap_panels_config}"
         }
 
-        def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/regions/SeqCap"
+        def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base}/Hsapiens/${params.genome}/regions/SeqCap"
         def cnv_base    = params.cnv_database_base  ?: seqcap_base
         def content     = configFile.text
 
