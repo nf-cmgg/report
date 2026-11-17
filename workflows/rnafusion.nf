@@ -18,7 +18,6 @@ workflow RNAFUSION {
     ch_samplesheet // channel: [ meta, path(directory) ]
     ch_genes
     ch_fusions
-    ch_mane
     workflow_version
 
     main:
@@ -52,7 +51,6 @@ workflow RNAFUSION {
         ch_varcov_input,
         ch_genes,
         ch_fusions,
-        ch_mane,
         workflow_version,
     )
 
@@ -67,7 +65,7 @@ workflow RNAFUSION {
 */
 
 def getFilesAndCheck(dir, glob) {
-    def files = file("${dir.toUri()}/${glob}")
+    def files = files("${dir.toUri()}/${glob}")
     if (!files) {
         error("No files found matching pattern '${glob}' in directory '${dir}'")
     }
