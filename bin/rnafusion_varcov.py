@@ -481,6 +481,9 @@ for filename in os.listdir(input_path):
             merged_indexed = merged_df.set_index(['Fusion', 'CHRA', 'CHRB', 'POSA', 'POSB'])
             merged_df = arriba_indexed.combine_first(merged_indexed).reset_index()
 
+        # sort on score
+        merged_df = merged_df.sort_values('SCORE', ascending = False)
+
         # subset the dataframe to only contain relevant columns
         relevant_columns: list[str] = [
             "Fusion",
@@ -510,9 +513,6 @@ for filename in os.listdir(input_path):
 
         df_filt = merged_df[relevant_columns]
 
-        # sort on score
-        df_filt = df_filt.sort_values('SCORE', ascending = False)
-
         # move some columns
         column_to_move = df_filt.pop('EXON_NUMBER_A')
         df_filt.insert(5, 'EXONA', column_to_move)
@@ -522,8 +522,6 @@ for filename in os.listdir(input_path):
 
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
-
-        df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
 
         # filter base on score and number of callers, both conditions have to be true
         df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
