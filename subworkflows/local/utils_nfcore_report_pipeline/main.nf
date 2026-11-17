@@ -212,8 +212,8 @@ def getSeqcapAttribute(design, panel, attribute) {
     }
 
     // Default conventions if not explicitly present in config
-    def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/regions/SeqCap"
-    def cnv_base    = params.cnv_database_base  ?: "${params.igenomes_base ?: '/references'}/Hsapiens/${params.genome ?: 'GRCh38'}/variation/EOG_CNV"
+    def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base}/Hsapiens/${params.genome}/regions/SeqCap"
+    def cnv_base    = params.cnv_database_base  ?: "${params.igenomes_base}/Hsapiens/${params.genome}/variation/EOG_CNV"
 
     if (attribute == 'design_genelist') {
         return seqcap_base && design ? "${seqcap_base}/${design}/${design}" : null
