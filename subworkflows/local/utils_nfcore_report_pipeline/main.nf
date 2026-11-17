@@ -170,29 +170,6 @@ def getSeqcapPanelsMap() {
         return params.seqcap_panels
     }
 
-    if (params.seqcap_panels_config) {
-        def configFile = file(params.seqcap_panels_config)
-        if (!configFile.exists()) {
-            error "Config file specified with --seqcap_panels_config does not exist: ${params.seqcap_panels_config}"
-        }
-
-        def seqcap_base = params.seqcap_panels_base ?: "${params.igenomes_base}/Hsapiens/${params.genome}/regions/SeqCap"
-        def cnv_base    = params.cnv_database_base  ?: seqcap_base
-        def content     = configFile.text
-
-        def slurper = new ConfigSlurper()
-        slurper.setBinding([
-            params: [
-                seqcap_panels_base: seqcap_base,
-                cnv_database_base : cnv_base,
-                igenomes_base     : params.igenomes_base,
-                genome            : params.genome
-            ]
-        ])
-        def parsed = slurper.parse(content)
-        return (parsed.params?.seqcap_panels ?: parsed.seqcap_panels ?: [:])
-    }
-
     return [:]
 }
 
