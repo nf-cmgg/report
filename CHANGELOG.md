@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated documentation
 - Copy input samplesheet to `pipeline_info` output dir
+- General improvements to rnafusion_varcov
+- More permissive filtering in rnafusion_varcov. This to prevent some specific fusion from being missed
 
 ## v1.1.0 - On Target [23/07/2026]
 

@@ -523,8 +523,6 @@ for filename in os.listdir(input_path):
         column_to_move = df_filt.pop('Fusion')
         df_filt.insert(0, 'Fusion', column_to_move)
 
-        df_filt.dropna(subset=tool_specific_columns, how='all', inplace=True)
-
         # filter base on score and number of callers, both conditions have to be true
         df_final = df_filt[(df_filt['SCORE'] > SCORE_THRESHOLD) & (df_filt['TOOL_HITS'] > TOOL_HITS_THRESHOLD)]
 
