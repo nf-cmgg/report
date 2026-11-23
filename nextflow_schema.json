@@ -269,11 +269,6 @@
                     "type": "string",
                     "description": "The base path to the CMGG CNV database files",
                     "fa_icon": "fas fa-database"
-                },
-                "seqcap_panels_config": {
-                    "type": "string",
-                    "description": "Path to a configuration file (.config) defining SeqCap panel and design reference paths",
-                    "fa_icon": "fas fa-cogs"
                 }
             }
         },

@@ -43,7 +43,7 @@ An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided w
 
 ### seqcap_smallvariants
 
-This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`panel_bed`, `design_bed`, `panel_genelist`, `design_genelist`, `transcript_file`) are optional if provided via `--seqcap_panels_config` (or `-c <config>`); otherwise they must be specified in the samplesheet:
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`panel_bed`, `design_bed`, `panel_genelist`, `design_genelist`, `transcript_file`) are optional if provided via a Nextflow config file (using `-c <config>`); otherwise they must be specified in the samplesheet:
 
 | Column            | Description                                                                                                                                                               |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,17 +52,17 @@ This flow processes all samples in one samplesheet as a single run. Each row des
 | `design`          | MANDATORY - Full SeqCap design name.                                                                                                                                      |
 | `vcf`             | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`).                                                                 |
 | `coverage`        | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`).                                      |
-| `panel_bed`       | OPTIONAL - Path to the BED file for the screening panel (auto-resolved if `--seqcap_panels_config` is supplied).                                                          |
-| `design_bed`      | OPTIONAL - Path to the BED file for the full design (auto-resolved if `--seqcap_panels_config` is supplied).                                                              |
-| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if `--seqcap_panels_config` is supplied).                             |
-| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if `--seqcap_panels_config` is supplied).                                 |
-| `transcript_file` | OPTIONAL - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design (auto-resolved if `--seqcap_panels_config` is supplied). |
+| `panel_bed`       | OPTIONAL - Path to the BED file for the screening panel (auto-resolved if a seqcap_panels config is supplied).                                                            |
+| `design_bed`      | OPTIONAL - Path to the BED file for the full design (auto-resolved if a seqcap_panels config is supplied).                                                               |
+| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if a seqcap_panels config is supplied).                              |
+| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if a seqcap_panels config is supplied).                                  |
+| `transcript_file` | OPTIONAL - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design (auto-resolved if a seqcap_panels config is supplied). |
 
 An [example samplesheet](../assets/samplesheet_seqcap_smallvariants.csv) has been provided with the pipeline.
 
 ### seqcap_exomecnv
 
-This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`design_genelist`, `panel_genelist`, `cnv_database`) are optional if provided via `--seqcap_panels_config` (or `-c <config>`); otherwise they must be specified in the samplesheet:
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`design_genelist`, `panel_genelist`, `cnv_database`) are optional if provided via a Nextflow config file (using `-c <config>`); otherwise they must be specified in the samplesheet:
 
 | Column            | Description                                                                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -70,18 +70,18 @@ This flow processes all samples in one samplesheet as a single run. Each row des
 | `design`          | MANDATORY - Full SeqCap design name.                                                                                                           |
 | `panel`           | MANDATORY - Screening genepanel name.                                                                                                          |
 | `vcf`             | MANDATORY - Path to the sample's VEP-annotated ExomeDepth CNV calls (`.vcf.gz`).                                                               |
-| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if `--seqcap_panels_config` is supplied).      |
-| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if `--seqcap_panels_config` is supplied).  |
-| `cnv_database`    | OPTIONAL - Path to the tab-separated historical CMGG CNV database file for the design (auto-resolved if `--seqcap_panels_config` is supplied). |
+| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if a seqcap_panels config is supplied).        |
+| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if a seqcap_panels config is supplied).   |
+| `cnv_database`    | OPTIONAL - Path to the tab-separated historical CMGG CNV database file for the design (auto-resolved if a seqcap_panels config is supplied). |
 
-### SeqCap Panels Reference Configuration (`--seqcap_panels_config`)
+### SeqCap Panels Reference Configuration
 
-To keep clinical panel and design definitions private and decoupled from the pipeline repository, reference file mappings can be provided through an external Nextflow configuration file using `--seqcap_panels_config` (or `-c <config>`):
+To keep clinical panel and design definitions private and decoupled from the pipeline repository, reference file mappings can be provided through an external Nextflow configuration file using the `-c` option:
 
 ```bash
 nextflow run nf-cmgg/report \
     --seqcap_smallvariants.input samplesheet.csv \
-    --seqcap_panels_config /path/to/seqcap_panels.config \
+    -c /path/to/seqcap_panels.config \
     --igenomes_base /references \
     --genome GRCh38 \
     -profile docker

@@ -137,11 +137,11 @@ workflow {
                 def final_design_genelist  = design_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'design_genelist')
                 def final_transcript_file  = transcript_file  ?: getSeqcapAttribute(meta.design, meta.panel, 'transcript_file')
 
-                if (!final_panel_bed)       error "Could not find 'panel_bed' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_bed' in the samplesheet."
-                if (!final_design_bed)      error "Could not find 'design_bed' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_bed' in the samplesheet."
-                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_genelist' in the samplesheet."
-                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_genelist' in the samplesheet."
-                if (!final_transcript_file) error "Could not find 'transcript_file' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'transcript_file' in the samplesheet."
+                if (!final_panel_bed)       error "Could not find 'panel_bed' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_bed' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_design_bed)      error "Could not find 'design_bed' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_bed' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_transcript_file) error "Could not find 'transcript_file' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'transcript_file' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
 
                 [
                     meta,
@@ -183,9 +183,9 @@ workflow {
                 def final_panel_genelist  = panel_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_genelist')
                 def final_cnv_database    = cnv_database    ?: getSeqcapAttribute(meta.design, meta.panel, 'cnv_database')
 
-                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'design_genelist' in the samplesheet."
-                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'panel_genelist' in the samplesheet."
-                if (!final_cnv_database)    error "Could not find 'cnv_database' for design '${meta.design}' and panel '${meta.panel}'. Please provide '--seqcap_panels_config <file>' (or '-c <file>') or specify 'cnv_database' in the samplesheet."
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_cnv_database)    error "Could not find 'cnv_database' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'cnv_database' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
 
                 [
                     meta,
