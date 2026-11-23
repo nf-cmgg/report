@@ -82,8 +82,8 @@
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                "cnvs_exomedepth_designs.txt:md5,c510f2c2b0709cdb6c603af0c6c015bd",
-                "cnvs_exomedepth_panels.txt:md5,16fde3bc1b7124a5492cef2bb741a1c9",
+                "cnvs_exomedepth_designs.txt:md5,7fdaa0d464294c17d55b151e5efff4ca",
+                "cnvs_exomedepth_panels.txt:md5,21b75eb85c75014a66031a1ffd03c91d",
                 "samplesheet_rnafusion.csv:md5,65c556eae0dc4d6c09217a2fe01eeea8",
                 "samplesheet_seqcap_exomecnv.csv:md5,8a590f9d640e984d66e169acd0626176",
                 "samplesheet_seqcap_smallvariants.csv:md5,65fe4a607d4f28abd2fdb76122a09c3b",
@@ -98,7 +98,7 @@
                 "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-10-12T10:44:10.321009561",
+        "timestamp": "2026-11-23T17:26:52.095602008",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
