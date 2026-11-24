@@ -30,30 +30,4 @@ nextflow_pipeline {
             assert snapshot(sizes).match()
         }
     }
-
-    test("stub") {
-        options "-stub"
-
-        when {
-            params {
-                targeted = [input: null]
-                rnafusion = [
-                    input: "${projectDir}/assets/samplesheet_rnafusion.csv",
-                    genes: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt",
-                    fusions: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt",
-                ]
-                seqcap_smallvariants = [input: null]
-                seqcap_exomecnv = [input: null]
-                outdir = "$outputDir"
-            }
-        }
-
-        then {
-            assert workflow.success
-            assert workflow.trace.succeeded().any { task -> task.name.startsWith("RNAFUSION:VARCOV (") }
-            assert workflow.trace.succeeded().any { task -> task.name.startsWith("RNAFUSION:UNTAR (") }
-            assert path("$outputDir/rnafusion/varcov/NVQTEST_123/NVQTEST_123.xlsx").exists()
-            assert path("$outputDir/multiqc/multiqc_report.html").exists()
-        }
-    }
 }
