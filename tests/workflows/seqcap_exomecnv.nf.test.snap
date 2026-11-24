@@ -1,0 +1,21 @@
+{
+    "Should run seqcap_exomecnv workflow with 2 different panels of one design": {
+        "content": [
+            [
+                {
+                    "path": "cnvs_exomedepth_designs_summary.tsv",
+                    "size": 592
+                },
+                {
+                    "path": "cnvs_exomedepth_panels_summary.tsv",
+                    "size": 522
+                }
+            ]
+        ],
+        "timestamp": "2026-11-24T13:55:23.788468483",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}

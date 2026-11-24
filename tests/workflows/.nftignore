@@ -1,0 +1,36 @@
+# nf-test ignore patterns for workflow tests
+# Files that should be ignored in snapshot comparisons
+
+# Pipeline info files (timestamps, versions, etc.)
+**/pipeline_info/**
+
+# Work directory
+**/work/**
+
+# Log files
+**/.nextflow.log*
+
+# Session files
+**/.session*
+
+# Temporary files
+**/tmp/**
+
+# Large data files (only check existence, not content)
+**/*.bam
+**/*.bai
+**/*.cram
+**/*.crai
+**/*.vcf.gz
+**/*.vcf.gz.tbi
+
+# Data-dependent output files
+**/multiqc_data/multiqc_data.json
+**/multiqc_data/multiqc_plots.html
+
+# Execution timing (varies between runs)
+**/execution_timeline*
+**/execution_trace*
+
+# Cache
+**/.cache/**

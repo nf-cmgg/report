@@ -259,6 +259,16 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "default": "s3://ngi-igenomes/igenomes/"
+                },
+                "seqcap_panels_base": {
+                    "type": "string",
+                    "description": "The base path to the SeqCap panels reference files",
+                    "fa_icon": "fas fa-dna"
+                },
+                "cnv_database_base": {
+                    "type": "string",
+                    "description": "The base path to the CMGG CNV database files",
+                    "fa_icon": "fas fa-database"
                 }
             }
         },

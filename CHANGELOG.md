@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.2.0dev - SeqCap [../../2026]
+## v1.2.0 - SeqCap [24/11/2026]
 
 ### `Added`
 
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Copy input samplesheet to `pipeline_info` output dir
 - General improvements to rnafusion_varcov
 - More permissive filtering in rnafusion_varcov. This to prevent some specific fusion from being missed
+- Added nf-test pipeline tests for each reporting workflow, including stub tests and output snapshots
 
 ## v1.1.0 - On Target [23/07/2026]
 

@@ -1,0 +1,16 @@
+{
+    "Should run rnafusion workflow with tarball input": {
+        "content": [
+            [
+                {
+                    "path": "varcov/NVQTEST_123/test.xlsx"
+                }
+            ]
+        ],
+        "timestamp": "2026-11-24T13:54:56.475255844",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}

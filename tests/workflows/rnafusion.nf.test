@@ -1,0 +1,33 @@
+nextflow_pipeline {
+
+    name "Test RNAFUSION workflow"
+    script "../../main.nf"
+    tag "workflow_rnafusion"
+
+    test("Should run rnafusion workflow with tarball input") {
+
+        when {
+            params {
+                targeted = [input: null]
+                rnafusion = [
+                    input: "${projectDir}/assets/samplesheet_rnafusion.csv",
+                    genes: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt",
+                    fusions: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt",
+                ]
+                seqcap_smallvariants = [input: null]
+                seqcap_exomecnv = [input: null]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+            assert getAllFilesFromDir("$outputDir").every { outputFile -> outputFile.size() > 0 }
+            def sizes = getAllFilesFromDir("$outputDir/rnafusion", relative: true).collect { relativePath ->
+                [path: relativePath]
+            }.sort { output -> output.path }
+            assert snapshot(sizes).match()
+        }
+    }
+}
