@@ -11,7 +11,7 @@ nextflow_pipeline {
                 targeted = [input: null]
                 rnafusion = [input: null]
                 seqcap_smallvariants = [input: null]
-                seqcap_exomecnv = [input: new File("assets/samplesheet_seqcap_exomecnv.csv").absolutePath, run_name: "test_run"]
+                seqcap_exomecnv = [input: "${projectDir}/assets/samplesheet_seqcap_exomecnv.csv", run_name: "test_run"]
                 outdir = "$outputDir"
             }
         }
@@ -36,7 +36,7 @@ nextflow_pipeline {
                 targeted = [input: null]
                 rnafusion = [input: null]
                 seqcap_smallvariants = [input: null]
-                seqcap_exomecnv = [input: new File("assets/samplesheet_seqcap_exomecnv.csv").absolutePath, run_name: "test_run"]
+                seqcap_exomecnv = [input: "${projectDir}/assets/samplesheet_seqcap_exomecnv.csv", run_name: "test_run"]
                 outdir = "$outputDir"
             }
         }

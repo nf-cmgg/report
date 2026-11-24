@@ -9,7 +9,7 @@ nextflow_pipeline {
         when {
             params {
                 targeted = [
-                    input: new File("assets/samplesheet_targeted.csv").absolutePath,
+                    input: "${projectDir}/assets/samplesheet_targeted.csv",
                     gene: "MSH2",
                     fasta: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa",
                     fai: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa.fai",
@@ -39,7 +39,7 @@ nextflow_pipeline {
         when {
             params {
                 targeted = [
-                    input: new File("assets/samplesheet_targeted.csv").absolutePath,
+                    input: "${projectDir}/assets/samplesheet_targeted.csv",
                     gene: "MSH2",
                     fasta: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa",
                     fai: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa.fai",

@@ -10,7 +10,7 @@ nextflow_pipeline {
             params {
                 targeted = [input: null]
                 rnafusion = [
-                    input: new File("assets/samplesheet_rnafusion.csv").absolutePath,
+                    input: "${projectDir}/assets/samplesheet_rnafusion.csv",
                     genes: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt",
                     fusions: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt",
                 ]
@@ -36,26 +36,9 @@ nextflow_pipeline {
 
         when {
             params {
-                def fixtureDir = new File(new File("$outputDir").parentFile, "rnafusion_stub")
-                [
-                    "vcf/test.vcf",
-                    "stringtie/test.gene.abundance.txt",
-                    "fusionreport/test/test.fusions.csv",
-                    "ctatsplicing/test.cancer.introns",
-                    "multiqc/multiqc_data/multiqc_general_stats.txt",
-                    "star/test.Aligned.sortedByCoord.out.bam",
-                    "star/test.Aligned.sortedByCoord.out.bam.bai",
-                    "arriba/test.fusions.tsv",
-                ].each { relativePath ->
-                    def fixtureFile = new File(fixtureDir, relativePath)
-                    fixtureFile.parentFile.mkdirs()
-                    fixtureFile.text = ""
-                }
-                def samplesheet = new File(fixtureDir.parentFile, "rnafusion_stub_samplesheet.csv")
-                samplesheet.text = "run,outdir\nNVQTEST_123,\"${fixtureDir.absolutePath.replace('"', '""')}\"\n"
                 targeted = [input: null]
                 rnafusion = [
-                    input: samplesheet.absolutePath,
+                    input: "${projectDir}/assets/samplesheet_rnafusion.csv",
                     genes: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/RNAseq_genes_2.txt",
                     fusions: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/varcov_files/fusions.txt",
                 ]
@@ -68,7 +51,7 @@ nextflow_pipeline {
         then {
             assert workflow.success
             assert workflow.trace.succeeded().any { task -> task.name.startsWith("RNAFUSION:VARCOV (") }
-            assert !workflow.trace.succeeded().any { task -> task.name.startsWith("RNAFUSION:UNTAR (") }
+            assert workflow.trace.succeeded().any { task -> task.name.startsWith("RNAFUSION:UNTAR (") }
             assert path("$outputDir/rnafusion/varcov/NVQTEST_123/NVQTEST_123.xlsx").exists()
             assert path("$outputDir/multiqc/multiqc_report.html").exists()
         }
