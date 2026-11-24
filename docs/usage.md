@@ -6,6 +6,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 
 - **rnafusion**: generating custom report for [nf-core RNA fusion](https://nf-co.re/rnafusion) pipeline
 - **targeted**: targeted variant analysis with HOTCOUNT
+- **seqcap_smallvariants**: generate custom Excel reports from a SeqCap [nf-cmgg/smallvariants](https://github.com/nf-cmgg/smallvariants) analysis
+- **seqcap_exomecnv**: generate custom Multiqc report from a SeqCap [nf-cmgg/exomecnv](https://github.com/nf-cmgg/exomecnv) analysis
 
 ## Samplesheet input
 
@@ -39,13 +41,59 @@ Following table shows the fields that are used by the samplesheet:
 
 An [example samplesheet](../assets/samplesheet_targeted.csv) has been provided with the pipeline.
 
+### seqcap_smallvariants
+
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`panel_bed`, `design_bed`, `panel_genelist`, `design_genelist`, `transcript_file`) are optional if provided via a Nextflow config file (using `-c <config>`); otherwise they must be specified in the samplesheet:
+
+| Column            | Description                                                                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`          | MANDATORY - Sample identifier.                                                                                                                                          |
+| `panel`           | MANDATORY - Screening genepanel name.                                                                                                                                   |
+| `design`          | MANDATORY - Full SeqCap design name.                                                                                                                                    |
+| `vcf`             | MANDATORY - Path to the sample's compressed VCF file from the nf-cmgg/smallvariants analysis (`.vcf.gz`).                                                               |
+| `coverage`        | MANDATORY - Path to the sample's compressed Mosdepth per-base BED file from the nf-cmgg/smallvariants analysis (`.per-base.bed.gz`).                                    |
+| `panel_bed`       | OPTIONAL - Path to the BED file for the screening panel (auto-resolved if a seqcap_panels config is supplied).                                                          |
+| `design_bed`      | OPTIONAL - Path to the BED file for the full design (auto-resolved if a seqcap_panels config is supplied).                                                              |
+| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if a seqcap_panels config is supplied).                             |
+| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if a seqcap_panels config is supplied).                                 |
+| `transcript_file` | OPTIONAL - Path to a tab-separated transcript mapping file (`gene`, `gene_id`, `ENST`, `NM`) for the full design (auto-resolved if a seqcap_panels config is supplied). |
+
+An [example samplesheet](../assets/samplesheet_seqcap_smallvariants.csv) has been provided with the pipeline.
+
+### seqcap_exomecnv
+
+This flow processes all samples in one samplesheet as a single run. Each row describes one sample-panel combination. The reference file paths (`design_genelist`, `panel_genelist`, `cnv_database`) are optional if provided via a Nextflow config file (using `-c <config>`); otherwise they must be specified in the samplesheet:
+
+| Column            | Description                                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`          | MANDATORY - Sample identifier.                                                                                                               |
+| `design`          | MANDATORY - Full SeqCap design name.                                                                                                         |
+| `panel`           | MANDATORY - Screening genepanel name.                                                                                                        |
+| `vcf`             | MANDATORY - Path to the sample's VEP-annotated ExomeDepth CNV calls (`.vcf.gz`).                                                             |
+| `design_genelist` | OPTIONAL - Path to a text file with one gene symbol per line for the full design (auto-resolved if a seqcap_panels config is supplied).      |
+| `panel_genelist`  | OPTIONAL - Path to a text file with one gene symbol per line for the screening panel (auto-resolved if a seqcap_panels config is supplied).  |
+| `cnv_database`    | OPTIONAL - Path to the tab-separated historical CMGG CNV database file for the design (auto-resolved if a seqcap_panels config is supplied). |
+
+### SeqCap Panels Reference Configuration
+
+To keep clinical panel and design definitions private and decoupled from the pipeline repository, reference file mappings can be provided through an external Nextflow configuration file using the `-c` option:
+
+```bash
+nextflow run nf-cmgg/report \
+    --seqcap_smallvariants.input samplesheet.csv \
+    -c /path/to/seqcap_panels.config \
+    --igenomes_base /references \
+    --genome GRCh38 \
+    -profile docker
+```
+
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```bash
 #targeted
-nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --outdir ./results  -profile docker
+nextflow run nf-cmgg/report --targeted.input ./samplesheet.csv --targeted.fasta <path-to-fasta> --targeted.fai <path-to-fasta-index> --outdir ./results  -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.

@@ -11,7 +11,6 @@ process VARCOV {
     tuple val(meta), path(vcfs, stageAs: 'vcfs/*'), path(stringtie, stageAs: 'stringtie/*'), path(fusionreport, stageAs: 'fusionreport/*'), path(ctat, stageAs: 'ctat/*'), path(multiqc, stageAs: 'multiqc/*'), path(bams, stageAs: 'bams/*'), path(bais, stageAs: 'bams/*'), path(arriba, stageAs: 'arriba/*'), val(run_nr), val(design)
     path genes
     path fusions
-    path mane
     val pipeline_version
 
     output:
@@ -35,7 +34,6 @@ process VARCOV {
         --bams bams \\
         --genes ${genes} \\
         --fusion_whitelist ${fusions} \\
-        --mane ${mane} \\
         --run ${run_nr} \\
         --pipeline_version ${pipeline_version} \\
         --design '${design}'

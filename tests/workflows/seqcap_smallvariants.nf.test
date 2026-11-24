@@ -1,0 +1,67 @@
+nextflow_pipeline {
+
+    name "Test SEQCAP_SMALLVARIANTS workflow"
+    script "../../main.nf"
+    tag "workflow_seqcap_smallvariants"
+
+    test("Should run seqcap_smallvariants workflow with Panel_v1 design") {
+
+        when {
+            params {
+                targeted = [input: null]
+                rnafusion = [input: null]
+                seqcap_exomecnv = [input: null]
+                seqcap_smallvariants = [
+                    input: "${projectDir}/assets/samplesheet_seqcap_smallvariants.csv",
+                    api_data: "https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/smallvariantstoexcel/api_data.json",
+                    run_name: "test_run",
+                    threshold_coverage: 31,
+                    build: "GRCh38/hg38",
+                    variant_caller: "vardict",
+                    runtype: "SeqCap",
+                ]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+            assert path("$outputDir/multiqc/multiqc_data").exists()
+            assert getAllFilesFromDir("$outputDir").every { outputFile -> outputFile.size() > 0 }
+            def sizes = getAllFilesFromDir("$outputDir/seqcap_smallvariants", relative: true).collect { relativePath ->
+                [path: relativePath, size: file("$outputDir/seqcap_smallvariants/$relativePath").size()]
+            }.sort { output -> output.path }
+            assert snapshot(sizes).match()
+        }
+    }
+
+    test("stub") {
+        options "-stub"
+
+        when {
+            params {
+                targeted = [input: null]
+                rnafusion = [input: null]
+                seqcap_exomecnv = [input: null]
+                seqcap_smallvariants = [
+                    input: "${projectDir}/assets/samplesheet_seqcap_smallvariants.csv",
+                    api_data: "https://raw.githubusercontent.com/nf-cmgg/test-datasets/refs/heads/report/data/genomics/homo_sapiens/illumina/smallvariantstoexcel/api_data.json",
+                    run_name: "test_run",
+                    threshold_coverage: 31,
+                    build: "GRCh38/hg38",
+                    variant_caller: "vardict",
+                    runtype: "SeqCap",
+                ]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/seqcap_smallvariants/results_vardict/_RAWdata_test_run.xlsx").exists()
+            assert path("$outputDir/seqcap_smallvariants/results_vardict/_RAWdata/test_run_variants.txt").exists()
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+        }
+    }
+}

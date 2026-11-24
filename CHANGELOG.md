@@ -3,6 +3,23 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.2.0 - SeqCap [24/11/2026]
+
+### `Added`
+
+#### New Workflows
+
+- **seqcap_smallvariants** (`workflows/seqcap_smallvariants.nf`): Generates Excel workbooks and text reports from a SeqCap nf-cmgg/smallvariants output, with configurable variant caller, genome build, coverage threshold, and run type.
+- **seqcap_exomecnv** (`workflows/seqcap_exomecnv.nf`): Summarizes ExomeDepth CNV calls from VEP-annotated VCFs into per-design and per-panel TSV reports, annotated with run-level recurrency and a historical CMGG high-confidence CNV database. Besides the TSV reports, the results are also shown in the MultiQC report (via the MULTIQC_CMGG plugin).
+
+### `Changed`
+
+- Updated documentation
+- Copy input samplesheet to `pipeline_info` output dir
+- General improvements to rnafusion_varcov
+- More permissive filtering in rnafusion_varcov. This to prevent some specific fusion from being missed
+- Added nf-test pipeline tests for each reporting workflow, including stub tests and output snapshots
+
 ## v1.1.0 - On Target [23/07/2026]
 
 ### `Added`

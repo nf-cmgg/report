@@ -1,0 +1,51 @@
+nextflow_pipeline {
+
+    name "Test SEQCAP_EXOMECNV workflow"
+    script "../../main.nf"
+    tag "workflow_seqcap_exomecnv"
+
+    test("Should run seqcap_exomecnv workflow with 2 different panels of one design") {
+
+        when {
+            params {
+                targeted = [input: null]
+                rnafusion = [input: null]
+                seqcap_smallvariants = [input: null]
+                seqcap_exomecnv = [input: "${projectDir}/assets/samplesheet_seqcap_exomecnv.csv", run_name: "test_run"]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+            assert path("$outputDir/multiqc/multiqc_data").exists()
+            assert getAllFilesFromDir("$outputDir").every { outputFile -> outputFile.size() > 0 }
+            def sizes = getAllFilesFromDir("$outputDir/seqcap_exomecnv", relative: true).collect { relativePath ->
+                [path: relativePath, size: file("$outputDir/seqcap_exomecnv/$relativePath").size()]
+            }.sort { output -> output.path }
+            assert snapshot(sizes).match()
+        }
+    }
+
+    test("stub") {
+        options "-stub"
+
+        when {
+            params {
+                targeted = [input: null]
+                rnafusion = [input: null]
+                seqcap_smallvariants = [input: null]
+                seqcap_exomecnv = [input: "${projectDir}/assets/samplesheet_seqcap_exomecnv.csv", run_name: "test_run"]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/seqcap_exomecnv/cnvs_exomedepth_designs_summary.tsv").exists()
+            assert path("$outputDir/seqcap_exomecnv/cnvs_exomedepth_panels_summary.tsv").exists()
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+        }
+    }
+}

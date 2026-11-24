@@ -15,6 +15,8 @@
 
 include { TARGETED                } from './workflows/targeted'
 include { RNAFUSION               } from './workflows/rnafusion'
+include { SEQCAP_SMALLVARIANTS    } from './workflows/seqcap_smallvariants'
+include { SEQCAP_EXOMECNV         } from './workflows/seqcap_exomecnv'
 include { PACVAR_REPEAT           } from './modules/local/pacvarrepeat'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_report_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_report_pipeline'
@@ -23,7 +25,8 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 include { paramsSummaryMap        } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc    } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText  } from './subworkflows/local/utils_nfcore_report_pipeline'
-include { check_required_params   } from './subworkflows/local/utils_nfcore_report_pipeline'
+include { check_required_params       } from './subworkflows/local/utils_nfcore_report_pipeline'
+include { getSeqcapAttribute          } from './subworkflows/local/utils_nfcore_report_pipeline'
 
 // Modules
 include { MULTIQC                 } from './modules/nf-core/multiqc/main'
@@ -51,6 +54,16 @@ workflow {
         params.help_full,
         params.show_hidden
     )
+
+    // Copy of the original input samplesheets
+    [
+        targeted           : params.targeted.input,
+        rnafusion          : params.rnafusion.input,
+        seqcap_smallvariants: params.seqcap_smallvariants.input,
+        seqcap_exomecnv    : params.seqcap_exomecnv.input,
+    ].findAll { _name, input -> input }.each { name, input ->
+        file(input).copyTo("${params.outdir}/pipeline_info/samplesheet_${name}.${file(input).extension}")
+    }
 
     //
     // Run reporting flows
@@ -91,23 +104,104 @@ workflow {
 
     def out_rnafusion_excels = channel.empty()
     if (params.rnafusion.input) {
-        def required_parameters = ['genes', 'fusions', 'mane']
+        def required_parameters = ['genes', 'fusions']
         check_required_params(params.get('rnafusion'), 'rnafusion', required_parameters)
         def rnafusion_params = params.rnafusion
 
         def ch_samplesheet = channel.fromList(samplesheetToList(rnafusion_params.input, "${projectDir}/assets/schema_rnafusion_input.json"))
         def genes = channel.value(file(rnafusion_params.genes))
         def fusions = channel.value(file(rnafusion_params.fusions))
-        def mane = channel.value(file(rnafusion_params.mane))
 
         RNAFUSION(
             ch_samplesheet,
             genes,
             fusions,
-            mane,
             workflow.manifest.version,
         )
         out_rnafusion_excels = RNAFUSION.out
+    }
+
+    def out_seqcap_smallvariants_excels = channel.empty()
+    def out_seqcap_smallvariants_reports = channel.empty()
+    if (params.seqcap_smallvariants.input) {
+        def required_parameters = ['input', 'api_data', 'run_name']
+        check_required_params(params.get('seqcap_smallvariants'), 'seqcap_smallvariants', required_parameters)
+        def seqcap_smallvariants_params = params.seqcap_smallvariants
+
+        def samplesheet = file(seqcap_smallvariants_params.input)
+        def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_smallvariants_input.json"))
+            .map { meta, panel_bed, design_bed, panel_genelist, design_genelist, transcript_file, vcf, coverage ->
+                def final_panel_bed        = panel_bed        ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_bed')
+                def final_design_bed       = design_bed       ?: getSeqcapAttribute(meta.design, meta.panel, 'design_bed')
+                def final_panel_genelist   = panel_genelist   ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_genelist')
+                def final_design_genelist  = design_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'design_genelist')
+                def final_transcript_file  = transcript_file  ?: getSeqcapAttribute(meta.design, meta.panel, 'transcript_file')
+
+                if (!final_panel_bed)       error "Could not find 'panel_bed' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_bed' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_design_bed)      error "Could not find 'design_bed' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_bed' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_transcript_file) error "Could not find 'transcript_file' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'transcript_file' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+
+                [
+                    meta,
+                    file(final_panel_bed, checkIfExists: true),
+                    file(final_design_bed, checkIfExists: true),
+                    file(final_panel_genelist, checkIfExists: true),
+                    file(final_design_genelist, checkIfExists: true),
+                    file(final_transcript_file, checkIfExists: true),
+                    vcf,
+                    coverage
+                ]
+            }
+        def api_data = channel.value(file(seqcap_smallvariants_params.api_data))
+        def run_name = seqcap_smallvariants_params.run_name
+
+        SEQCAP_SMALLVARIANTS(
+            ch_rows,
+            api_data,
+            run_name,
+            channel.value(seqcap_smallvariants_params.threshold_coverage),
+            channel.value(seqcap_smallvariants_params.build),
+            channel.value(seqcap_smallvariants_params.variant_caller),
+            channel.value(seqcap_smallvariants_params.runtype),
+        )
+        out_seqcap_smallvariants_excels = SEQCAP_SMALLVARIANTS.out.excels
+        out_seqcap_smallvariants_reports = SEQCAP_SMALLVARIANTS.out.reports
+    }
+
+    def out_seqcap_exomecnv_summaries = channel.empty()
+    if (params.seqcap_exomecnv.input) {
+        def required_parameters = ['input', 'run_name']
+        check_required_params(params.get('seqcap_exomecnv'), 'seqcap_exomecnv', required_parameters)
+        def seqcap_exomecnv_params = params.seqcap_exomecnv
+
+        def samplesheet = file(seqcap_exomecnv_params.input)
+        def ch_rows = channel.fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_seqcap_exomecnv_input.json"))
+            .map { meta, design_genelist, panel_genelist, vcf, cnv_database ->
+                def final_design_genelist = design_genelist ?: getSeqcapAttribute(meta.design, meta.panel, 'design_genelist')
+                def final_panel_genelist  = panel_genelist  ?: getSeqcapAttribute(meta.design, meta.panel, 'panel_genelist')
+                def final_cnv_database    = cnv_database    ?: getSeqcapAttribute(meta.design, meta.panel, 'cnv_database')
+
+                if (!final_design_genelist) error "Could not find 'design_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'design_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_panel_genelist)  error "Could not find 'panel_genelist' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'panel_genelist' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+                if (!final_cnv_database)    error "Could not find 'cnv_database' for design '${meta.design}' and panel '${meta.panel}'. Please specify 'cnv_database' in the samplesheet or use '-c <config>' to load a seqcap_panels configuration file."
+
+                [
+                    meta,
+                    file(final_design_genelist, checkIfExists: true),
+                    file(final_panel_genelist, checkIfExists: true),
+                    vcf,
+                    file(final_cnv_database, checkIfExists: true)
+                ]
+            }
+        def run_name = seqcap_exomecnv_params.run_name
+
+        SEQCAP_EXOMECNV(
+            ch_rows,
+            run_name,
+        )
+        out_seqcap_exomecnv_summaries = SEQCAP_EXOMECNV.out.summaries
     }
 
     // TODO: out of scope of the current release, reimplement this later
@@ -122,7 +216,6 @@ workflow {
     //     out_pacvar_repeat_excels = PACVAR_REPEAT.out.excels
     // }
 
-    //
     // Collate and save software versions
     //
     def topic_versions = channel.topic("versions")
@@ -200,11 +293,14 @@ workflow {
     )
 
     publish:
-    targeted_hotcount    = out_targeted_hotcount
-    rnafusion_excels     = out_rnafusion_excels
+    targeted_hotcount             = out_targeted_hotcount
+    rnafusion_excels              = out_rnafusion_excels
     // pacvar_repeat_excels = out_pacvar_repeat_excels
-    multiqc_report       = MULTIQC.out.report
-    multiqc_data         = MULTIQC.out.data
+    seqcap_smallvariants_excels   = out_seqcap_smallvariants_excels
+    seqcap_smallvariants_reports  = out_seqcap_smallvariants_reports
+    seqcap_exomecnv_summaries     = out_seqcap_exomecnv_summaries
+    multiqc_report                = MULTIQC.out.report
+    multiqc_data                  = MULTIQC.out.data
 }
 
 /*
@@ -229,6 +325,21 @@ output {
     //         excel >> "pacvar_repeat/reports/"
     //     }
     // }
+    seqcap_smallvariants_excels {
+        path { meta, excel ->
+            excel >> "seqcap_smallvariants/"
+        }
+    }
+    seqcap_smallvariants_reports {
+        path { meta, report ->
+            report >> "seqcap_smallvariants/"
+        }
+    }
+    seqcap_exomecnv_summaries {
+        path { meta, summary ->
+            summary >> "seqcap_exomecnv/"
+        }
+    }
     multiqc_report {
         path { _meta, report ->
             report >> "multiqc/"

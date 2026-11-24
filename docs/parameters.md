@@ -16,17 +16,24 @@ Define where the pipeline should save output data.
 
 All options to run the targeted reporting flow.
 
-| Parameter  | Description | Type     | Default | Required | Hidden |
-| ---------- | ----------- | -------- | ------- | -------- | ------ |
-| `targeted` |             | `object` |         |          |        |
+| Parameter              | Description                                                                              | Type     | Default | Required | Hidden |
+| ---------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `targeted.input`       | Path to comma-separated file containing information about the samples in the experiment. | `string` |         | Yes      |        |
+| `targeted.queries_dir` | Directory containing the query files per gene (defaults to `assets/targeted/`).          | `string` |         |          | Yes    |
+| `targeted.gene`        | Gene name of targeted query.                                                             | `string` | `MSH2`  | Yes      |        |
+| `targeted.fasta`       | Path to FASTA genome file.                                                               | `string` |         | Yes      |        |
+| `targeted.fai`         | Path to the index of the FASTA genome file.                                              | `string` |         | Yes      |        |
 
 ## Options for the RNAfusion flow
 
 All options to run the RNAfusion flow.
 
-| Parameter   | Description | Type     | Default | Required | Hidden |
-| ----------- | ----------- | -------- | ------- | -------- | ------ |
-| `rnafusion` |             | `object` |         |          |        |
+| Parameter           | Description                                                                              | Type     | Default | Required | Hidden |
+| ------------------- | ---------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `rnafusion.input`   | Path to comma-separated file containing information about the samples in the experiment. | `string` |         | Yes      |        |
+| `rnafusion.genes`   | Path to a text file containing genes to analyze in the Rnafusion report.                 | `string` |         | Yes      |        |
+| `rnafusion.fusions` | Path to a text file containing fusions to analyze in the Rnafusion report.               | `string` |         | Yes      |        |
+| `rnafusion.mane`    | Path to a CSV file containing MANE transcripts to analyze in the Rnafusion report.       | `string` |         | Yes      |        |
 
 ## Options for the pacvar_repeat flow
 
@@ -36,15 +43,40 @@ All options to run the pacvar_repeat reporting flow.
 | --------------- | ----------- | -------- | ------- | -------- | ------ |
 | `pacvar_repeat` |             | `object` |         |          |        |
 
+## Options for the seqcap_smallvariants flow
+
+All options to run the SeqCap smallvariants reporting flow.
+
+| Parameter                                 | Description                                                                                                                    | Type      | Default       | Required | Hidden |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------- | -------- | ------ |
+| `seqcap_smallvariants.input`              | Samplesheet describing the samples, panels, designs and their BED, gene list, VCF and coverage files.                          | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.api_data`           | Path to a combined API data JSON bundle (`ford_approved_assays`, `mdg_approved_assays`, `cmgg_variants`, `cmgg_variants_mdg`). | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.run_name`           | Run name used in the generated SeqCap reports and output filenames.                                                            | `string`  |               | Yes      |        |
+| `seqcap_smallvariants.threshold_coverage` | Coverage threshold below which a region is flagged as low coverage.                                                            | `integer` | `31`          |          |        |
+| `seqcap_smallvariants.build`              | Genome build label displayed in the generated reports.                                                                         | `string`  | `GRCh38/hg38` |          |        |
+| `seqcap_smallvariants.variant_caller`     | Variant caller name used to match the VCF filename during file discovery.                                                      | `string`  | `vardict`     |          |        |
+| `seqcap_smallvariants.runtype`            | Runtype label used for Excel title styling.                                                                                    | `string`  | `SeqCap`      |          |        |
+
+## Options for the seqcap_exomecnv flow
+
+All options to run the SeqCap exomecnv (ExomeDepth) reporting flow.
+
+| Parameter                  | Description                                                                                          | Type     | Default | Required | Hidden |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- | -------- | ------- | -------- | ------ |
+| `seqcap_exomecnv.input`    | Samplesheet describing the samples, designs, panels and their gene list, VCF and CNV database files. | `string` |         | Yes      |        |
+| `seqcap_exomecnv.run_name` | Run name used in the analysis.                                                                       | `string` |         | Yes      |        |
+
 ## Reference genome options
 
 Reference genome related files and options required for the workflow.
 
-| Parameter         | Description                                                                                                                                                                                                                                                                                                                                                                                                                   | Type      | Default                     | Required | Hidden |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------- | -------- | ------ |
-| `genome`          | Name of iGenomes reference. <details><summary>Help</summary><small>If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. <br><br>See the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details.</small></details> | `string`  |                             |          |        |
-| `igenomes_ignore` | Do not load the iGenomes reference config. <details><summary>Help</summary><small>Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.</small></details>                                                                                                                                             | `boolean` |                             |          | True   |
-| `igenomes_base`   | The base path to the igenomes reference files                                                                                                                                                                                                                                                                                                                                                                                 | `string`  | s3://ngi-igenomes/igenomes/ |          | True   |
+| Parameter            | Description                                                                                                                                                                                                                                                                                                                                                                                                                   | Type      | Default                     | Required | Hidden |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------- | -------- | ------ |
+| `genome`             | Name of iGenomes reference. <details><summary>Help</summary><small>If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. <br><br>See the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details.</small></details> | `string`  |                             |          |        |
+| `igenomes_ignore`    | Do not load the iGenomes reference config. <details><summary>Help</summary><small>Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.</small></details>                                                                                                                                             | `boolean` |                             |          | True   |
+| `igenomes_base`      | The base path to the igenomes reference files                                                                                                                                                                                                                                                                                                                                                                                 | `string`  | s3://ngi-igenomes/igenomes/ |          | True   |
+| `seqcap_panels_base` | The base path to the SeqCap panels reference files                                                                                                                                                                                                                                                                                                                                                                            | `string`  |                             |          |        |
+| `cnv_database_base`  | The base path to the EOG CNV database files                                                                                                                                                                                                                                                                                                                                                                                   | `string`  |                             |          |        |
 
 ## Institutional config options
 

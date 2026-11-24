@@ -2,6 +2,9 @@
     "-profile test": {
         "content": [
             {
+                "EXOMECNV_TO_CSV": {
+                    "python": "3.14.2"
+                },
                 "HOTCOUNT": {
                     "hotcount": 0.0
                 },
@@ -14,6 +17,9 @@
                 "SAMTOOLS_VIEW": {
                     "samtools": "1.23.1"
                 },
+                "SMALLVARIANTS_TO_EXCEL": {
+                    "python": "3.14.2"
+                },
                 "UNTAR": {
                     "untar": 1.34
                 },
@@ -25,42 +31,77 @@
                     "samtools": "1.22.1"
                 },
                 "Workflow": {
-                    "nf-cmgg/report": "v1.1.0"
+                    "nf-cmgg/report": "v1.2.0"
                 }
             },
             [
                 "multiqc",
                 "multiqc/multiqc_data",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/llms-full.txt",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.log",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc.parquet",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_citations.txt",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_data.json",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_software_versions.txt",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_sources.txt",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/multiqc_targeted_MSH2.txt",
-                "multiqc/multiqc_data/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report_data/targeted_MSH2.txt",
-                "multiqc/nf-cmggreport-Multi-workflow-Analysis-Report_multiqc_report.html",
+                "multiqc/multiqc_data/multiqc_report_data",
+                "multiqc/multiqc_data/multiqc_report_data/cnvs_exomedepth_designs.txt",
+                "multiqc/multiqc_data/multiqc_report_data/cnvs_exomedepth_panels.txt",
+                "multiqc/multiqc_data/multiqc_report_data/llms-full.txt",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc.log",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc.parquet",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc_citations.txt",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc_software_versions.txt",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc_sources.txt",
+                "multiqc/multiqc_data/multiqc_report_data/multiqc_targeted_MSH2.txt",
+                "multiqc/multiqc_data/multiqc_report_data/targeted_MSH2.txt",
+                "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/report_mqc_versions.yml",
+                "pipeline_info/samplesheet_rnafusion.csv",
+                "pipeline_info/samplesheet_seqcap_exomecnv.csv",
+                "pipeline_info/samplesheet_seqcap_smallvariants.csv",
+                "pipeline_info/samplesheet_targeted.csv",
                 "rnafusion",
                 "rnafusion/varcov",
                 "rnafusion/varcov/NVQTEST_123",
                 "rnafusion/varcov/NVQTEST_123/test.xlsx",
+                "seqcap_exomecnv",
+                "seqcap_exomecnv/cnvs_exomedepth_designs_summary.tsv",
+                "seqcap_exomecnv/cnvs_exomedepth_panels_summary.tsv",
+                "seqcap_smallvariants",
+                "seqcap_smallvariants/results_vardict",
+                "seqcap_smallvariants/results_vardict/_RAWdata",
+                "seqcap_smallvariants/results_vardict/_RAWdata/test_run_coverage.txt",
+                "seqcap_smallvariants/results_vardict/_RAWdata/test_run_variants.txt",
+                "seqcap_smallvariants/results_vardict/_RAWdata_test_run.xlsx",
+                "seqcap_smallvariants/results_vardict/sample1",
+                "seqcap_smallvariants/results_vardict/sample1/_sample1_Design_v1.xlsx",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Design_v1_coverage.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Design_v1_variants.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Panel_v1_coverage.txt",
+                "seqcap_smallvariants/results_vardict/sample1/sample1_Panel_v1_variants.txt",
+                "seqcap_smallvariants/results_vardict/sample1_Panel_v1.xlsx",
                 "targeted",
                 "targeted/MSH2",
                 "targeted/MSH2/test1.counts.txt",
                 "targeted/MSH2/test2.counts.txt"
             ],
             [
-                
+                "cnvs_exomedepth_designs.txt:md5,7fdaa0d464294c17d55b151e5efff4ca",
+                "cnvs_exomedepth_panels.txt:md5,21b75eb85c75014a66031a1ffd03c91d",
+                "samplesheet_rnafusion.csv:md5,65c556eae0dc4d6c09217a2fe01eeea8",
+                "samplesheet_seqcap_exomecnv.csv:md5,8a590f9d640e984d66e169acd0626176",
+                "samplesheet_seqcap_smallvariants.csv:md5,65fe4a607d4f28abd2fdb76122a09c3b",
+                "samplesheet_targeted.csv:md5,2b2446582412baa95a89fe8eb0792fdc",
+                "cnvs_exomedepth_designs_summary.tsv:md5,0d3eb50daa5fa88ed270e7b6e084409d",
+                "cnvs_exomedepth_panels_summary.tsv:md5,dc22d20c98455ae26cb980ebde99d031",
+                "test_run_coverage.txt:md5,fe4dfacf891ec289abc5733e17c06995",
+                "test_run_variants.txt:md5,00670c56fa6415a3bd7c9d31727eb093",
+                "sample1_Design_v1_coverage.txt:md5,a98058c6dcf7c0f82729cd359936d127",
+                "sample1_Design_v1_variants.txt:md5,13522a94db8c8c38ea144c4820af8082",
+                "sample1_Panel_v1_coverage.txt:md5,071a97ae10e42afb9e736e83d3e0984c",
+                "sample1_Panel_v1_variants.txt:md5,3e0ef6fb89a7253c43b27f7f27641769"
             ]
         ],
-        "timestamp": "2026-07-17T17:05:04.899149873",
+        "timestamp": "2026-11-23T17:26:52.095602008",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.4"
+            "nextflow": "26.04.0"
         }
     }
 }

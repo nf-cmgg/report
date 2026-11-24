@@ -1,0 +1,21 @@
+{
+    "Should run targeted workflow with FamCanc_v2, FamCanc_v3 design and MSH2 gene": {
+        "content": [
+            [
+                {
+                    "path": "MSH2/test1.counts.txt",
+                    "size": 221
+                },
+                {
+                    "path": "MSH2/test2.counts.txt",
+                    "size": 221
+                }
+            ]
+        ],
+        "timestamp": "2026-11-24T13:56:30.900753596",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}
