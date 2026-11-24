@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Copy input samplesheet to `pipeline_info` output dir
 - General improvements to rnafusion_varcov
 - More permissive filtering in rnafusion_varcov. This to prevent some specific fusion from being missed
+- Added nf-test pipeline tests for each reporting workflow, including stub tests and output snapshots
 
 ## v1.1.0 - On Target [23/07/2026]
 

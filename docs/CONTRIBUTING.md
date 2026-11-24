@@ -81,6 +81,15 @@ GitHub Actions runs the pipeline on this data to ensure it runs through and exit
 If there are any failures then the automated tests fail.
 These tests are run with the latest available version of Nextflow and the minimum required version specified in the pipeline code.
 
+The workflow tests also snapshot the sizes of files in each reporting flow's output directory.
+In full runs, all output files, including variable MultiQC and pipeline reports, must be non-empty.
+Each workflow also has a `stub` test that checks the expected placeholder outputs with Nextflow's stub mode.
+After reviewing an intentional output change, update these snapshots with:
+
+```bash
+nf-test test tests/workflows/ --profile=+docker --update-snapshot
+```
+
 ### Patch release
 
 > [!WARNING]

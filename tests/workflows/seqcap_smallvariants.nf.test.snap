@@ -1,0 +1,49 @@
+{
+    "Should run seqcap_smallvariants workflow with Panel_v1 design": {
+        "content": [
+            [
+                {
+                    "path": "results_vardict/_RAWdata/test_run_coverage.txt",
+                    "size": 688
+                },
+                {
+                    "path": "results_vardict/_RAWdata/test_run_variants.txt",
+                    "size": 1355
+                },
+                {
+                    "path": "results_vardict/_RAWdata_test_run.xlsx",
+                    "size": 4935
+                },
+                {
+                    "path": "results_vardict/sample1/_sample1_Design_v1.xlsx",
+                    "size": 6597
+                },
+                {
+                    "path": "results_vardict/sample1/sample1_Design_v1_coverage.txt",
+                    "size": 3614
+                },
+                {
+                    "path": "results_vardict/sample1/sample1_Design_v1_variants.txt",
+                    "size": 1843
+                },
+                {
+                    "path": "results_vardict/sample1/sample1_Panel_v1_coverage.txt",
+                    "size": 623
+                },
+                {
+                    "path": "results_vardict/sample1/sample1_Panel_v1_variants.txt",
+                    "size": 1340
+                },
+                {
+                    "path": "results_vardict/sample1_Panel_v1.xlsx",
+                    "size": 5523
+                }
+            ]
+        ],
+        "timestamp": "2026-11-24T13:55:47.501779396",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}

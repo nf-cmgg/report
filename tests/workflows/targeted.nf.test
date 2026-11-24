@@ -1,0 +1,61 @@
+nextflow_pipeline {
+
+    name "Test TARGETED workflow"
+    script "../../main.nf"
+    tag "workflow_targeted"
+
+    test("Should run targeted workflow with FamCanc_v2, FamCanc_v3 design and MSH2 gene") {
+
+        when {
+            params {
+                targeted = [
+                    input: new File("assets/samplesheet_targeted.csv").absolutePath,
+                    gene: "MSH2",
+                    fasta: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa",
+                    fai: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa.fai",
+                ]
+                rnafusion = [input: null]
+                seqcap_smallvariants = [input: null]
+                seqcap_exomecnv = [input: null]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+            assert path("$outputDir/multiqc/multiqc_data").exists()
+            assert getAllFilesFromDir("$outputDir").every { outputFile -> outputFile.size() > 0 }
+            def sizes = getAllFilesFromDir("$outputDir/targeted", relative: true).collect { relativePath ->
+                [path: relativePath, size: file("$outputDir/targeted/$relativePath").size()]
+            }.sort { output -> output.path }
+            assert snapshot(sizes).match()
+        }
+    }
+
+    test("stub") {
+        options "-stub"
+
+        when {
+            params {
+                targeted = [
+                    input: new File("assets/samplesheet_targeted.csv").absolutePath,
+                    gene: "MSH2",
+                    fasta: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa",
+                    fai: "https://github.com/nf-cmgg/test-datasets/raw/refs/heads/report/data/genomics/homo_sapiens/genome/seq/subset.fa.fai",
+                ]
+                rnafusion = [input: null]
+                seqcap_smallvariants = [input: null]
+                seqcap_exomecnv = [input: null]
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert path("$outputDir/targeted/MSH2/test1.counts.txt").exists()
+            assert path("$outputDir/targeted/MSH2/test2.counts.txt").exists()
+            assert path("$outputDir/multiqc/multiqc_report.html").exists()
+        }
+    }
+}
